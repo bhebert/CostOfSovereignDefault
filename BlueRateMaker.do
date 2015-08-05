@@ -94,7 +94,7 @@ reshape wide `rtypes', i(date) j(Ticker) string
 reshape long `rtypes', i(date) j(Ticker) string
 
 tempfile temp
-save "$bbpath/`temp'", replace
+save "`temp'", replace
 
 use "$dpath/ARS_Blue.dta", clear
 keep ARSUSDS TDARSSP date
@@ -109,7 +109,7 @@ reshape long total_return, i(date) j(Ticker) string
 
 gen px_close = total_return
 
-append using "$bbpath/temp.dta"
+append using "`temp'"
 
 
 
