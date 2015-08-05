@@ -93,7 +93,8 @@ drop weight conversion
 reshape wide `rtypes', i(date) j(Ticker) string
 reshape long `rtypes', i(date) j(Ticker) string
 
-save "$bbpath/temp.dta", replace
+tempfile temp
+save "$bbpath/`temp'", replace
 
 use "$dpath/ARS_Blue.dta", clear
 keep ARSUSDS TDARSSP date
