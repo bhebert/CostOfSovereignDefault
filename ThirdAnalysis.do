@@ -61,15 +61,15 @@ sort Ticker date market
 
 tempfile temp
 
-save "`temp'.dta", replace
+save "`temp'", replace
 
 use "$apath/blue_rate.dta", clear
 drop if ~regexm("`exrates'",Ticker)
 gen industry_sector = Ticker
 gen market = "Index"
 
-append using "`temp'.dta"
-save "`temp'.dta", replace
+append using "`temp'"
+save "`temp'", replace
 
 use "$bbpath/Latam_equities.dta", clear
 drop if regexm(variable,"return")
@@ -81,8 +81,8 @@ reshape long total_return, i(date) j(Ticker) string
 gen industry_sector = Ticker
 gen market = "Index"
 
-append using "`temp'.dta"
-save "`temp'.dta", replace
+append using "`temp'"
+save "`temp'", replace
 
 use "$bbpath/Latam_CDS.dta", clear
 drop if regexm(reporter,"CBIN")
@@ -94,7 +94,7 @@ reshape long total_return, i(date) j(Ticker) string
 gen industry_sector = Ticker
 gen market = "Index"
 
-append using "`temp'.dta"
+append using "`temp'"
 
 drop if date >= td(30jul2014)
 drop if date < td(1jan`startyear')
@@ -103,7 +103,9 @@ gen temp = Ticker + market
 encode temp, gen(firm_id)
 drop temp
 
-save "`temp'.dta", replace
+tempfile factor_temp temp
+
+save "`temp'", replace
 
 * Merge in the saved factor data
 
@@ -131,10 +133,9 @@ foreach nm in `factors' {
 disp "`fnames'"
 disp "`fprefs'"
 
-tempfile factor_temp
 save "`factor_temp'", replace
 
-use "`temp.dta'", clear
+use "`temp'", clear
 
 mmerge date using "`factor_temp'", unmatched(master)
 drop _merge
