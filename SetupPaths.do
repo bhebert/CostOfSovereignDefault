@@ -1,4 +1,4 @@
-//global droppath /Users/bhebert/Dropbox
+
 
 * Code to setup global path variables
 
