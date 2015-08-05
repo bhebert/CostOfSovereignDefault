@@ -27,3 +27,8 @@ if _rc {
 
 * This is for locally generated files
 global apath "$csd_dir/Datasets"
+
+* change current directory
+cd ${csd_dir}
+* force loading of the business day calendar
+bcal load basic
