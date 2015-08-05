@@ -1,0 +1,6 @@
+version 13
+purpose "Example for manual"
+dateformat dmy
+range 03jan2011 30oct2014
+centerdate 03jan2011
+omit dayofweek (Sa Su)
