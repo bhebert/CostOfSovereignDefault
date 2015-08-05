@@ -13,6 +13,8 @@ global tpath "$droppath/Cost of Sovereign Default/Argentina/Tradable"
 global gdppath "$droppath/Cost of Sovereign Default/GDP Weighting"
 global miscdata "$droppath/Cost of Sovereign Default/Misc Data"
 global forpath "$droppath/Cost of Sovereign Default/Forecasts"
+global fweo_path "$droppath/Cost of Sovereign Default/Forecasts/WEO"
+
 
 * Setup path for results
 
@@ -32,5 +34,10 @@ global apath "$csd_dir/Datasets"
 
 * change current directory
 cd ${csd_dir}
+
+* add this to the adopath
+
+adopath + $csd_dir
+
 * force loading of the business day calendar
 bcal load basic
