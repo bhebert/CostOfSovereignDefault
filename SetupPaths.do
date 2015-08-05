@@ -4,13 +4,14 @@
 
 global bbpath "$droppath/Cost of Sovereign Default/Bloomberg/Datasets"
 global opath "$droppath/Cost of Sovereign Default/Notes"
-
 global fpath "$droppath/Cost of Sovereign Default/Additional Data"
 global dpath "$droppath/Cost of Sovereign Default/Datastream"
 global mpath "$droppath/Cost of Sovereign Default/Markit/Datasets"
 global cpath "$droppath/Cost of Sovereign Default/CDS Comparison"
 global ffpath "$droppath/Cost of Sovereign Default/Argentina/Tradable/FF"
 global tpath "$droppath/Cost of Sovereign Default/Argentina/Tradable"
+global gdppath "$droppath/Cost of Sovereign Default/GDP Weighting"
+global miscdata "$droppath/Cost of Sovereign Default/Misc Data"
 
 * Setup path for results
 
