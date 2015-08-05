@@ -215,7 +215,7 @@ display "`crtypes'"
 
 collapse (mean) `rtypes' `fnames' isstock nonfinancial ports (count) `crtypes', by(date industry_sector Ticker market)
 
-mmerge industry_sector using "$apath/gdp_weights.dta", unmatched(master)
+/*mmerge industry_sector using "$apath/gdp_weights.dta", unmatched(master)
 expand 2 if ports == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_us)
 expand 2 if ports == 0 & gdp_adr_us == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_ar)
 
@@ -248,9 +248,11 @@ foreach rt in `rtypes' {
 ta industry_sector gdp_beta if market != "AR"
 
 collapse (mean) `rtypes' `fnames' isstock nonfinancial ports cnt_* (count) gdp_beta `crtypes2', by(date industry_sector Ticker market)
+*/
 
 sort industry_sector Ticker market date
 
+/*
 by industry_sector Ticker market: egen cnt_target = max(gdp_beta) if regexm(industry_sector,"GDP")
 
 foreach rt in `rtypes' {
@@ -260,6 +262,7 @@ foreach rt in `rtypes' {
 	drop cnt2_`rt'
 }
 drop cnt_target
+*/
 		
 expand 2 if regexm(industry_sector,"High_") | regexm(industry_sector,"Low_"), gen(ishml)
 	
