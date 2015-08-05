@@ -12,6 +12,7 @@ global ffpath "$droppath/Cost of Sovereign Default/Argentina/Tradable/FF"
 global tpath "$droppath/Cost of Sovereign Default/Argentina/Tradable"
 global gdppath "$droppath/Cost of Sovereign Default/GDP Weighting"
 global miscdata "$droppath/Cost of Sovereign Default/Misc Data"
+global forpath "$droppath/Cost of Sovereign Default/Forecasts"
 
 * Setup path for results
 
