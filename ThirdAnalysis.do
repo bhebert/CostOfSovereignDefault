@@ -459,5 +459,8 @@ drop if SPX_ == .
 replace firmname = strtoname(firmname)
 replace industry_sector = strtoname(industry_sector)
 
+* this is a totally useless byproduct of the code.
+drop if regexm(firmname,"HML_indicator_adr_US")
+
 save "$apath/`file'.dta", replace
 
