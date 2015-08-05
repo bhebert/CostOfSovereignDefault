@@ -1,17 +1,24 @@
-
 set more off
 
+global forecast_path "`droppath'/Cost of Sovereign Default/Forecasts"
 
+
+*GDP Indices
+// Don't do this at all now
+local forecast 0
+*if 0, no forecast
+*if 1, only consensus and var
+*if 2, consensus and weo/DON'T USE THIS, IT IS NOT DONE YET
 
 * This controls which Exchange Rates to use
-local exrates ADRBlue DSBlue OfficialRate
+global exrates ADRBlue DSBlue OfficialRate
 
 * This controls which Latam equity/cds indices to use
-local latam Brazil Mexico
+global latam Brazil Mexico
 
 * Drop data before this year
 * One of the data sources doesn't go before 2011, so this doesn't help
-local startyear 2011
+global startyear 2011
 
 
 * Choose ADRBlue or DSBlue
@@ -19,7 +26,7 @@ local excontrol ADRBlue
 
 local file ThirdAnalysis
 
-local static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar
+global static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar
 
 local export_share_cut 25
 local Government_cut 0
@@ -29,23 +36,24 @@ local es_industry_cut 0.1
 local import_intensity_cut 0.03
 local finvar_cut 0
 
+
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
 drop if date == .
 drop if Ticker == ""
 drop if market != "US" & market != "AR" & Ticker != "MXAR" & Ticker != "Merval"
 
 drop if date >= td(30jul2014)
-drop if date < td(1jan`startyear')
+drop if date < td(1jan$startyear)
 
 
 gen ADRticker = bb_ticker if market == "US"
 replace ADRticker = "none" if market == "AR" | market == "Index"
-mmerge bb_ticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector `static_vars') update
+mmerge bb_ticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector $static_vars) update
 
 * The firm table uses the old IRSA ADR ticker
 replace ADRticker = "APSA US Equity" if ADRticker == "IRCP US Equity"
 
-mmerge ADRticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector `static_vars') update
+mmerge ADRticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector $static_vars) update
 
 replace industry_sector = "INDEX" if Ticker == "MXAR"
 replace market = "US" if Ticker == "MXAR"
@@ -64,7 +72,7 @@ tempfile temp
 save "`temp'", replace
 
 use "$apath/blue_rate.dta", clear
-drop if ~regexm("`exrates'",Ticker)
+drop if ~regexm("$exrates",Ticker)
 gen industry_sector = Ticker
 gen market = "Index"
 
@@ -73,8 +81,8 @@ save "`temp'", replace
 
 use "$bbpath/Latam_equities.dta", clear
 drop if regexm(variable,"return")
-keep date `latam'
-foreach cntry in `latam' {
+keep date $latam
+foreach cntry in $latam {
 	rename `cntry' total_return`cntry'Equity
 }
 reshape long total_return, i(date) j(Ticker) string
@@ -86,8 +94,8 @@ save "`temp'", replace
 
 use "$bbpath/Latam_CDS.dta", clear
 drop if regexm(reporter,"CBIN")
-keep date `latam'
-foreach cntry in `latam' {
+keep date $latam
+foreach cntry in $latam {
 	rename `cntry' total_return`cntry'CDS
 }
 reshape long total_return, i(date) j(Ticker) string
@@ -97,13 +105,11 @@ gen market = "Index"
 append using "`temp'"
 
 drop if date >= td(30jul2014)
-drop if date < td(1jan`startyear')
+drop if date < td(1jan$startyear)
 
 gen temp = Ticker + market
 encode temp, gen(firm_id)
 drop temp
-
-tempfile factor_temp temp
 
 save "`temp'", replace
 
@@ -133,12 +139,14 @@ foreach nm in `factors' {
 disp "`fnames'"
 disp "`fprefs'"
 
+tempfile factor_temp
 save "`factor_temp'", replace
 
 use "`temp'", clear
 
 mmerge date using "`factor_temp'", unmatched(master)
 drop _merge
+
 
 * Here I am dropping dates that have fewer than 5 returns
 * This elminates some oddities when weekends/holidays
@@ -150,6 +158,7 @@ ta Ticker valid
 drop if valid <= 7
 drop valid
 
+
 * Compute the returns for various event windows
 gen bdate = bofd("basic",date)
 format bdate %tbbasic
@@ -158,6 +167,7 @@ sort firm_id bdate
 tsset firm_id bdate
 
 local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
+global rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
 
 gen return_intra = 100*log(px_close/px_open)
 gen return_onedayN = 100*log(total_return / L.total_return)
@@ -165,10 +175,51 @@ gen return_onedayL = 100*log(total_return / L.total_return) - return_intra + L.r
 gen return_nightbefore = return_onedayN - return_intra
 gen return_twoday = 100*log(total_return / L2.total_return) 
 gen return_1_5 = return_twoday - return_intra
+ 
+append using "$bbpath/ValueIndex_ADR.dta"
 
-keep date bdate Ticker `rtypes' `fnames' industry_sector firm_id `static_vars' market
+*USE THIS DATASET TO CONSTRUCT NEW INDICES
+save "$apath/Index_Maker.dta", replace
+
+if `forecast'==0 {
+local gdp_indices  
+}
+else if `forecast'==1 {
+
+// I don't think this file exists any more
+append using "$apath/GDP_indices.dta"
+*Create list of indices
+levelsof(Ticker), local(tickers)
+local gdp_indices
+foreach x of local tickers {
+	if regexm("`x'","GDP")==1 {
+	local gdp_indices ="`gdp_indices'" +" " +"`x'"
+	}
+	}
+
+}
+else if `forecast'==2 {
+// These also don't exist any more
+append using "$apath/GDP_indices.dta"
+append using "$apath/weo_forecast_GDP.dta"
+levelsof(Ticker), local(tickers)
+local gdp_indices
+foreach x of local tickers {
+	if regexm("`x'","GDP")==1 {
+	local gdp_indices ="`gdp_indices'" +" " +"`x'"
+	}
+	}
+}
+
+
+keep date bdate Ticker `rtypes' `fnames' industry_sector firm_id $static_vars market
 
 gen isstock = (market == "US" | market == "AR") & ~regexm(industry_sector,"INDEX")
+
+foreach x in  `gdp_indices' {
+	replace isstock=0 if industry_sector=="`x'"
+	}
+	
 //gen isstock = ~regexm(industry_sector,"ADRBlue") & ~regexm(industry_sector,"Official") & ~regexm(industry_sector,"DSBlue") & ~regexm(industry_sector,"Brazil") & ~regexm(industry_sector,"Mexico") & ~regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"ETF")
 gen nonfinancial = isstock == 1 & finvar == 0
 
@@ -185,7 +236,7 @@ expand 2 if nonfinancial == 1 & ports == 1, gen(nf)
 replace industry_sector = "NonFinancial" if nf == 1
 
 	
-foreach svar in `static_vars' {
+foreach svar in $static_vars {
 	disp "svar: `svar' ``svar'_cut'"
 	
 	if "`svar'" != "finvar" {
@@ -207,68 +258,48 @@ local crtypes
 foreach rt in `rtypes' {
 	local crtypes `crtypes' cnt_`rt'=`rt'
 }
-display "`crtypes'"
 
 * Equal-weight returns at the industry_sector level.
 * For ADRs, this does nothing right now.
-*rtypes is return types
-*crtypes is cnt_return_intra=return_intra for each type of return. Counting returns
-
 collapse (mean) `rtypes' `fnames' isstock nonfinancial ports (count) `crtypes', by(date industry_sector Ticker market)
 
-/*mmerge industry_sector using "$apath/gdp_weights.dta", unmatched(master)
-expand 2 if ports == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_us)
-expand 2 if ports == 0 & gdp_adr_us == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_ar)
 
-expand 2 if ports == 1 & isstock == 1, gen(gdpw)
+replace Ticker="ValueIndex" if industry_sector=="ValueIndex"
 
-replace gdpw = 1 if gdp_adr_us == 1 | gdp_adr_ar == 1
-replace market = "AR" if gdp_adr_ar == 1
-replace market = "US" if gdp_adr_us == 1
-
-	
-gen gdp_beta = gdp_beta_adr if market == "US"
-replace gdp_beta = gdp_beta_local if market == "AR"
-drop if gdpw == 1 & gdp_beta == . 
-replace ports = 1 if gdpw == 1
-
-drop gdp_adr_us gdp_adr_ar
-
-replace industry_sector = "GDP" if gdpw == 1
-replace Ticker = "" if gdpw == 1
-
-local crtypes2
-foreach rt in `rtypes' {
-	local crtypes2 `crtypes2' cnt2_`rt'=`rt'
-}
-
-foreach rt in `rtypes' {
-	replace `rt' = `rt'*gdp_beta if gdpw == 1
-}
-
-ta industry_sector gdp_beta if market != "AR"
-
-collapse (mean) `rtypes' `fnames' isstock nonfinancial ports cnt_* (count) gdp_beta `crtypes2', by(date industry_sector Ticker market)
-*/
-
-sort industry_sector Ticker market date
+*This creates GDP=beta_G$*ValueIndex+beta_RER*ADR, now unncessary
 
 /*
-by industry_sector Ticker market: egen cnt_target = max(gdp_beta) if regexm(industry_sector,"GDP")
+mmerge industry_sector using "$apath/gdp_weights.dta", unmatched(master)
 
-foreach rt in `rtypes' {
-	replace `rt' = . if regexm(industry_sector,"GDP") & cnt2_`rt' < cnt_target
-	replace `rt' = cnt2_`rt' * `rt' if regexm(industry_sector,"GDP")
-	replace cnt_`rt' = cnt2_`rt' if regexm(industry_sector,"GDP")
-	drop cnt2_`rt'
-}
-drop cnt_target
+*save "$apath/temp_gdp.dta", replace
+*use  "$apath/temp_gdp.dta", clear
+*create 2 ADR Blues to use one for the index
+expand 2 if ports == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_us)
+replace gdp_adr_us=1 if ports==1 & industry_sector=="ValueIndex"
+
+foreach rt in $rtypes {
+	gen ADR_GDP_temp_`rt'=`rt'*gdp_beta_adr if gdp_adr_us==1 & industry_sector=="ADRBlue"
+	bysort date: egen ADR_GDP_`rt'=max(ADR_GDP_temp_`rt')
+	*Replace one of the ValueIndex with GDP=beta_G$*ValueIndex+beta_RER*ADR
+	replace `rt'=gdp_beta_adr*`rt'+ADR_GDP_`rt' if gdp_adr_us==1 & industry_sector=="ValueIndex"
+	*drop ADR_GDP*
+}	
+replace industry_sector="GDP_Real" if industry_sector=="ValueIndex" & gdp_adr==1
+replace Ticker="GDP_Real" if industry_sector=="GDP_Real" 
+drop if Ticker=="ADRBlue" & gdp_adr_us==1
+replace isstock=0 if industry_sector=="GDP_Real" | industry_sector=="ValueIndex"
+replace ports=0 if industry_sector=="GDP_Real" | industry_sector=="ValueIndex"
 */
-		
+
+
+
+
+collapse (mean) $rtypes `fnames' isstock nonfinancial ports cnt_* , by(date industry_sector Ticker market)
+	
 expand 2 if regexm(industry_sector,"High_") | regexm(industry_sector,"Low_"), gen(ishml)
 	
 gen ptype = 1
-foreach svar in `static_vars' {
+foreach svar in $static_vars {
 	
 	foreach rt in `rtypes' {
 		replace `rt' = -`rt' if regexm(industry_sector,"Low_`svar'") & ishml == 1
@@ -281,7 +312,7 @@ foreach svar in `static_vars' {
 expand 2 if (regexm(industry_sector,"DSBlue") | regexm(industry_sector,"ADRBlue")), gen(counter3)
 replace industry_sector = "ADRMinusDS" if counter3 == 1
 replace ports = 1 if counter3 == 1
-foreach rt in `rtypes' {
+foreach rt in $rtypes {
 		replace `rt' = -`rt' if regexm(Ticker,"DSBlue") & counter3 == 1
 }
 replace ishml = 1 if counter3 == 1
@@ -289,7 +320,7 @@ replace Ticker = "" if counter3 == 1
 drop counter3
 
 local crtypes2
-foreach rt in `rtypes' {
+foreach rt in $rtypes {
 	local crtypes2 `crtypes2' cnt2_`rt'=`rt'
 }
 		
@@ -377,10 +408,7 @@ replace firmname = firmname+"_"+market if market == "AR" | market == "US"
 drop ind_id
 encode firmname, gen(ind_id)
 
-
 sort day_type ind_id date
-
-
 
 ta day_type
 
@@ -412,18 +440,17 @@ gen dayindex = bdate - minbdate + 1
 gen prevdate = L.bdate
 format prevdate %tbbasic
 
-
 * Code to fix the issue of overlapping twoday event windows
-* For ADRs, this uses June24, whereas for locals it uses Jun23
-* The reason is that the ADRBlue is available only on the 24th.
+* For ADRs, this uses June24, whereas for locals, exchange rates, and indices it uses Jun23
+* The reason is that the ADRBlue is available only on the 23rd.
 
-replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market != "AR"
-replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market != "AR"
-replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market != "AR"
+replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
+replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
+replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
 
-replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "AR"
-replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "AR"
-replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "AR"
+replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
+replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
+replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
 
 
 * Exclude days with missing S&P 500
