@@ -1,7 +1,7 @@
 	**********************
 	*GENERATE ADR Weights*
 	**********************
-	use "$dpath/inter/quarter_data_042915.dta", clear
+	use "$apath/Datastream_Quarterly.dta", clear
 	mmerge Ticker using "$apath/FirmTable.dta"
 	keep if _merge==3
 	split ADR, p(" ")
@@ -28,7 +28,7 @@
 	*******************
 	*FOR LOCAL Value**
 	*******************
-	use "$dpath/inter/quarter_data_042915.dta", clear
+	use "$apath/Datastream_Quarterly.dta", clear
 	mmerge Ticker using "$apath/FirmTable.dta"
 	keep if _merge==3
 	split bb_ticker, p(" ")
