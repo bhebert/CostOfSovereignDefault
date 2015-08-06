@@ -42,3 +42,8 @@ adopath + $csd_dir
 
 * force loading of the business day calendar
 bcal load basic
+
+
+* a list of factor variables
+* useful in multiple places.
+global all_factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
