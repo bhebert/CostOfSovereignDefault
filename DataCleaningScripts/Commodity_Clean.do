@@ -7,8 +7,8 @@ rename Open open
 rename Close close
 keep date ticker open close
 keep if ticker=="__WTC_D" | ticker=="__SYB_TD"
-replace ticker="wti_oil_spot" if ticker=="__WTC_D"
-replace ticker="soybean_future" if ticker=="__SYB_TD"
+replace ticker="oil" if ticker=="__WTC_D"
+replace ticker="soybean" if ticker=="__SYB_TD"
 rename date datestr
 gen date=date(datestr,"MDY")
 format date %td
