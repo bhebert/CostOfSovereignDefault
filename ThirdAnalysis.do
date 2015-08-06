@@ -176,7 +176,7 @@ gen return_nightbefore = return_onedayN - return_intra
 gen return_twoday = 100*log(total_return / L2.total_return) 
 gen return_1_5 = return_twoday - return_intra
  
-append using "$bbpath/ValueIndex_ADR.dta"
+append using "$apath/ValueIndex_ADR.dta"
 
 *USE THIS DATASET TO CONSTRUCT NEW INDICES
 save "$apath/Index_Maker.dta", replace
