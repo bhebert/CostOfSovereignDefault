@@ -1,6 +1,7 @@
 ***************************
 *Quarterly Characteristics*
 ***************************
+set more off
 import excel "$dpath/Datastream_042915.xlsx",  sheet("Sheet2") clear
 foreach x of varlist _all {
 	 if `x'[1]=="#ERROR" {
