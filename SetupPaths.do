@@ -15,6 +15,8 @@ global miscdata "$droppath/Cost of Sovereign Default/Misc Data"
 global forpath "$droppath/Cost of Sovereign Default/Forecasts"
 global fweo_path "$droppath/Cost of Sovereign Default/Forecasts/WEO"
 global apath "$droppath/Cost of Sovereign Default/Analysis/Datasets"
+global dir_gdpw "$droppath/Cost of Sovereign Default/GDP Weighting"
+global dir_main "$droppath/Cost of Sovereign Default"
 
 * Setup path for results
 

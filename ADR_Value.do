@@ -1,21 +1,72 @@
-*Generate 
-*NEED TO FIGURE OUT WHY THIS ISN'T HITTING EVERY DAY
 
+*Market Cap Weighting
 set more off
-
-local droppath /Users/jesseschreger/Dropbox
-*local droppath C:/Users/Benjamin/Dropbox
-*local droppath /Users/bhebert/Dropbox
-
-global bbpath "`droppath'/Cost of Sovereign Default/Bloomberg/Datasets"
-global dpath "`droppath'/Cost of Sovereign Default/Datastream"
-global apath "`droppath'/Cost of Sovereign Default/Analysis/Datasets"
-global rpath "`droppath'/Cost of Sovereign Default/Results"
-global mdata "`droppath'/Cost of Sovereign Default/Misc Data"
+global dir_localeq "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Local Data"
 global dir_datast "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Datastream"
-global dir_gdp "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/GDP Weighting"
-set more off
+global dir_bb "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Bloomberg"
 
+
+	use "$dpath/inter/quarter_data_042915.dta", clear
+	mmerge Ticker using "$apath/FirmTable.dta"
+	keep if _merge==3
+	split ADR, p(" ")
+	drop ADRticker2 ADRticker3
+	drop Ticker
+	rename ADRticker1 Ticker
+	keep Ticker quarter MV
+	drop if Ticker==""
+	
+	bysort quarter: egen total_market=sum(MV)
+	gen weight=MV/total_market
+	replace weight=0 if weight==.
+	bysort quarter: egen test=sum(weight)
+	drop test total_market
+	
+	bysort quarter: egen total_market=sum(MV) if Ticker~="YPF"
+	gen weight_exypf=MV/total_market if Ticker~="YPF"
+	replace weight_exypf=0 if weight_exypf==.
+	bysort quarter: egen test=sum(weight_exypf)
+	drop test total_market
+	replace quarter=quarter+1
+	save "$dpath/ADR_weighting.dta", replace
+	
+	*******************
+	*FOR LOCAL Value**
+	*******************
+	use "$dpath/inter/quarter_data_042915.dta", clear
+	mmerge Ticker using "$apath/FirmTable.dta"
+	keep if _merge==3
+	split bb_ticker, p(" ")
+	order bb_ticker*
+	replace Ticker=bb_ticker1
+	drop bb_tic*
+	keep Ticker quarter MV
+	drop if Ticker==""
+	
+	bysort quarter: egen total_market=sum(MV)
+	gen weight=MV/total_market
+	replace weight=0 if weight==.
+	bysort quarter: egen test=sum(weight)
+	drop test total_market
+	
+	bysort quarter: egen total_market=sum(MV) if Ticker~="YPFD"
+	gen weight_exypf=MV/total_market if Ticker~="YPFD"
+	replace weight_exypf=0 if weight_exypf==.
+	bysort quarter: egen test=sum(weight_exypf)
+	drop test total_market
+	replace quarter=quarter+1
+	save "$dpath/Local_weighting.dta", replace
+
+
+
+
+
+******************************************
+*CONSTRUCT RETURNS ON THE  VALUE INDICES**
+******************************************
+
+*COMMENTING OUT FACTOR STUFF
+/*set more off
 *SET UP FACTORS FOR MERGE
 use "$apath/MarketFactorsNew.dta", clear
 * Save the names of each factor variable, which will
@@ -37,30 +88,45 @@ disp "`fnames'"
 disp "`fprefs'"
 tempfile factor_temp
 save "`factor_temp'", replace
+*/
 
 
+
+*****************
+****VALUE INDEX*
+*****************
+forvalues i=1/2 {
+if `i'==1 {
+local mark="US"
+local filename="ValueIndex_ADR"
+local weightfile="ADR_weighting"
+}
+else if `i'==2 {
+local mark="AR"
+local filename="LocalValueIndex"
+local weightfile="Local_weighting"
+}
 
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
 drop if date == .
 drop if Ticker == ""
-drop if market != "US"
+drop if market != "`mark'"
 keep date px_open px_last Ticker total_return market
 
 //rename Ticker ticker
 //replace ticker = ticker + " US Equity" if market == "US"
-
 drop if date < mdy(1,1,1995)
 drop if date>mdy(4,1,2015)
 gen quarter=qofd(date)
 format quarter %tq
-mmerge quarter Ticker using "$dir_datast/ADR_weighting.dta", ukeep(weight_exypf)
+mmerge quarter Ticker using "$dpath/`weightfile'.dta", ukeep(weight_exypf)
 rename weight_exypf weight
 keep if _merge==3
 rename px_last px_close
 
 
 *MERGE IN BILLS
-append using "$dir_gdp/Tbill_daily.dta"
+append using "$dir_gdpw/Tbill_daily.dta"
 gen dow=dow(date)
 drop if dow==0 | dow==6
 
@@ -109,14 +175,16 @@ collapse (firstnm) ret1mxar ret2mxar bdate, by(date)
 keep if bdate~=.
 gen Ticker="ValueIndex"
 gen industry_sector="ValueIndex"
-gen market="US"
+gen market="`mark'"
 rename ret1mxar return_onedayN
 rename ret2mxar return_twoday
-mmerge  date using "`factor_temp'", unmatched(master)
-drop _merge
-replace return_o=return_o*100
-replace return_t=return_t*100
-save "$bbpath/ValueIndex_ADR.dta", replace
+*COMMENTING OUT FACTOR STUFF
+*mmerge  date using "`factor_temp'", unmatched(master)
+*drop _merge
+*replace return_o=return_o*100
+*replace return_t=return_t*100
+save "$bbpath/`filename'.dta", replace
+}
 
 
 
