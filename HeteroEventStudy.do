@@ -38,6 +38,9 @@ use "$apath/ThirdAnalysis.dta", clear
 drop if regexm(industry_sector,"DSBlue") | regexm(industry_sector,"OfficialRate") | regexm(industry_sector,"Brazil") | regexm(industry_sector,"Mexico") | regexm(industry_sector,"ADRMinusDS")
 
 
+// Right now, this cannot be run, because it is misssing open/close data.
+drop if regexm(firmname,"INDEX_US")
+
 gen shocktype = .
 
 sort ind_id daynum date
