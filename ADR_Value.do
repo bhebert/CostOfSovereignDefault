@@ -135,11 +135,31 @@ format bdate %tbbasic
 tsset tid bdate
 sort tid bdate
 
-gen ret1 = total_return / L.total_return - 1
-gen ret2=total_return / L2.total_return - 1
 
-local rtypes ret px_ret 
-gen weight1=weight
+local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
+
+gen return_intra = 100*log(px_close/px_open)
+gen return_onedayN = 100*log(total_return / L.total_return)
+gen return_onedayL = 100*log(total_return / L.total_return) - return_intra + L.return_intra
+gen return_nightbefore = return_onedayN - return_intra
+gen return_twoday = 100*log(total_return / L2.total_return) 
+gen return_1_5 = return_twoday - return_intra
+
+//gen ret1 = total_return / L.total_return - 1
+//gen ret2=total_return / L2.total_return - 1
+
+//local rtypes ret px_ret 
+
+foreach rt in `rtypes' {
+	gen weight_`rt' = weight
+	replace weight_`rt' = 0 if `rt' == .
+	bysort date: egen total_`rt'=sum(weight_`rt')
+	
+	replace weight_`rt'=0.9*weight_`rt'/total_`rt'
+	drop total_`rt'
+}
+
+/*gen weight1=weight
 gen weight2=weight
 replace weight1=0 if ret1==.
 replace weight2=0 if ret2==.
@@ -150,7 +170,8 @@ bysort date: egen total_w2=sum(weight2)
 replace weight1=0.9*weight1/total_w1 
 replace weight2=0.9*weight2/total_w2 
 
-drop total_w*
+drop total_w**/
+
 sort date Ticker
 by date: egen valid = count(total_return)
 ta Ticker valid
@@ -160,25 +181,35 @@ drop valid
 
 
 sort date tid
-foreach rtype  in ret1 ret2  {
+local mxarrets
+foreach rtype  in `rtypes' {
 	by date: egen `rtype'mxar = sum(weight*`rtype')
 	by date: egen `rtype'mxar_cnt = sum(weight*(`rtype'!=.))
 	replace `rtype'mxar = . if `rtype'mxar_cnt == 0
 	replace `rtype'mxar = `rtype'mxar / `rtype'mxar_cnt 
 	drop `rtype'mxar_cnt 
-	}
-collapse (firstnm) ret1mxar ret2mxar bdate, by(date)
+	local mxarrets `mxarrets' `rtype'mxar
+}
+
+collapse (firstnm) `mxarrets' bdate, by(date)
 keep if bdate~=.
 gen Ticker="ValueIndex"
 gen industry_sector="ValueIndex"
 gen market="`mark'"
-rename ret1mxar return_onedayN
-rename ret2mxar return_twoday
+
+foreach rtype  in `rtypes' {
+	rename `rtype'mxar `rtype'
+}
+
+//rename ret1mxar return_onedayN
+//rename ret2mxar return_twoday
+
 *COMMENTING OUT FACTOR STUFF
 *mmerge  date using "`factor_temp'", unmatched(master)
 *drop _merge
 *replace return_o=return_o*100
 *replace return_t=return_t*100
+
 save "$apath/`filename'.dta", replace
 }
 
