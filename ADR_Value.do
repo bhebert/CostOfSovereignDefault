@@ -1,6 +1,7 @@
-	**********************
+**********************
 *GENERATE ADR Weights*
 **********************
+set more off
 use "$apath/Datastream_Quarterly.dta", clear
 mmerge Ticker using "$apath/FirmTable.dta"
 keep if _merge==3
@@ -121,7 +122,7 @@ rename px_last px_close
 
 
 *MERGE IN BILLS
-append using "$dir_gdpw/Tbill_daily.dta"
+append using "$gdppath/Tbill_daily.dta"
 gen dow=dow(date)
 drop if dow==0 | dow==6
 
