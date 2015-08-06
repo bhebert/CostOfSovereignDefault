@@ -1,56 +1,56 @@
 	**********************
-	*GENERATE ADR Weights*
-	**********************
-	use "$apath/Datastream_Quarterly.dta", clear
-	mmerge Ticker using "$apath/FirmTable.dta"
-	keep if _merge==3
-	split ADR, p(" ")
-	drop ADRticker2 ADRticker3
-	drop Ticker
-	rename ADRticker1 Ticker
-	keep Ticker quarter MV
-	drop if Ticker==""
-	
-	bysort quarter: egen total_market=sum(MV)
-	gen weight=MV/total_market
-	replace weight=0 if weight==.
-	bysort quarter: egen test=sum(weight)
-	drop test total_market
-	
-	bysort quarter: egen total_market=sum(MV) if Ticker~="YPF"
-	gen weight_exypf=MV/total_market if Ticker~="YPF"
-	replace weight_exypf=0 if weight_exypf==.
-	bysort quarter: egen test=sum(weight_exypf)
-	drop test total_market
-	replace quarter=quarter+1
-	save "$dpath/ADR_weighting.dta", replace
-	
-	*******************
-	*FOR LOCAL Value**
-	*******************
-	use "$apath/Datastream_Quarterly.dta", clear
-	mmerge Ticker using "$apath/FirmTable.dta"
-	keep if _merge==3
-	split bb_ticker, p(" ")
-	order bb_ticker*
-	replace Ticker=bb_ticker1
-	drop bb_tic*
-	keep Ticker quarter MV
-	drop if Ticker==""
-	
-	bysort quarter: egen total_market=sum(MV)
-	gen weight=MV/total_market
-	replace weight=0 if weight==.
-	bysort quarter: egen test=sum(weight)
-	drop test total_market
-	
-	bysort quarter: egen total_market=sum(MV) if Ticker~="YPFD"
-	gen weight_exypf=MV/total_market if Ticker~="YPFD"
-	replace weight_exypf=0 if weight_exypf==.
-	bysort quarter: egen test=sum(weight_exypf)
-	drop test total_market
-	replace quarter=quarter+1
-	save "$dpath/Local_weighting.dta", replace
+*GENERATE ADR Weights*
+**********************
+use "$apath/Datastream_Quarterly.dta", clear
+mmerge Ticker using "$apath/FirmTable.dta"
+keep if _merge==3
+split ADR, p(" ")
+drop ADRticker2 ADRticker3
+drop Ticker
+rename ADRticker1 Ticker
+keep Ticker quarter MV
+drop if Ticker==""
+
+bysort quarter: egen total_market=sum(MV)
+gen weight=MV/total_market
+replace weight=0 if weight==.
+bysort quarter: egen test=sum(weight)
+drop test total_market
+
+bysort quarter: egen total_market=sum(MV) if Ticker~="YPF"
+gen weight_exypf=MV/total_market if Ticker~="YPF"
+replace weight_exypf=0 if weight_exypf==.
+bysort quarter: egen test=sum(weight_exypf)
+drop test total_market
+replace quarter=quarter+1
+save "$apath/ADR_weighting.dta", replace
+
+*******************
+*FOR LOCAL Value**
+*******************
+use "$apath/Datastream_Quarterly.dta", clear
+mmerge Ticker using "$apath/FirmTable.dta"
+keep if _merge==3
+split bb_ticker, p(" ")
+order bb_ticker*
+replace Ticker=bb_ticker1
+drop bb_tic*
+keep Ticker quarter MV
+drop if Ticker==""
+
+bysort quarter: egen total_market=sum(MV)
+gen weight=MV/total_market
+replace weight=0 if weight==.
+bysort quarter: egen test=sum(weight)
+drop test total_market
+
+bysort quarter: egen total_market=sum(MV) if Ticker~="YPFD"
+gen weight_exypf=MV/total_market if Ticker~="YPFD"
+replace weight_exypf=0 if weight_exypf==.
+bysort quarter: egen test=sum(weight_exypf)
+drop test total_market
+replace quarter=quarter+1
+save "$apath/Local_weighting.dta", replace
 
 
 
@@ -114,7 +114,7 @@ drop if date < mdy(1,1,1995)
 drop if date>mdy(4,1,2015)
 gen quarter=qofd(date)
 format quarter %tq
-mmerge quarter Ticker using "$dpath/`weightfile'.dta", ukeep(weight_exypf)
+mmerge quarter Ticker using "$apath/`weightfile'.dta", ukeep(weight_exypf)
 rename weight_exypf weight
 keep if _merge==3
 rename px_last px_close
@@ -178,7 +178,7 @@ rename ret2mxar return_twoday
 *drop _merge
 *replace return_o=return_o*100
 *replace return_t=return_t*100
-save "$bbpath/`filename'.dta", replace
+save "$apath/`filename'.dta", replace
 }
 
 
