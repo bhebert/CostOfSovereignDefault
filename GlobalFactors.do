@@ -17,6 +17,7 @@ rename MCCNH5Y closeHY5Yr
 reshape long close, i(date) j(ticker) string
 
 append using "$apath/temp.dta"
+append using "$apath/commodity_prices.dta"
 
 gen bdate = bofd("basic",date)
 format bdate %tbbasic
