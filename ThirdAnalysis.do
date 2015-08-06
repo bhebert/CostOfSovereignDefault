@@ -167,7 +167,7 @@ sort firm_id bdate
 tsset firm_id bdate
 
 local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
-global rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
+global rtypes `rtypes'
 
 gen return_intra = 100*log(px_close/px_open)
 gen return_onedayN = 100*log(total_return / L.total_return)
