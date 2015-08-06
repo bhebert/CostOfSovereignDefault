@@ -61,8 +61,7 @@ save "$apath/Local_weighting.dta", replace
 *CONSTRUCT RETURNS ON THE  VALUE INDICES**
 ******************************************
 
-*COMMENTING OUT FACTOR STUFF
-/*set more off
+*FACTOR STUFF
 *SET UP FACTORS FOR MERGE
 use "$apath/MarketFactorsNew.dta", clear
 * Save the names of each factor variable, which will
@@ -84,7 +83,6 @@ disp "`fnames'"
 disp "`fprefs'"
 tempfile factor_temp
 save "`factor_temp'", replace
-*/
 
 *******************************************************
 *Construct T-bill returns for inclusion in Value Index*
@@ -236,8 +234,8 @@ foreach rtype  in `rtypes' {
 //rename ret2mxar return_twoday
 
 *COMMENTING OUT FACTOR STUFF
-*mmerge  date using "`factor_temp'", unmatched(master)
-*drop _merge
+mmerge  date using "`factor_temp'", unmatched(master)
+drop _merge
 *replace return_o=return_o*100
 *replace return_t=return_t*100
 
