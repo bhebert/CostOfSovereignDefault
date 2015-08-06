@@ -177,6 +177,9 @@ gen return_twoday = 100*log(total_return / L2.total_return)
 gen return_1_5 = return_twoday - return_intra
  
 append using "$apath/ValueIndex_ADR.dta"
+append using "$apath/LocalValueIndex.dta"
+drop if date >= td(30jul2014)
+drop if date < td(1jan$startyear)
 
 *USE THIS DATASET TO CONSTRUCT NEW INDICES
 save "$apath/Index_Maker.dta", replace
