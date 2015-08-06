@@ -1,13 +1,8 @@
-
-*Market Cap Weighting
-set more off
-global dir_localeq "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Local Data"
-global dir_datast "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Datastream"
-global dir_bb "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Bloomberg"
-
-
+	**********************
+	*GENERATE ADR Weights*
+	**********************
 	use "$dpath/inter/quarter_data_042915.dta", clear
-	mmerge Ticker using "$apath/FirmTable.dta"
+	mmerge Ticker using "$anpath/FirmTable.dta"
 	keep if _merge==3
 	split ADR, p(" ")
 	drop ADRticker2 ADRticker3
@@ -34,7 +29,7 @@ global dir_bb "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Bloomberg"
 	*FOR LOCAL Value**
 	*******************
 	use "$dpath/inter/quarter_data_042915.dta", clear
-	mmerge Ticker using "$apath/FirmTable.dta"
+	mmerge Ticker using "$anpath/FirmTable.dta"
 	keep if _merge==3
 	split bb_ticker, p(" ")
 	order bb_ticker*
@@ -68,7 +63,7 @@ global dir_bb "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Bloomberg"
 *COMMENTING OUT FACTOR STUFF
 /*set more off
 *SET UP FACTORS FOR MERGE
-use "$apath/MarketFactorsNew.dta", clear
+use "$anpath/MarketFactorsNew.dta", clear
 * Save the names of each factor variable, which will
 * be needed to avoid dropping them later
 levelsof ticker, local(factors)
