@@ -1,28 +1,6 @@
 ***************************
 *Quarterly Characteristics*
 ***************************
-*Labels
-import excel "$dpath/Datastream_042915.xlsx",  sheet("Sheet2") clear
-foreach x of varlist _all {
-	 if `x'[1]=="#ERROR" {
-	 drop `x'
-	 }
-	 }
-	 keep if _n==1 | _n==2
-	 sxpose, clear
-	 rename _var1 varname
-	 rename _var2 varcode
-	 replace varname=subinstr(varname,"MIRGOR SA - ","",.)
-	 replace varname=subinstr(varname,"MIRGOR 'C' - ","",.)
-	 replace varcode=subinstr(varcode,"AG:MIR(","",.)
-	 replace varcode=subinstr(varcode,")","",.)
-	 replace varname=proper(varname)
-	 rename varname var
-	 drop if _n==1
-keep if _n<=13
-	 save "$dpath/inter/varlabels_042915.dta", replace
-
-
 import excel "$dpath/Datastream_042915.xlsx",  sheet("Sheet2") clear
 foreach x of varlist _all {
 	 if `x'[1]=="#ERROR" {
@@ -91,7 +69,7 @@ drop WC05350str
 	
 sort Ticker quarter
 
-	save "$dpath/inter/quarter_data_042915.dta", replace
+	save "$apath/Datastream_Quarterly.dta", replace
 	
 
 
