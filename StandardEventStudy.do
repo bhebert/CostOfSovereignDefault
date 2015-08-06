@@ -17,17 +17,24 @@ local threshold 1
 local exclusions 1
 
 * Names of factors
-local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_
+//local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_
+local factors $all_factors
 
 * These determine the earliest and latest days to use for non-events
 local mindate = mdy(1,1,2011)
 local maxdate = mdy(1,1,2015)
+
+local use_singlenames 0
 
 set more off
 
 
 use "$apath/ThirdAnalysis.dta", clear
 
+
+if `use_singlenames' == 0 {
+	drop if isstock == 1 & ports == 0
+}
 
 * The code below is copied from RigobonSack_v3.do
 

@@ -21,11 +21,12 @@ local exclusions 1
 local example_sec ValueIndex_US
 
 
+local use_singlenames 0
 
 * Factor names to control for.
 * Why aren't HY/IG turned on? no open/close data
-local factors  SPX_ VIX_ EEMA_ // HY5Yr_ IG5Yr_
-
+//local factors  SPX_ VIX_ EEMA_ // HY5Yr_ IG5Yr_
+local factors $all_factors
 
 set more off
 
@@ -40,6 +41,10 @@ drop if regexm(industry_sector,"DSBlue") | regexm(industry_sector,"OfficialRate"
 
 // Right now, this cannot be run, because it is misssing open/close data.
 drop if regexm(firmname,"INDEX_US")
+
+if `use_singlenames' == 0 {
+	drop if isstock == 1 & ports == 0
+}
 
 gen shocktype = .
 

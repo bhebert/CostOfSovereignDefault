@@ -43,8 +43,8 @@ local use_index_beta 0
 local no_exchange 1
 
 *local factors
-local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
-
+//local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
+local factors $all_factors
 
 * Different kinds of regressions that can be run
 * Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV
