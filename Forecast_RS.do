@@ -2,7 +2,7 @@ set more off
 
 tempfile Tbill_forecasts exchange_rate
 
-use "$gdppath/Tbill_daily.dta", clear
+use "$apath/Tbill_daily.dta", clear
 mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(C)
 keep if _merge==3
 keep date total_return Ticker
