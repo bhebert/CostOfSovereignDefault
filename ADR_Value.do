@@ -86,6 +86,37 @@ tempfile factor_temp
 save "`factor_temp'", replace
 */
 
+*******************************************************
+*Construct T-bill returns for inclusion in Value Index*
+*******************************************************
+import excel "$gdppath/Tbill_rate.xls", sheet("fred_stata") firstrow clear
+gen quarter=qofd(date)
+format quarter %tq
+collapse (firstnm) tbill, by(quarter)
+gen Ticker="Tbill"
+gen weight=.1
+tsset quarter
+drop if quarter<tq(1980q1)
+gen total_return=1+(tbill/400) if quarter==tq(1980q1)
+replace total_return=l.total_return*(1+tbill/400) if quarter>tq(1980q1)
+gen px_last=1 
+gen date=dofq(quarter)
+gen newq=1
+format date %td
+tsset date
+tsfill
+carryforward tbill, replace
+gen total_return_d=1+(tbill/36500) if date==td(01jan1980)
+replace total_return_d=l.total_return_d*(1+tbill/36500) if  date>td(01jan1980)
+carryforward total_return, replace
+order quarter date total_return*
+keep date total_return_d
+rename total_return total_return
+*Assuming the interest is earned between open and close
+gen px_open=l.total_return
+gen px_close=total_return
+gen Ticker="Tbill"
+save "$apath/Tbill_daily.dta", replace
 
 
 *****************
@@ -122,7 +153,7 @@ rename px_last px_close
 
 
 *MERGE IN BILLS
-append using "$gdppath/Tbill_daily.dta"
+append using "$apath/Tbill_daily.dta"
 gen dow=dow(date)
 drop if dow==0 | dow==6
 
