@@ -1,5 +1,6 @@
 set more off
 
+global all_factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
 
 * This code loads the factors we use to compute excess returns
 use "$fpath/Addition_Vars.dta", clear
