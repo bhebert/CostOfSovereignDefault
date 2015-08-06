@@ -1,9 +1,13 @@
 
-* Runs all code associated with preparing datasets for analysis
+* Runs code associated with preparing datasets for analysis
+* Assumes the data cleaning scripts have been run
+
 
 do ${csd_dir}/SetupPaths.do
 
 do ${csd_dir}/StaticTable.do
+
+do ${csd_dir}/ADR_Value.do
 
 do ${csd_dir}/BlueRateMaker.do
 
