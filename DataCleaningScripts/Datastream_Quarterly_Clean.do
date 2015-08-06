@@ -53,7 +53,7 @@ foreach x in MV WC01705 WC01706 WC03051 WC03101 WC03251 WC03451 WC05101 WC05301 
 	gen WC05350=date(WC05350str,"DMY")
 	format WC0530 %td
 	label var WC05350 "Date Of Fiscal Year End"
-drop WC05350str
+	drop WC05350str
 	replace quarter=subinstr(quarter,"Q","",.)
 	replace quarter=subinstr(quarter," ","",.)
 	rename quarter quarterstr
@@ -66,9 +66,7 @@ drop WC05350str
 	drop quarter* year
 	rename qtr quarter
 	order quarter
-	
-sort Ticker quarter
-
+	sort Ticker quarter
 	save "$apath/Datastream_Quarterly.dta", replace
 	
 
