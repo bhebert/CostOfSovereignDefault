@@ -1,6 +1,6 @@
 
 
-global GDP_models vecm consensus consensus03
+global GDP_models vecm consensus consensus03 consensus6m consensus036m
 
 *Make the Dividend VAR indices
 do "$csd_dir/DivMaker4.do"
