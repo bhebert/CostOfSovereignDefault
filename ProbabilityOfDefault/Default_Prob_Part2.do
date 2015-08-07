@@ -158,6 +158,9 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	}	
 
 drop _merge 
+
+mmerge date using "$apath/PUF_NY.dta", ukeep(Upfront*)
+drop if _merge==2
 save "$apath/Default_Prob_All.dta", replace
 
 
