@@ -3,7 +3,7 @@ set more off
 tempfile Tbill_forecasts exchange_rate
 
 use "$apath/Tbill_daily.dta", clear
-mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(C)
+mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(C)
 keep if _merge==3
 keep date total_return Ticker
 save "`Tbill_forecasts'", replace
@@ -50,7 +50,7 @@ gen quarter=qofd(date)
 format quarter %tq
 *RECREATE VALUE INDEX
 mmerge quarter Ticker using "$dpath/ADR_weighting.dta", ukeep(weight_)
-mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(C)
+mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(C)
 drop C
 keep if _merge==3
 rename weight weight
@@ -59,8 +59,9 @@ drop _merge
 bysort Ticker: gen n=_n
 encode Ticker, gen(tid)
 tsset tid n
-gen ret=(t_/l2.t_)-1
-replace weight=0 if ret==.
+gen ret1y=(t_/l2.t_)-1
+gen ret6m=(t_/l.t_)-1
+replace weight=0 if ret1y==.
 bysort date: egen total_w=sum(weight)
 replace weight=0.9*weight/total_w 
 drop if total_w==0
@@ -71,37 +72,49 @@ ta Ticker valid
 drop if valid <= 6
 drop valid
 
-by date: egen ValueIndex = sum(weight*ret)
-expand 2 if Ticker=="Tbill", gen(index)
-replace Ticker="ValueIndex" if index==1
-replace ret=ValueIndex if index==1
-keep date Ticker ret
-reshape wide ret, i(date) j(Ticker) string
-renpfix ret
+by date: egen ValueIndex1y = sum(weight*ret1y)
+by date: egen ValueIndex6m = sum(weight*ret6m)
 
-mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(PV_GDP_2 d_GDP_2 d_PV_GDP_2 d_LT_GDP N*)
+expand 2 if Ticker=="Tbill", gen(index)
+expand 2 if Ticker=="Tbill", gen(index6m)
+
+replace Ticker="ValueIndex1y" if index==1 & index6m==0
+replace ret1y=ValueIndex1y if index==1 & index6m==0
+replace ret6m=. if index==1 & index6m==0
+
+replace Ticker="ValueIndex6m" if index==0 & index6m==1
+replace ret6m=ValueIndex6m if index==0 & index6m==1
+replace ret1y=. if index==0 & index6m==1
+drop if index==1 & index6m==1
+
+keep date Ticker ret1y ret6m
+reshape wide ret1y ret6m, i(date) j(Ticker) string
+*renpfix ret1y
+
+mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(N*)
 keep if _merge==3
-save "$apath/forecast_dataset.dta", replace
+save "$apath/forecast_dataset_update.dta", replace
 
 *****************
 *CREATE WEIGHTS
-use "$apath/forecast_dataset.dta", clear
-local eq_data BFR CRESY IRS TEO TGS YPF
-local eq_data_ny BFR CRESY IRS TEO TGS
+use "$apath/forecast_dataset_update.dta", clear
+*local eq_data BFR CRESY IRS TEO TGS YPF
+*local eq_data_ny BFR CRESY IRS TEO TGS
 local eq_index ValueIndex ADRBlue
 
-reg N_GDP_ft `eq_index' , r
-predict N_GDP_ft_xb, xb
-twoway (line N_GDP_ft_xb date) (line N_GDP_ft date)
+*reg N_GDP_ft `eq_index' , r
+*predict N_GDP_ft_xb, xb
+*twoway (line N_GDP_ft_xb date) (line N_GDP_ft date)
 
-reg N_GDP_ft `eq_index' if yofd(date)>=2003, r
-predict N_GDP_ft_xb_03, xb
-twoway (line N_GDP_ft_xb_03 date) (line N_GDP_ft date) if yofd(date)>=2003
+*reg N_GDP_ft `eq_index' if yofd(date)>=2003, r
+*predict N_GDP_ft_xb_03, xb
+*twoway (line N_GDP_ft_xb_03 date) (line N_GDP_ft date) if yofd(date)>=2003
+drop ret6mValueIndex1y ret1yValueIndex6m
+*local eq_data BFR CRESY IRS TEO TGS YPF
+rename ret1yValueIndex ValueIndex_US
+rename ret1yADRBlue ADRBlue
 
-local eq_data BFR CRESY IRS TEO TGS YPF
-rename ValueIndex ValueIndex_US
 reg N_GDP_ft Value  ADRBlue, r
-
 matrix temp = e(b)
 matrix consensus_b=temp[1,1..2]'
 matrix temp = e(V)
@@ -112,6 +125,24 @@ matrix temp = e(b)
 matrix consensus03_b=temp[1,1..2]'
 matrix temp = e(V)
 matrix consensus03_V=temp[1..2,1..2]
+
+rename ValueIndex_US ret1yValueIndex
+rename ADRBlue ret1yADRBlue 
+rename ret6mValueIndex ValueIndex_US
+rename ret6mADRBlue ADRBlue
+
+reg N_GDP_ft_6m Value  ADRBlue, r
+matrix temp = e(b)
+matrix consensus6m_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus6m_V=temp[1..2,1..2]
+
+reg N_GDP_ft_6m Value  ADRBlue if yofd(date)>2003, r
+matrix temp = e(b)
+matrix consensus036m_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus036m_V=temp[1..2,1..2]
+
 
 
 /*
