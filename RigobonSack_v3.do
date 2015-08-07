@@ -12,6 +12,9 @@ local use_adrs 1
 * Run with exchange rates
 local use_exrates 1
 
+*Run with NDF rates
+local use_ndf 0
+
 * Run with the GDP models
 * Requires use_adrs and use_exrates
 local use_gdpmodels 1
@@ -122,8 +125,13 @@ else {
 }
 
 if `use_exrates' == 0 {
-	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS")
+	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") 
 }
+
+if `use_ndf'==0 {
+	drop if regexm(industry_sector,"NDF")  | regexm(industry_sector,"FWDP") 
+}
+	
 if `use_mexbrl' == 0 {
 	drop if regexm(industry_sector,"Mexico") | regexm(industry_sector,"Brazil")
 }
