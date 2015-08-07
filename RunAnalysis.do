@@ -1,4 +1,6 @@
 
+* Setup paths-- in case it hasn't been done yet.
+do ${csd_dir}/SetupPaths.do
 
 global GDP_models vecm consensus consensus03 consensus6m consensus036m
 
