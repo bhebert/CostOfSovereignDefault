@@ -11,3 +11,5 @@ do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
 
+do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
+
