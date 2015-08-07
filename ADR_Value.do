@@ -172,6 +172,7 @@ gen return_onedayN = 100*log(total_return / L.total_return)
 gen return_onedayL = 100*log(total_return / L.total_return) - return_intra + L.return_intra
 gen return_nightbefore = return_onedayN - return_intra
 gen return_twoday = 100*log(total_return / L2.total_return) 
+*gen return_twoday=100*(total_return / L2.total_return - 1)
 gen return_1_5 = return_twoday - return_intra
 
 //gen ret1 = total_return / L.total_return - 1
