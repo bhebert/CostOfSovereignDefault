@@ -3,7 +3,7 @@ set more off
 tempfile Tbill_forecasts exchange_rate
 
 use "$apath/Tbill_daily.dta", clear
-mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(C)
+mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(C)
 keep if _merge==3
 keep date total_return Ticker
 save "`Tbill_forecasts'", replace
@@ -50,7 +50,7 @@ gen quarter=qofd(date)
 format quarter %tq
 *RECREATE VALUE INDEX
 mmerge quarter Ticker using "$dpath/ADR_weighting.dta", ukeep(weight_)
-mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(C)
+mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(C)
 drop C
 keep if _merge==3
 rename weight weight
@@ -91,7 +91,7 @@ keep date Ticker ret1y ret6m
 reshape wide ret1y ret6m, i(date) j(Ticker) string
 *renpfix ret1y
 
-mmerge date using "$apath/Simple_Weight_update.dta", umatch(fdate) ukeep(N*)
+mmerge date using "$apath/Simple_Weight.dta", umatch(fdate) ukeep(N*)
 keep if _merge==3
 save "$apath/forecast_dataset_update.dta", replace
 
