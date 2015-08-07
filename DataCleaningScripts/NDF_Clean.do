@@ -69,7 +69,7 @@ gen px_open=l.total_return
 drop tid	
 drop bdate
 order date Ticker total px_cl px_open
-save "$dpath/NDF_Datastream.dta", replace
+save "$apath/NDF_Datastream.dta", replace
 
 	
 	
