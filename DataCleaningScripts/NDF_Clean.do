@@ -46,14 +46,15 @@ replace problem=1 if date==td(29aug2013)
 drop dN*
 
 foreach x in 1 2 3 6 12 {
-	gen FP`x'M=(log(NDF`x'M)-log(TDARSSP))*100
+	*gen FWDP`x'M=(log(NDF`x'M)-log(TDARSSP))*100
+	gen FWDP`x'M=NDF`x'M-TDARSSP
 	}
 
 
 *twoway (line ARSUSDS date) (line TDARSSP date) (line NDF1M date) (line NDF2M date) (line NDF3M date) (line NDF6M date) (line NDF12M date) if problem==0 , legend(order(1 "Onshore, Unofficial" 2 "Official" 3 "1M NDF" 4 "2M NDF" 5 "3M NDF" 6 "6M NDF" 7 "1Y NDF")) name("Exprob")
 
 drop ARSUSDS TDARSSP dARSUSDS dTDARSSP obs_type obs_num 
-foreach x in NDF1M NDF2M NDF3M NDF6M NDF12M FP1M FP2M FP3M FP6M FP12M {
+foreach x in NDF1M NDF2M NDF3M NDF6M NDF12M FWDP1M FWDP2M FWDP3M FWDP6M FWDP12M {
 	replace `x'=. if problem==1
 	rename `x' p_`x'
 	}
