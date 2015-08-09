@@ -38,7 +38,7 @@ format date %td
 drop datestr
 save "$apath/UST_Zero.dta", replace
 
-
+***
 use  "$mpath/Composite_USD.dta", clear
 *mmerge date using "$mpath/Sameday_USD.dta"
 *mmerge date using "$mpath/Sameday_FC_USD.dta"
@@ -80,6 +80,36 @@ order date
 drop month
 export delimited using "$apath/Matlab_spreads_zero_month.csv", replace novarnames
 
+
+***************
+*SameDay*******
+***************
+foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
+use  "$mpath/Sameday_USD.dta", clear
+keep if snaptime=="`y'"
+keep date Spread* Recovery
+mmerge date using "$apath/swaprates.dta"
+order date Recovery
+drop _merge
+gen datenum=date
+order datenum date 
+drop date
+keep if year(date)>=2011 
+keep if date<=td(30jul2014)
+tsset date
+foreach x in USD6MTD156N DSWP1 DSWP3 DSWP4 DSWP5 DSWP7 DSWP10 {
+replace `x'=. if DSWP30==0
+}
+replace DSWP30=. if DSWP30==0
+tsset date
+foreach x in USD6MTD156N DSWP1 DSWP3 DSWP4 DSWP5 DSWP7 DSWP10 DSWP30 {
+carryforward `x', replace
+}
+
+order datenum Recovery Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread15y Spread20y Spread30y
+export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
+}
+
 ****************************************
 *DATASET USING US TREASURY TO DISCOUNT
 ****************************************
@@ -104,8 +134,34 @@ forvalues x=10/30 {
 carryforward SVENY`x', replace
 }
 
-*export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero_UST.xls", replace 
 export delimited using "$apath/Matlab_spreads_zero_UST.csv", replace novarnames
+
+*FOR SAMEDAY
+foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
+use  "$mpath/Sameday_USD.dta", clear
+keep if snaptime=="`y'"
+keep date Spread* Recovery
+mmerge date using "$apath/UST_Zero.dta"
+order date Recovery
+drop _merge
+gen datenum=date
+order datenum date 
+drop date
+keep if year(date)>=2011 
+keep if date<=td(30jul2014)
+tsset date
+
+tsset date
+forvalues x=1/9 {
+carryforward SVENY0`x', replace
+}
+forvalues x=10/30 {
+carryforward SVENY`x', replace
+}
+
+*export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero_UST.xls", replace 
+export delimited using "$apath/Matlab_`y'_spreads_zero_UST.csv", replace novarnames
+}
 
 
 **************
