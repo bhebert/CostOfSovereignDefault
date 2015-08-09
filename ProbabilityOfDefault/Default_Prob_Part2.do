@@ -2,23 +2,24 @@
 ***************************
 *FILES NOW BACK FROM MATLAB
 ***************************
+foreach y in "" "_europe" "_newyork" {
 
 forvalues i=1/4 {
 if `i'==1 {
 import delimited "$apath/Bootstrap_results.csv", clear
-local name="cumdef_hazard"
+local name="cumdef_hazard`y'"
 }
 else if `i'==2 {
-import delimited "$apath/Bootstrap_resultsConH.csv", clear
-local name="cumdef_hazard_ConH"
+import delimited "$apath/Bootstrap`y'_resultsConH.csv", clear
+local name="cumdef_hazard_ConH`y'"
 }
 else if `i'==3 { 
-import delimited "$apath/Bootstrap_results_UST.csv", clear
-local name "cumdef_hazard_UST"
+import delimited "$apath/Bootstrap`y'_results_UST.csv", clear
+local name "cumdef_hazard_UST`y'"
 }
 else if `i'==4 { 
-import delimited "$apath/Bootstrap_resultsConH_UST.csv", clear
-local name "cumdef_hazard_ConH_UST"
+import delimited "$apath/Bootstrap`y'_resultsConH_UST.csv", clear
+local name "cumdef_hazard_ConH_UST`y'"
 }
 
 rename v1 date
@@ -61,7 +62,7 @@ replace problem=1 if `x'<=0 | `x'==.
 
 save "$apath/`name'.dta", replace
 }
-
+}
 
 
 
@@ -144,10 +145,41 @@ foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 }	
 
 
-mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
 drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
+
+drop _merge 
+
+mmerge date using "$apath/PUF_NY.dta", ukeep(Upfront*)
+drop if _merge==2
+save "$apath/Default_Prob_All.dta", replace
+
+foreach y in "_europe" "_newyork"{
+use "$apath/Default_Prob_All.dta", clear
+
+mmerge date using "$apath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
+foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
+	rename `x' conh_`x'`y'
+}	
+
+mmerge date using "$apath/cumdef_hazard_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
+	rename `x' ust_`x'`y'
+}	
+
+mmerge date using "$apath/cumdef_hazard_ConH_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
+	rename `x' conh_ust_`x'`y'
+}	
+mmerge date using  "$apath/cumdef_hazard`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
+	rename `x' `x'`y'
+}
+save  "$apath/Default_Prob_All.dta", replace
+}
+
+mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var def`x' "`x' Cumulative Default Probability, Composite, IRS Zero"
 	label var conh_def`x' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, IRS Zero"
@@ -157,11 +189,5 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var tri_conH_def`x' "`x' Cumulative Default Probability, Constant 39.5% Recovery, Credit Triangle"
 	}	
 
-drop _merge 
-
-mmerge date using "$apath/PUF_NY.dta", ukeep(Upfront*)
-drop if _merge==2
-save "$apath/Default_Prob_All.dta", replace
-
-
+save  "$apath/Default_Prob_All.dta", replace
 
