@@ -1,5 +1,5 @@
 
-*SIMPLE CREDIT TRIANGLE
+*SIMPLE CREDIT TRIANGLE, Composite
 use "$mpath/Composite_USD.dta",  clear
 keep date Spread* Recov
 foreach x in "6m" "1y" "2y" "3y" "4y" "5y" "7y" "10y" "15y" "20y" "30y"{
@@ -20,6 +20,29 @@ foreach x in 1 2 3 4 5 7 10 15 20 30 {
 	keep if date<=td(30jul2014)
 	save "$apath/cumdef_hazard_triangle.dta", replace
 	
+*SAMEDAY	
+foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
+	use "$mpath/Sameday_USD.dta",  clear
+	keep if snaptime=="`y'"
+keep date Spread* Recovery
+foreach x in "6m" "1y" "2y" "3y" "4y" "5y" "7y" "10y" "15y" "20y" "30y"{
+	gen haz_tri_`x'=(Spread`x'/100)/(1-Recovery/100)
+	replace haz_tri_`x'=. if haz_tri_`x'<0
+	gen haz_tri_conH_`x'=(Spread`x'/100)/(1-.395)
+	replace haz_tri_conH_`x'=. if haz_tri_`x'<0
+	}
+
+	gen tri_def6m=1-exp(-haz_tri_6m*.5)
+	gen tri_conH_def6m=1-exp(-haz_tri_conH_6m*.5)
+foreach x in 1 2 3 4 5 7 10 15 20 30 {
+	gen tri_def`x'y =1-exp(-haz_tri_`x'y*`x')
+	gen tri_conH_def`x'y =1-exp(-haz_tri_conH_`x'y*`x')
+	}
+	drop Spread* Recov
+	keep if year(date)>=2011 
+	keep if date<=td(30jul2014)
+	save "$apath/cumdef_hazard_triangle_`y'.dta", replace
+	}
 
 *JUST GET THE ARGENTINE DATA
 *Clean the zero curve, swaps
