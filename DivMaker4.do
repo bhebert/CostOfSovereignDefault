@@ -191,7 +191,7 @@ gen forecast_rer_sd = .
 replace forecast_rer_sd=`valsd' if Ticker=="ADRBlue"
 save "$dir_gdp/gdp_weights_temp.dta", replace*/
 
-use  "$gdppath/dataset_temp.dta", clear
+use  "$apath/dataset_temp.dta", clear
 
 *** Everything at once
 *** I think this is the right way to do it
