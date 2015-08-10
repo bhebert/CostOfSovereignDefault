@@ -265,7 +265,7 @@ tsset, clear
 if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 
 	** code to make some summary stats *
-	log using "$rpath/summary_log.txt", replace
+	log using "$rpath/summary_log$cds_app.txt", replace
 
 	summ return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US")
 	summ return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US")
@@ -445,7 +445,7 @@ foreach rg in `regs' {
 			
 		*disp "cis: `cis'"
 		*disp "`rpath'/`rg'.xls"
-		outreg2 using "$rpath/`rg'`ext_style'.xls", stats(coef se) `action' addstat(`cis' `extrastat') noaster nonotes `outopts'
+		outreg2 using "$rpath/`rg'`ext_style'$cds_app.xls", stats(coef se) `action' addstat(`cis' `extrastat') noaster nonotes `outopts'
 		
 		local action append
 	}
@@ -505,7 +505,7 @@ disp "varorder: `varorder'"
 
 foreach x in  `regs' { 
  
-	import delimited "$rpath/`x'`ext_style'.txt", clear
+	import delimited "$rpath/`x'`ext_style'$cds_app.txt", clear
 
 	drop if (v2=="" | v2 == "(1)" | v2 == "( - )") & v1 ~= "Full_SE"
 	
@@ -571,19 +571,19 @@ foreach x in  `regs' {
 	
 	
 	save "$rpath/`x'_reshape`fext'.dta", replace
-	export excel using "$rpath/`x'_reshape`ext_style'.xls", firstrow(varlabels) replace
+	export excel using "$rpath/`x'_reshape`ext_style'$cds_app.xls", firstrow(varlabels) replace
 
 	
 	use "$rpath/`x'_reshape`fext'.dta", clear
 
 	keep variables `varorder2'
 
-	export excel using "$rpath/`x'_Body`ext_style'.xls", firstrow(varlabels) replace
+	export excel using "$rpath/`x'_Body`ext_style'$cds_app.xls", firstrow(varlabels) replace
 	use "$rpath/`x'_reshape`fext'.dta", clear
 	
 	if `use_mexbrl' != 0 {
 		keep variables brazilcds brazilequity mexicocds mexicoequity
-		export excel using "$rpath/`x'_Appendix`ext_style'.xls", firstrow(varlabels) replace
+		export excel using "$rpath/`x'_Appendix`ext_style'$cds_app.xls", firstrow(varlabels) replace
 	}
 }
 
