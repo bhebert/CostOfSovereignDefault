@@ -12,10 +12,24 @@ assignin('base','apath',[dir_csd '/Datasets/'])
 assignin('base','csvfile',[apath 'Matlab_spreads_zero.csv'])
 assignin('base','csvfile_ust',[apath 'Matlab_spreads_zero_UST.csv'])
 assignin('base','csvfile_june16',[apath 'Matlab_June16.csv'])
+assignin('base','csvfile_europe',[apath 'Matlab_Europe_zero.csv'])
+assignin('base','csvfile_newyork',[apath 'Matlab_NewYork_zero.csv'])
+assignin('base','csvfile_ust_europe',[apath 'Matlab_Europe_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_newyork',[apath 'Matlab_NewYork_spreads_zero_UST.csv'])
 
 
 %COMPOSITE
-dataset=csvread(csvfile);
+matlabpool close force local
+matlabpool
+for i=1:3
+    if i==1
+       dataset=csvread(csvfile);
+    elseif i==2
+        dataset=csvread(csvfile_europe);
+    elseif i==3
+        dataset=csvread(csvfile_newyork);    
+    end
+    
 if test==1 
     dataset=dataset(700:710,:);
 end
@@ -31,8 +45,7 @@ days_to_add=round(365.*irs_length);
 recoveryConH=ones(size(recovery))*.395;
 
 %Run code in parallel to spped up
-matlabpool close force local
-matlabpool
+
 parfor i=1:length(date)
     Settle=date(i);
     Spread_Time=spread_length;
@@ -66,10 +79,17 @@ keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
 cd(apath)
+if i==1
 csvwrite('Bootstrap_results.csv',keymat)
 csvwrite('Bootstrap_resultsConH.csv',keymatConH)
-
-
+elseif i==2
+    csvwrite('Bootstrap_Europe_results.csv',keymat)
+    csvwrite('Bootstrap_Europe_resultsConH.csv',keymatConH)
+elseif i==3
+     csvwrite('Bootstrap_NewYork_results.csv',keymat)
+    csvwrite('Bootstrap_NewYork_resultsConH.csv',keymatConH)
+end
+end
 
 
 %%
@@ -78,9 +98,17 @@ csvwrite('Bootstrap_resultsConH.csv',keymatConH)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Estimating risk-neutral default probabilites from CDS
 %COMPOSITE
-dataset=csvread(csvfile_ust);
+for i=1:3
+    if i==1
+       dataset=csvread(csvfile_ust);
+    elseif i==2
+        dataset=csvread(csvfile_ust_europe);
+    elseif i==3
+        dataset=csvread(csvfile_ust_newyork);    
+    end
+    
 if test==1 
-    dataset=dataset(700:710,:)
+    dataset=dataset(700:710,:);
 end
 date=dataset(:,1);
 recovery=dataset(:,2)/100;
@@ -94,8 +122,6 @@ days_to_add=round(365.*irs_length);
 recoveryConH=ones(size(recovery))*.395;
 
 %Run code in parallel to spped up
-matlabpool close force local
-matlabpool
 parfor i=1:length(date)
     Settle=date(i);
     Spread_Time=spread_length;
@@ -129,8 +155,18 @@ keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
 cd(apath)
+if i==1
 csvwrite('Bootstrap_results_UST.csv',keymat)
 csvwrite('Bootstrap_resultsConH_UST.csv',keymatConH)
+elseif i==2
+   csvwrite('Bootstrap_Europe_results_UST.csv',keymat)
+    csvwrite('Bootstrap_Europe_resultsConH_UST.csv',keymatConH)
+elseif i==3
+     csvwrite('Bootstrap_NewYork_results_UST.csv',keymat)
+     csvwrite('Bootstrap_NewYork_resultsConH_UST.csv',keymatConH)
+end
+
+end
 
 %%
 %%%%%%%%%
