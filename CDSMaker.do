@@ -12,7 +12,7 @@ set more off
 * 6 for Markit implied default prob, 5yr, Composite and Europe
 * If 2/4 is chosen, there is only 1 day and 2day events.
 
-local cds_i_marks 6
+local cds_i_marks 7
 
 
 * This code loads CDS returns
@@ -87,10 +87,30 @@ else if `cds_i_marks' == 4 {
 	keep date CDS
 }
 else if `cds_i_marks' == 6 {
-	use "$mpath/Default_Prob.dta", clear
+	*use "$mpath/Default_Prob.dta", clear
+	*rename europe Spread5yE
+	*rename composite Spread5yN
+	use "$apath/Default_Prob_All.dta", clear
+	keep date def5y def5y_europe 
+	rename def5y_europe Spread5yE
+	rename def5y Spread5yN
+	global cds_app ""
+}
 
-	rename europe Spread5yE
-	rename composite Spread5yN
+else if `cds_i_marks' == 7 {
+	use "$apath/Default_Prob_All.dta", clear
+	*keep date def1y def1y_europe 
+	*rename def1y_europe Spread5yE
+	*rename def1y Spread5yN
+	*global cds_app="_1y"
+	*keep date conh_def5y conh_def5y_europe 
+	*rename conh_def5y_europe Spread5yE
+	*rename conh_def5y Spread5yN
+	*global cds_app="_5yconH"
+	keep date def3y def3y_europe 
+	rename def3y_europe Spread5yE
+	rename def3y Spread5yN
+	global cds_app="_3y"
 }
 
 * We use a business day calendar to figure out
@@ -145,7 +165,7 @@ else if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
 
 }
-else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
+else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 | `cds_i_marks' == 7 {
 
 	gen cds_intra = Spread5yN - Spread5yE
 	gen cds_nightbefore = Spread5yE - L.Spread5yN
