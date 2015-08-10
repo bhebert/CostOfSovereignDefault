@@ -6,7 +6,7 @@ foreach y in "" "_europe" "_newyork" {
 
 forvalues i=1/4 {
 if `i'==1 {
-import delimited "$apath/Bootstrap_results.csv", clear
+import delimited "$apath/Bootstrap`y'_results.csv", clear
 local name="cumdef_hazard`y'"
 }
 else if `i'==2 {
@@ -57,6 +57,7 @@ destring haz30y, replace
 
 gen problem=0
 foreach x in haz6m haz1y haz2y haz3y haz4y haz5y haz7y haz10y haz15y haz20y haz30y {
+destring `x', force replace
 replace problem=1 if `x'<=0 | `x'==.
 }
 
@@ -145,10 +146,6 @@ foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 }	
 
 
-mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
-drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
-
-
 drop _merge 
 
 mmerge date using "$apath/PUF_NY.dta", ukeep(Upfront*)
@@ -176,18 +173,31 @@ mmerge date using  "$apath/cumdef_hazard`y'.dta", ukeep(def6m def1y def2y def3y 
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' `x'`y'
 }
+
+mmerge date using  "$apath/cumdef_hazard_triangle`y'.dta", ukeep(tri*)
+drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
+
+foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
+	rename tri_def`x' tri_def`x'`y'
+	rename tri_conH_def`x' tri_conH_def`x'`y' 
+}	
+
 save  "$apath/Default_Prob_All.dta", replace
 }
 
 mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
-foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
-	label var def`x' "`x' Cumulative Default Probability, Composite, IRS Zero"
-	label var conh_def`x' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, IRS Zero"
-	label var conh_ust_def`x' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, UST Zero"
-	label var ust_def`x' "`x' Cumulative Default Probability, UST Zero"
-	label var tri_def`x' "`x' Cumulative Default Probability, Credit Triangle"
-	label var tri_conH_def`x' "`x' Cumulative Default Probability, Constant 39.5% Recovery, Credit Triangle"
-	}	
+mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
+drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
+foreach y in "" "_europe" "_newyork" {
+foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
+	label var def`x'`y' "`x' Cumulative Default Probability, Composite, IRS Zero, `y'"
+	label var conh_def`x'`y' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, IRS Zero, `y'"
+	label var conh_ust_def`x'`y' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, UST Zero, `y'"
+	label var ust_def`x'`y' "`x' Cumulative Default Probability, UST Zero, `y'"
+	label var tri_def`x'`y' "`x' Cumulative Default Probability, Credit Triangle, `y'"
+	label var tri_conH_def`x'`y' "`x' Cumulative Default Probability, Constant 39.5% Recovery, Credit Triangle, `y'"
+	}	
+	}
 save  "$apath/Default_Prob_All.dta", replace
 
