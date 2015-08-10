@@ -99,18 +99,9 @@ else if `cds_i_marks' == 6 {
 
 else if `cds_i_marks' == 7 {
 	use "$apath/Default_Prob_All.dta", clear
-	*keep date def1y def1y_europe 
-	*rename def1y_europe Spread5yE
-	*rename def1y Spread5yN
-	*global cds_app="_1y"
-	*keep date conh_def5y conh_def5y_europe 
-	*rename conh_def5y_europe Spread5yE
-	*rename conh_def5y Spread5yN
-	*global cds_app="_5yconH"
-	keep date def3y def3y_europe 
-	rename def3y_europe Spread5yE
-	rename def3y Spread5yN
-	global cds_app="_3y"
+	keep date $cds_n $cds_e 
+	rename $cds_e  Spread5yE
+	rename $cds_n Spread5yN
 }
 
 * We use a business day calendar to figure out
