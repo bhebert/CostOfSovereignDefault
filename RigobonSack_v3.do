@@ -15,6 +15,9 @@ local use_exrates 1
 *Run with NDF rates
 local use_ndf 0
 
+*Run with US Breakeven Inflation Rates
+local use_usbeinf 0
+
 * Run with the GDP models
 * Requires use_adrs and use_exrates
 local use_gdpmodels 1
@@ -130,6 +133,10 @@ if `use_exrates' == 0 {
 
 if `use_ndf'==0 {
 	drop if regexm(industry_sector,"NDF")  | regexm(industry_sector,"FWDP") 
+}
+
+if `use_usbeinf'==0 {
+	drop if regexm(industry_sector,"US10YBE")  | regexm(industry_sector,"US5YBE") 
 }
 	
 if `use_mexbrl' == 0 {
