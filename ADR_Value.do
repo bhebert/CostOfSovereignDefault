@@ -92,7 +92,6 @@ gen quarter=qofd(date)
 format quarter %tq
 collapse (firstnm) tbill, by(quarter)
 gen Ticker="Tbill"
-gen weight=.1
 tsset quarter
 drop if quarter<tq(1980q1)
 gen total_return=1+(tbill/400) if quarter==tq(1980q1)
@@ -108,12 +107,13 @@ gen total_return_d=1+(tbill/36500) if date==td(01jan1980)
 replace total_return_d=l.total_return_d*(1+tbill/36500) if  date>td(01jan1980)
 carryforward total_return, replace
 order quarter date total_return*
-keep date total_return_d
+keep date total_return_d 
 rename total_return total_return
 *Assuming the interest is earned between open and close
 gen px_open=l.total_return
 gen px_close=total_return
 gen Ticker="Tbill"
+gen weight=.1
 save "$apath/Tbill_daily.dta", replace
 
 
@@ -167,11 +167,11 @@ sort tid bdate
 
 local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
 
-gen return_intra = 100*log(px_close/px_open)
-gen return_onedayN = 100*log(total_return / L.total_return)
-gen return_onedayL = 100*log(total_return / L.total_return) - return_intra + L.return_intra
+gen return_intra = log(px_close/px_open)
+gen return_onedayN = log(total_return / L.total_return)
+gen return_onedayL = log(total_return / L.total_return) - return_intra + L.return_intra
 gen return_nightbefore = return_onedayN - return_intra
-gen return_twoday = 100*log(total_return / L2.total_return) 
+gen return_twoday = log(total_return / L2.total_return) 
 gen return_1_5 = return_twoday - return_intra
 
 //gen ret1 = total_return / L.total_return - 1
@@ -182,10 +182,11 @@ gen return_1_5 = return_twoday - return_intra
 foreach rt in `rtypes' {
 	gen weight_`rt' = weight
 	replace weight_`rt' = 0 if `rt' == .
-	bysort date: egen total_`rt'=sum(weight_`rt')
-	
-	replace weight_`rt'=0.9*weight_`rt'/total_`rt'
-	drop total_`rt'
+	bysort date: egen total_`rt'=sum(weight_`rt') if Ticker~="Tbill"
+	replace weight_`rt'=0.9*weight_`rt'/total_`rt'  if Ticker~="Tbill"
+	bysort date: egen total_test=sum(weight_`rt') 
+	drop if total_test<.1000001 & total_test>.099999
+	drop total_`rt' total_test
 }
 
 /*gen weight1=weight
@@ -217,7 +218,7 @@ foreach rtype  in `rtypes' {
 	by date: egen `rtype'mxar_cnt = sum(weight*(`rtype'!=.))
 	replace `rtype'mxar = . if `rtype'mxar_cnt == 0
 	replace `rtype'mxar = `rtype'mxar / `rtype'mxar_cnt 
-	replace `rtype'mxar = log(1+`rtype'mxar)
+	replace `rtype'mxar = 100*log(1+`rtype'mxar)
 	
 	drop `rtype'mxar_cnt temp
 	local mxarrets `mxarrets' `rtype'mxar
