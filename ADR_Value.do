@@ -163,6 +163,7 @@ gen bdate = bofd("basic",date)
 format bdate %tbbasic
 tsset tid bdate
 sort tid bdate
+drop if bdate==.
 
 
 local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
@@ -179,14 +180,18 @@ gen return_1_5 = return_twoday - return_intra
 
 //local rtypes ret px_ret 
 
+bysort date: egen temp2=count(total_return)
+drop if temp2==1
+
+sort tid bdate
+
 foreach rt in `rtypes' {
 	gen weight_`rt' = weight
 	replace weight_`rt' = 0 if `rt' == .
 	bysort date: egen total_`rt'=sum(weight_`rt') if Ticker~="Tbill"
 	replace weight_`rt'=0.9*weight_`rt'/total_`rt'  if Ticker~="Tbill"
-	bysort date: egen total_test=sum(weight_`rt') 
-	drop if total_test<.1000001 & total_test>.099999
-	drop total_`rt' total_test
+	bysort date: egen total_test_`rt'=sum(weight_`rt') 
+	drop total_`rt'
 }
 
 /*gen weight1=weight
