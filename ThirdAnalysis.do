@@ -11,7 +11,7 @@ local forecast 0
 *if 2, consensus and weo/DON'T USE THIS, IT IS NOT DONE YET
 
 * This controls which Exchange Rates to use
-global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M
+global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M US10YBE US5YBE
 
 * This controls which Latam equity/cds indices to use
 global latam Brazil Mexico
@@ -74,6 +74,7 @@ save "`temp'", replace
 use "$apath/blue_rate.dta", clear
 append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
+append using "$apath/US_Breakeven.dta"
 drop if ~regexm("$exrates",Ticker)
 gen industry_sector = Ticker
 gen market = "Index"
