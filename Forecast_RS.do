@@ -88,6 +88,9 @@ replace ret1y=. if index==0 & index6m==1
 drop if index==1 & index6m==1
 
 keep date Ticker ret1y ret6m
+replace ret1y=log(1+ret1y)
+replace ret6m=log(1+ret6m)
+
 reshape wide ret1y ret6m, i(date) j(Ticker) string
 *renpfix ret1y
 
