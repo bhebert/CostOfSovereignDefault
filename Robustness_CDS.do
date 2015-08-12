@@ -12,7 +12,7 @@ do ${csd_dir}/BlueRateMaker.do
 
 do ${csd_dir}/GlobalFactors.do
 
-forvalues cdsii=10/15 {
+forvalues cdsii=1/15 {
 if `cdsii'==1 {
 	global cds_app "_3y"
 	global cds_e "def3y_europe"
