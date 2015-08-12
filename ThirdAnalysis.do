@@ -104,6 +104,7 @@ foreach cntry in $latam {
 reshape long total_return, i(date) j(Ticker) string
 gen industry_sector = Ticker
 gen market = "Index"
+append using "$apath/Other_CDS.dta"
 
 append using "`temp'"
 
@@ -114,7 +115,10 @@ gen temp = Ticker + market
 encode temp, gen(firm_id)
 drop temp
 
+
 save "`temp'", replace
+
+
 
 * Merge in the saved factor data
 
