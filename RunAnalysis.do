@@ -3,6 +3,7 @@
 do ${csd_dir}/SetupPaths.do
 
 global GDP_models vecm consensus consensus03 consensus6m consensus036m ipg24 ipg12 ipg3
+*global GDP_models vecm 
 
 *Make the Dividend VAR indices
 do "$csd_dir/DivMaker4.do"
