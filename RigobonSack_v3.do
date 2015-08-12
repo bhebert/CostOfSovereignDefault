@@ -25,6 +25,9 @@ local use_gdpmodels 1
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
 local use_mexbrl 0
 
+* Run with other default probabilities
+local use_otherdefp 0
+
 * Each of these will run with both local and ADR versions
 * Run with single name stocks
 local use_singlenames 0
@@ -142,6 +145,11 @@ if `use_usbeinf'==0 {
 if `use_mexbrl' == 0 {
 	drop if regexm(industry_sector,"Mexico") | regexm(industry_sector,"Brazil")
 }
+
+if `use_otherdefp' == 0 {
+	drop if regexm(industry_sector,"DTRI")
+}
+
 if `use_singlenames' == 0 {
 	drop if isstock == 1 & ports == 0
 }
