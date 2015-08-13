@@ -29,6 +29,15 @@ tsline log_div log_div_sa log_div4
 
 gen log_pd = log(px_last) - log_div4
 
+su log_pd
+
+local mean_pd = `r(mean)'
+
+local rho_est = (exp(`mean_pd') / (exp(`mean_pd') + 1)) ^ (1/4)
+disp "rho_est: `rho_est'"
+
+local rho `rho_est'
+
 gen log_ngdp = log(Nominal_GDPusd)
 gen log_exrate = log(ADRBlue)
 gen log_cpi = log(cpi)
@@ -41,11 +50,11 @@ if `post2003'==1 {
 /* DOLS + SVAR APPROACH-- MAYBE A BETTER APPROACH? */
 // http://www.ssc.wisc.edu/~bhansen/390/390Lecture22.pdf
 
-// DOLS to estimate phi
+// DOLS to estimate phi //quarter
 newey log_ngdp log_div L(-3/3).D.log_div q1 q2 q3 quarter, lag(4)
 
 // Construct time series of stationary variable
-gen gdratio = log_ngdp - _b[log_div]*log_div - _b[q1]*q1 - _b[q2]*q2 - _b[q3]*q3 - _b[_cons] +  _b[quarter]*quarter
+gen gdratio = log_ngdp - _b[log_div]*log_div - _b[q1]*q1 - _b[q2]*q2 - _b[q3]*q3 - _b[_cons] + _b[quarter]*quarter
 
 local phi = _b[log_div]
 
