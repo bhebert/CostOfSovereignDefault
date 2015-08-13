@@ -1,6 +1,5 @@
 *OTHER COUNTRIES
-
-use "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Markit/Datasets/Master_all_EOD.dta", clear
+use "$mpath/Master_all_EOD.dta", clear
 keep if DocC=="CR"
 keep if Ccy=="USD"
 keep date Ticker Country Spread* Recov
