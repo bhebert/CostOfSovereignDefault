@@ -150,7 +150,7 @@ bysort date: replace exclude=1 if px_close==min_px_close | px_close==max_px_clos
 *replace px_close=. if sd_px_close>r(p99)  & sd_px_close~=. & yofd(date)<2009
 drop if exclude==1
 collapse px_open px_close total_return, by(date)
-gen Ticker="ADRBluedb_clean"
+gen Ticker="adrdb_clean"
 append using "$apath/ADRBlue_All.dta"
 save "$apath/ADRBlue_All.dta", replace
 
