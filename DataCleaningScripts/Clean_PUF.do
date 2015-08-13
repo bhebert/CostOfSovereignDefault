@@ -1,3 +1,5 @@
+set more off
+
 *JUST GET THE ARGENTINE DATA
 import delimited "$mainpath/Markit/Sameday Data/FC-NewYork/Sameday Fixed Coupon CDS-16Jun14.csv", delimiter(comma) rowrange(3) clear
 keep if _n==1
