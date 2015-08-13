@@ -13,3 +13,6 @@ do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
 
+do ${csd_dir}/DataCleaningScripts/dolarblue_clean.do
+
+do ${csd_dir}/DataCleaningScripts/US_Inflation.do
