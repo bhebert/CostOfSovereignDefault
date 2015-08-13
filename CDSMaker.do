@@ -90,7 +90,7 @@ else if `cds_i_marks' == 6 {
 	*use "$mpath/Default_Prob.dta", clear
 	*rename europe Spread5yE
 	*rename composite Spread5yN
-	use "$apath/Default_Prob_All.dta", clear
+	use "$mpath/Default_Prob_All.dta", clear
 	keep date def5y def5y_europe 
 	rename def5y_europe Spread5yE
 	rename def5y Spread5yN
@@ -98,7 +98,7 @@ else if `cds_i_marks' == 6 {
 }
 
 else if `cds_i_marks' == 7 {
-	use "$apath/Default_Prob_All.dta", clear
+	use "$mpath/Default_Prob_All.dta", clear
 	keep date $cds_n $cds_e 
 	rename $cds_e  Spread5yE
 	rename $cds_n Spread5yN
