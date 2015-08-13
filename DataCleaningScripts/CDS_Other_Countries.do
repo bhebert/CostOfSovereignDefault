@@ -26,6 +26,8 @@ drop n maxn
 tsset tid bdate
 
 keep date Ticker Country tri_def5y
+*To keep units sensible vs. cds in ThirdAnalysis.
+replace tri_def5y=tri_def5y/100
 *make it exp so returns are calculated correctly
 replace tri_def5y=exp(tri_def5y)
 replace Ticker="HK" if Ticker=="CHINA-HongKong"
