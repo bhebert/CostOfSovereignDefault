@@ -6,16 +6,15 @@ test=0
 
 assignin('base','dir_user','/Users/jesseschreger/Dropbox/')
 assignin('base','dir_csd','/Users/jesseschreger/Documents/CostofSovereignDefault')
-assignin('base','apath',['/Users/jesseschreger/Documents/CostofSovereignDefault/Datasets'])
+assignin('base','mpath',[dir_user 'Cost of Sovereign Default/Markit/Datasets'])
 assignin('base','pod',[dir_user 'Cost of Sovereign Default/Markit/Prob of Default/'])
-assignin('base','apath',[dir_csd '/Datasets/'])
-assignin('base','csvfile',[apath 'Matlab_spreads_zero.csv'])
-assignin('base','csvfile_ust',[apath 'Matlab_spreads_zero_UST.csv'])
-assignin('base','csvfile_june16',[apath 'Matlab_June16.csv'])
-assignin('base','csvfile_europe',[apath 'Matlab_Europe_zero.csv'])
-assignin('base','csvfile_newyork',[apath 'Matlab_NewYork_zero.csv'])
-assignin('base','csvfile_ust_europe',[apath 'Matlab_Europe_spreads_zero_UST.csv'])
-assignin('base','csvfile_ust_newyork',[apath 'Matlab_NewYork_spreads_zero_UST.csv'])
+assignin('base','csvfile',[mpath 'Matlab_spreads_zero.csv'])
+assignin('base','csvfile_ust',[mpath 'Matlab_spreads_zero_UST.csv'])
+assignin('base','csvfile_june16',[mpath 'Matlab_June16.csv'])
+assignin('base','csvfile_europe',[mpath 'Matlab_Europe_zero.csv'])
+assignin('base','csvfile_newyork',[mpath 'Matlab_NewYork_zero.csv'])
+assignin('base','csvfile_ust_europe',[mpath 'Matlab_Europe_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_newyork',[mpath 'Matlab_NewYork_spreads_zero_UST.csv'])
 
 
 %COMPOSITE
@@ -70,15 +69,15 @@ parfor i=1:length(date)
 end
 
 
-% savefile=[apath 'Bootstrap_results.mat'];
+% savefile=[mpath 'Bootstrap_results.mat'];
 % save(savefile,'ProbDef_mat','Haz_mat','date','date_id','dataset')
-% savefile=[apath 'Bootstrap_resultsconH.mat'];
+% savefile=[mpath 'Bootstrap_resultsconH.mat'];
 % save(savefile,'ProbDef_matConH','Haz_matConH','date','date_id','dataset')
 date_stata=date-715876;
 keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
-cd(apath)
+cd(mpath)
 if i==1
 csvwrite('Bootstrap_results.csv',keymat)
 csvwrite('Bootstrap_resultsConH.csv',keymatConH)
@@ -146,15 +145,15 @@ parfor i=1:length(date)
 end
 
 
-%savefile=[apath 'Bootstrap_results_UST.mat'];
+%savefile=[mpath 'Bootstrap_results_UST.mat'];
 %save(savefile,'ProbDef_mat','Haz_mat','date','date_id','dataset')
-%savefile=[apath 'Bootstrap_results_UST.mat'];
+%savefile=[mpath 'Bootstrap_results_UST.mat'];
 %save(savefile,'ProbDef_matConH','Haz_matConH','date','date_id','dataset')
 date_stata=date-715876;
 keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
-cd(apath)
+cd(mpath)
 if i==1
 csvwrite('Bootstrap_results_UST.csv',keymat)
 csvwrite('Bootstrap_resultsConH_UST.csv',keymatConH)
@@ -202,7 +201,7 @@ for i=1:length(date)
 end
 
 keymat=[date,ProbDef_mat,Haz_mat,time_est];
-cd(apath)
+cd(mpath)
 csvwrite('Bootstrap_June16.csv',keymat)
 
 

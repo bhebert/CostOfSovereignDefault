@@ -18,7 +18,7 @@ foreach x in 1 2 3 4 5 7 10 15 20 30 {
 	drop Spread* Recov
 	keep if year(date)>=2011 
 	keep if date<=td(30jul2014)
-	save "$apath/cumdef_hazard_triangle.dta", replace
+	save "$mpath/cumdef_hazard_triangle.dta", replace
 	
 *SAMEDAY	
 foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
@@ -41,7 +41,7 @@ foreach x in 1 2 3 4 5 7 10 15 20 30 {
 	drop Spread* Recov
 	keep if year(date)>=2011 
 	keep if date<=td(30jul2014)
-	save "$apath/cumdef_hazard_triangle_`y'.dta", replace
+	save "$mpath/cumdef_hazard_triangle_`y'.dta", replace
 	}
 
 *JUST GET THE ARGENTINE DATA
@@ -50,7 +50,7 @@ import excel "$mainpath/Markit/Prob of Default/Swap_Rates.xls", sheet("Daily") f
 drop USD3
 order DATE  USD6 DSWP1  DSWP3  DSWP4 DSWP5 DSWP7 DSWP10 DSWP30
 rename DATE date
-save "$apath/swaprates.dta", replace
+save "$mpath/swaprates.dta", replace
 
 *Import the US TREASURY ZEROS
 import excel "$mainpath/Markit/Prob of Default/GSW_Zero_Curve.xlsx", sheet("Yields") firstrow clear
@@ -59,7 +59,7 @@ gen date=date(datestr,"YMD")
 order date
 format date %td
 drop datestr
-save "$apath/UST_Zero.dta", replace
+save "$mpath/UST_Zero.dta", replace
 
 ***
 use  "$mpath/Composite_USD.dta", clear
@@ -73,7 +73,7 @@ use  "$mpath/Composite_USD.dta", clear
 *	twoway (line hazard1 date, sort) if year(date)>=2012
 *		twoway (line hazard5 date, sort) if year(date)>=2012
 keep date Spread* Recovery
-mmerge date using "$apath/swaprates.dta"
+mmerge date using "$mpath/swaprates.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -91,7 +91,7 @@ foreach x in USD6MTD156N DSWP1 DSWP3 DSWP4 DSWP5 DSWP7 DSWP10 DSWP30 {
 carryforward `x', replace
 }
 *export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero.xls", replace 
-export delimited using "$apath/Matlab_spreads_zero.csv", replace novarnames
+export delimited using "$mpath/Matlab_spreads_zero.csv", replace novarnames
 
 format date %td
 gen month=mofd(date)
@@ -101,7 +101,7 @@ collapse (mean) Recov *Spread*  USD* DSWP*, by(month)
 gen date=dofm(month)
 order date
 drop month
-export delimited using "$apath/Matlab_spreads_zero_month.csv", replace novarnames
+export delimited using "$mpath/Matlab_spreads_zero_month.csv", replace novarnames
 
 
 ***************
@@ -111,7 +111,7 @@ foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
 use  "$mpath/Sameday_USD.dta", clear
 keep if snaptime=="`y'"
 keep date Spread* Recovery
-mmerge date using "$apath/swaprates.dta"
+mmerge date using "$mpath/swaprates.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -130,7 +130,7 @@ carryforward `x', replace
 }
 
 order datenum Recovery Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread15y Spread20y Spread30y
-export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
+export delimited using "$mpath/Matlab_`y'_zero.csv", replace novarnames
 }
 
 ****************************************
@@ -139,7 +139,7 @@ export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
 
 use  "$mpath/Composite_USD.dta", clear
 keep date Spread* Recovery
-mmerge date using "$apath/UST_Zero.dta"
+mmerge date using "$mpath/UST_Zero.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -157,14 +157,14 @@ forvalues x=10/30 {
 carryforward SVENY`x', replace
 }
 
-export delimited using "$apath/Matlab_spreads_zero_UST.csv", replace novarnames
+export delimited using "$mpath/Matlab_spreads_zero_UST.csv", replace novarnames
 
 *FOR SAMEDAY
 foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
 use  "$mpath/Sameday_USD.dta", clear
 keep if snaptime=="`y'"
 keep date Spread* Recovery
-mmerge date using "$apath/UST_Zero.dta"
+mmerge date using "$mpath/UST_Zero.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -183,7 +183,7 @@ carryforward SVENY`x', replace
 }
 
 *export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero_UST.xls", replace 
-export delimited using "$apath/Matlab_`y'_spreads_zero_UST.csv", replace novarnames
+export delimited using "$mpath/Matlab_`y'_spreads_zero_UST.csv", replace novarnames
 }
 
 
@@ -193,7 +193,7 @@ export delimited using "$apath/Matlab_`y'_spreads_zero_UST.csv", replace novarna
 use  "$mpath/Sameday_USD.dta", clear
 keep if date==td(16jun2014)
 keep date Spread* Recovery time_est
-mmerge date using "$apath/swaprates.dta"
+mmerge date using "$mpath/swaprates.dta"
 keep if _merge==3
 order date Recovery
 drop _merge
@@ -205,7 +205,7 @@ keep if date<=td(30jul2014)
 
 order datenum Recovery Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread15y Spread20y Spread30y 
 order time_est, last
-export delimited using "$apath/Matlab_June16.csv", replace novarnames
+export delimited using "$mpath/Matlab_June16.csv", replace novarnames
 
 
 **************************************************
