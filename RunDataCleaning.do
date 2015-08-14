@@ -16,3 +16,6 @@ do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
 do ${csd_dir}/DataCleaningScripts/dolarblue_clean.do
 
 do ${csd_dir}/DataCleaningScripts/US_Inflation.do
+
+do ${csd_dir}/DataCleaningScripts/BCS.do
+
