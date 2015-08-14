@@ -1,3 +1,8 @@
+*CONSTRUCT ADR BLUE RATE USING DATA DIRECTLY FROM EXCHANGES
+*BCBA BOLSAR FOR LOCAL
+*CRSP FOR ADRS
+
+*Clean data
 set more off
 use "$mainpath/CRSP/Argentina_ADRdta.dta", clear
 drop if ticker=="PZL" | ticker=="POEA" | ticker=="POBR" | ticker=="PC" | ticker=="BRO"
@@ -26,6 +31,7 @@ replace ratio=25 if ADR_T=="PAM"
 replace ratio=1 if ADR_T=="YPF"
 
 save "$mainpath/CRSP/CRSP_ADR.dta", replace
+
 
 use "$mainpath/Local Data/Bolsar/Bolsar_merged.dta", clear
 rename ticker Ticker
@@ -71,7 +77,7 @@ rename blue_open px_open
 rename blue_close px_close
 gen total_return=px_close
 gen Ticker="ADRBaltdata"
-save "$apath/ADRBaltdata.dta"
+save "$apath/ADRBaltdata.dta", replace
 
 
 *bysort date: egen adrdb_temp =mean(blue_close)
