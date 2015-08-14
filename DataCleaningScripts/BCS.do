@@ -1,6 +1,5 @@
-*THIS IS A WORK IN PROGRESS
 
-*BCS
+*BCS: IMPORT ALL DATA
  set more off
 import excel "$mainpath/Bloomberg/BlueChipSwap08132015.xlsx", sheet("BULK_DL") clear
 *Note, this still generates output to dropbox, need to correct.
@@ -59,6 +58,87 @@ replace ARS_temp=1 if px_last>200 & date==td(16jun2014)
 bysort ticker_full: egen ARS=max(ARS_temp)
 drop ARS_temp
 save "$mainpath/Bloomberg/Datasets/BCS.dta", replace
+
+*Drop bad data series 
+use  "$mainpath/Bloomberg/Datasets/BCS.dta", clear
+keep if yofd(date)>=2011 & yofd(date)<=td(01aug2014)
+encode bb_ticker, gen(tid)
+sort tid date
+bysort tid: gen n=_n
+tsset tid n
+gen change=log(px_last)-log(l.px_last)
+gen stale=1 if px_last==l.px_last
+bysort tid: egen tidcount=count(px_last)
+bysort tid: egen stalecount=sum(stale)
+gen stale_ratio=stalecount/tidcount
+*Drop stale data
+drop if stale_ratio>.05
+
+*See what data we have
+browse if Ticker=="EF106106" & ARS==1 & date==td(16jun2014)
+browse if Ticker=="EF106106" & ARS==0 & date==td(16jun2014)
+browse if Ticker~="EF106106" & ARS==1 & date==td(16jun2014)
+browse if Ticker~="EF106106" & ARS==0 & date==td(16jun2014)
+
+*Make sure that there are no 
+replace px_last=. if px_last>150 & ARS==0
+replace px_last=. if px_last<200 & ARS==1
+*drop if less than 300 days of data
+drop if tidcount<300
+
+*plot individual series
+/*discard
+levelsof source, local(sid)
+foreach x of local sid {
+twoway (line px_last date  if Ticker=="EF106106", sort) if source=="`x'" & yofd(date)>=2011, title("`x'") name("`x'")
+} */
+
+*Select median price by currency, bond, date
+collapse (median) px_last, by(date Ticker ARS)
+reshape wide px_last, i(date Ticker) j(ARS)
+gen blue=px_last1/px_last0
+*Call Blue Chip Swap Rate the mean across the two bonds.
+*This is the step where we could add more bonds.
+collapse (mean) blue, by(date)
+twoway (line blue date), title("Blue Chip Swap Rate") ytitle("Blue Chip Swap Rate")
+graph export "$rpath/BCS_Clean.png", replace
+gen bdate = bofd("basic",date)
+format bdate %tbbasic
+sort bdate
+rename blue px_close
+tsset bdate
+gen px_open =l.px_close
+gen Ticker="BCS"
+gen total_return=px_close
+drop bdate
+*ready to merge into ThirdAnalysis.dta
+save "$apath/bcs.dta", replace
+
+*Plots
+use "$apath/bcs.dta", clear
+append using "$apath/blue_rate.dta"
+*append using "$apath/NDF_Datastream.dta"
+append using "$apath/dolarblue.dta"
+append using "$apath/ADRBaltdata.dta"
+twoway (line px_close date if Ticker=="BCS", sort) (line px_close date if Ticker=="ADRBlue", sort) (line px_close date if Ticker=="dolarblue", sort) if yofd(date)>=2011 & date<=td(31jul2014), ylabel(0(2)14) legend(order(1 "Blue Chip Swap" 2 "ADRBlue" 3 "DolarBlue.net"))
+graph export "$rpath/BlueChipCompare.png"
+/*
+*JUST MATCH THE TWO
+
+
+keep if source=="BAEF" | source=="BFUS" 
+
+drop bb ticker source
+reshape wide px_last, i(date Ticker) j(ARS)
+gen blue=px_last1/px_last0
+encode Ticker, gen(tid)
+twoway (line blue date  if tid==1) (line blue date  if tid==2) if yofd(date)>=2011
+twoway (line blue date  if tid==1) (line blue date  if tid==2) if date>=td(10jun2014) & date<=td(20jun2014) 
+levelsof source, local(sid)
+foreach x in local sid {
+twoway (line blue date  if Ticker=="EF106106") if source=="`x'" & yofd(date)>=2011, title("`x'") name("`x'")
+}
+
 
 use  "$mainpath/Bloomberg/Datasets/BCS.dta", clear
 collapse (median) px_last, by(date Ticker ARS)
