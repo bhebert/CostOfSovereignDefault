@@ -1,61 +1,4 @@
-*Note, this still generates output to dropbox, need to correct.
-set more off
-import excel "$mainpath/Bloomberg/Additional_Data_081215.xlsx", sheet("Data All") clear
-foreach x of varlist _all {
-tostring `x', replace
-	if `x'[3]=="." {
-		drop `x'
-		}
-		}
-		
-local i=1
-foreach x of varlist _all {		
-	rename `x' v`i'
-	local i=`i'+1
-	}
-	
-	local ii=`i'-3
-save "$mainpath/Bloomberg/intermediate/Data_081215.dta", replace
-	
-	forvalues i=1(4)`ii' {
-use "$mainpath/Bloomberg/intermediate/Data_081215.dta", clear
-local y=`i'+1
-local z=`i'+2
-local w=`i'+3
-keep v`i' v`y' v`z' v`w'
-local temp=v`i'[1]
-gen bb_ticker="`temp'"
-replace v`i'=subinstr(v`i'," Equity","",.)
-replace v`i'=subinstr(v`i'," ","_",.) if _n==1
-local temp=v`i'[1]
-gen ticker= "`temp'"
-rename v`i' date
-rename v`y' px_open
-rename v`z' px_last
-rename v`w' total_return
-drop if _n==1 | _n==2
-local x=`w'/4
-save "$mainpath/Bloomberg/intermediate/eqnew_`x'.dta", replace
-}
-
-use "$mainpath/Bloomberg/intermediate/eqnew_1.dta", clear
-forvalues i=2/16 {
-append using "$mainpath/Bloomberg/intermediate/eqnew_`i'.dta"
-}
-split ticker, p("_")
-rename ticker ticker_full
-rename ticker1 Ticker
-rename ticker2 market
-rename date datestr
-gen date=date(datestr,"MDY")
-format date %td
-order date
-drop datestr
-destring px_open, replace force
-destring px_last, replace force
-destring total_return, replace force
-drop if date==.
-save "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta", replace
+*THE CLOSES FOR BLOOMBERG LOCAL DON'T SEEM RELIABLE... Not using this for now.
 
 tempfile eqtemp ADR_temp
 use "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta", clear
@@ -128,10 +71,10 @@ graph export "$rpath/Blue_Rate_Comparison_Sample.png", replace
 twoway (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="ADRBluedb") (line px_close date if Ticker=="dolarblue", sort) if date>=td(01jun2014) & date<=td(30jun2014), legend(order( 1 "ADRBlue" 2 "ADRBluedb" 3 "dolarblue")) ytitle("Blue Rate")
 graph export "$rpath/Blue_Rate_Comparison_June2014.png", replace
 
-use "$apath/ADRBluedb.dta", clear
-keep if Ticker=="ADRBluedb"
-keep date Ticker px_open px_close total_return
-save "$apath/ADRBluedb_merge.dta", replace
+*use "$apath/ADRBluedb.dta", clear
+*keep if Ticker=="ADRBluedb"
+*keep date Ticker px_open px_close total_return
+*save "$apath/ADRBluedb_merge.dta", replace
 
 
 use "$apath/ADRBlue_All.dta", clear
@@ -140,6 +83,8 @@ bysort date: egen min_px_close=min(px_close)
 bysort date: egen max_px_close=max(px_close)
 bysort date: replace exclude=1 if px_close==min_px_close | px_close==max_px_close
 
+twoway (line px_close date if ADR_T=="BFR") (line px_close date if ADR_T=="BMA") (line px_close date if ADR_T=="GGAL") (line px_close date if ADR_T=="PAM") (line px_close date if ADR_T=="PBR") (line px_close date if ADR_T=="PZE") (line px_close date if ADR_T=="TEO") (line px_close date if ADR_T=="TS") if date>=td(10jun2014) & date<=td(20jun2014), ytitle("Blue Rate") legend(order(1 "BFR" 2 "BMA" 3 "GGAL" 4 "PAM" 5 "PBR" 6 "PZE" 7 "TEO" 8 "TS")) title("Why ADRBlue from BB won't work")
+graph export "$rpath/ADRBlue_BB_Fail.png", replace
 *FOR A VARIANCE CUTOFF
 *bysort date: egen adrdb_temp =mean(px_close)
 *gen px_close_norm=px_close/adrdb_temp
@@ -150,9 +95,15 @@ bysort date: replace exclude=1 if px_close==min_px_close | px_close==max_px_clos
 *replace px_close=. if sd_px_close>r(p99)  & sd_px_close~=. & yofd(date)<2009
 drop if exclude==1
 collapse px_open px_close total_return, by(date)
-gen Ticker="adrdb_clean"
+gen Ticker="adrdb"
 append using "$apath/ADRBlue_All.dta"
 save "$apath/ADRBlue_All.dta", replace
+
+use "$apath/ADRBlue_All.dta", clear
+keep date px_open px_close total_return Ticker
+keep if Ticker=="adrdb"
+save "$apath/adrdb_merge.dta", replace
+
 
 
 /*
