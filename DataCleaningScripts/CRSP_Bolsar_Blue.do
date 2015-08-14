@@ -77,7 +77,7 @@ rename blue_open px_open
 rename blue_close px_close
 gen total_return=px_close
 gen Ticker="ADRBaltdata"
-save "$apath/ADRBaltdata.dta", replace
+save "$apath/adrdb_altdata.dta", replace
 
 
 *bysort date: egen adrdb_temp =mean(blue_close)
