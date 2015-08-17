@@ -19,3 +19,5 @@ do ${csd_dir}/CDS_Other_Countries.do
 
 do ${csd_dir}/ThirdAnalysis.do
 
+do ${csd_dir}/DivMaker4.do
+
