@@ -6,7 +6,7 @@ global GDP_models vecm consensus consensus03 consensus6m consensus036m ipg24 ipg
 *global GDP_models vecm 
 
 *Make the Dividend VAR indices
-do "$csd_dir/DivMaker4.do"
+do "$csd_dir/VarRunner_OLD.do"
 
 *Creates NGF and the different indices of Forecasts from the Consensus Data
 do "$csd_dir/Long_Term.do"
