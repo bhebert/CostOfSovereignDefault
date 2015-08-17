@@ -1,3 +1,5 @@
+set more off
+
 *OTHER COUNTRIES
 use "$mpath/Master_all_EOD.dta", clear
 keep if DocC=="CR"
