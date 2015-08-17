@@ -77,7 +77,7 @@ append using "$apath/dolarblue.dta"
 append using "$apath/US_Breakeven.dta"
 append using "$apath/bcs.dta"
 *append using "$apath/ADRBluedb_merge.dta" This is the Bloomberg data where the closes are reliable.
-append using "$apath/ADRBaltdata.dta"
+append using "$apath/adrdb_altdata.dta"
 
 drop if ~regexm("$exrates",Ticker)
 gen industry_sector = Ticker
