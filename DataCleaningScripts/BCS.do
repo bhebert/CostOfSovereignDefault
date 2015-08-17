@@ -119,7 +119,7 @@ use "$apath/bcs.dta", clear
 append using "$apath/blue_rate.dta"
 *append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
-append using "$apath/ADRBaltdata.dta"
+append using "$apath/adrdb_altdata.dta"
 twoway (line px_close date if Ticker=="BCS", sort) (line px_close date if Ticker=="ADRBlue", sort) (line px_close date if Ticker=="dolarblue", sort) if yofd(date)>=2011 & date<=td(31jul2014), ylabel(0(2)14) legend(order(1 "Blue Chip Swap" 2 "ADRBlue" 3 "DolarBlue.net"))
 graph export "$rpath/BlueChipCompare.png"
 /*
