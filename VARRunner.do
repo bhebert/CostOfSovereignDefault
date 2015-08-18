@@ -6,12 +6,14 @@ set more off
 local post2003=1
 
 //options: log_div4_real log_div_real log_div_real_sa
-local divvar log_div4_real
+local divvar log_div_real_sa
 
-local useqtr 0
+local useqtr 1
 local use_dummies 1
 local nwlags 4
 local dols_lags 4
+
+local varlags 4
 
 local run_svar 0
 
@@ -109,30 +111,55 @@ local numvar 5
 * number of exogenous variables (include 1 for constant)
 local numexog 5
 
-local fullsize = `numvar' + `numexog'
+local numv = `numvar' * `varlags'
 
-var D_log_rgdp gdratio log_rer D.log_exrate log_pd , lag(1) exog(q1 q2 q3 D_log_us_cpi) //constraints(1)
+local fullsize = `numv' + `numexog'
+
+var D_log_rgdp gdratio log_rer D.log_exrate log_pd , lag(1/`varlags') exog(q1 q2 q3 D_log_us_cpi) //constraints(1)
 
 matrix varb = e(b)
 matrix varsig = e(Sigma)
 matrix vec_V = e(V)
 
 * Matrix version of the VAR, absent constants/exogenous variables
-matrix matb = J(`numvar',`numvar',0)
+matrix matb = J(`numv',`numv',0)
 
-matrix selvars = J(`numvar'*`numvar',`numvar'*`fullsize',0)
+matrix selvars = J(`numvar'*`numv',`numvar'*`fullsize',0)
 
-forvalues i = 1/`numvar' {
-	local js = `fullsize'*(`i'-1)
-	local js2 = `numvar'*(`i'-1)
-	forvalues j = 1/`numvar' {
-		matrix matb[`i',`j'] = varb[1,`js'+`j']
-		matrix selvars[`js2'+`j',`js'+`j'] = 1
+matrix removelags = J(`numv',`numvar',0)
+
+forvalues i = 1/`numv' {
+	//disp "`i' `numv' `varlags'"
+	if `varlags' == 1 | mod(`i',`varlags') == 1 {
+		local i2 = (`i'-1)/`varlags' + 1 
+		local js = `fullsize'*(`i2'-1)
+		local js2 = `numv'*(`i2'-1)
+		//disp "`i2' `js' `js2'"
+		forvalues j = 1/`numv' {
+			matrix matb[`i',`j'] = varb[1,`js'+`j']
+			matrix selvars[`js2'+`j',`js'+`j'] = 1
+		}
+		matrix removelags[`i',`i2'] = 1
+	}
+	else {
+		matrix matb[`i',`i'-1] = 1
 	}
 }
 
+/*if `varlags' > 1 {
+	local start = `numvar' + 1
+	forvalues i = `start'/`numv' {
+		matrix matb[`i',`i'-`numvar'] = 1
+	}
+}*/
+
 //matrix list varb
 //matrix list matb
+
+//return
+
+matrix list removelags
+matrix varsigbig = removelags * varsig * removelags'
 
 matrix varV = selvars * vec_V * selvars'
 
@@ -140,19 +167,37 @@ matrix varV = selvars * vec_V * selvars'
 //matrix list varV
 
 * Matrix to select dividend growth news
-matrix dsel = J(5,1,0)
-matrix dsel[1,1] = 1/`phi'
-matrix dsel[2,1] = -(1-`rho')/`phi'
-matrix dsel[3,1] = -(1-`rho')
+
+matrix egdp = J(`numv',1,0)
+matrix egdp[1,1] = 1
+matrix egdratio = J(`numv',1,0)
+matrix egdratio[1*`varlags'+1,1] = 1
+matrix erer = J(`numv',1,0)
+matrix erer[2*`varlags'+1,1] = 1
+matrix eexrate = J(`numv',1,0)
+matrix eexrate[3*`varlags'+1,1] = 1
+
+
+matrix dsel = 1/`phi'*egdp - (1-`rho')/`phi'*egdratio - (1-`rho')*erer
 
 * matrix to select real gdp growth news
-matrix gsel = J(5,1,0)
-matrix gsel[1,1] = 1
-*matrix gsel[4,1] = -1
+matrix gsel = egdp
 
-matrix matv = inv(I(5)-`rho'*matb)
+local tstep = 0.001
+local testi = 1
+local testj = 3
+
+matrix matb2 = matb
+matrix matb2[`testi',`testj'] = matb2[`testi',`testj'] + `tstep'
+
+matrix matv = inv(I(`numv')-`rho'*matb)
+matrix matv2 = inv(I(`numv')-`rho'*matb2)
+
 matrix dnews_mat = dsel' * matv
 matrix gnews_mat = gsel' * matv
+
+matrix dnews_mat2 = dsel' * matv2
+matrix gnews_mat2 = gsel' * matv2
 
 
 /* select surprise returns... different idea
@@ -166,11 +211,12 @@ gen gnews = 0
 gen dnews = 0
 //gen rets = 0
 
-forvalues i = 1/5 {
+forvalues i = 1/`numvar' {
 	predict resid_`i', equation(#`i') residuals
+	local ind = (`i'-1)*`varlags' + 1
+	local gcoef = gnews_mat[1,`ind']
+	local dcoef = dnews_mat[1,`ind']
 	
-	local gcoef = gnews_mat[1,`i']
-	local dcoef = dnews_mat[1,`i']
 	//local rcoef = rsel[`i',1]
 	replace gnews = gnews + `gcoef' * resid_`i'
 	replace dnews = dnews + `dcoef' * resid_`i'
@@ -183,28 +229,29 @@ rename resid_4 exnews
 tsline gnews dnews //rets
 
 * matrix of high-frequency predictors (return + ex rate )
-matrix xsel = J(2,5,0)
+matrix xsel = J(`numbeta',`numv',0)
 * first one is dshock
 matrix xsel[1,1] = dnews_mat
 * second is exchange rate
-matrix xsel[2,4] = 1
+matrix xsel[2,1] = eexrate'
 
-/*matrix xsel2 = J(2,5,0)
-* first one is returns
-matrix xsel2[1,1] = rsel'
-* second is exchange rate
-matrix xsel2[2,4] = 1*/
+matrix xsel2 = J(`numbeta',`numv',0)
+matrix xsel2[1,1] = dnews_mat2
+matrix xsel2[2,1] = eexrate'
 
-matrix xx = xsel * varsig * xsel'
 
-matrix xy = xsel * varsig * gnews_mat'
+matrix xx = xsel * varsigbig * xsel'
 
-//matrix xx2 = xsel2 * varsig * xsel2'
+matrix xy = xsel * varsigbig * gnews_mat'
 
-//matrix xy2 = xsel2 * varsig * gnews_mat'
+matrix xx2 = xsel2 * varsigbig * xsel2'
+
+matrix xy2 = xsel2 * varsigbig * gnews_mat2'
 
 matrix var_b = inv(xx) * xy
-//matrix svar_b2 = inv(xx2) * xy2
+matrix var_b2 = inv(xx2) * xy2
+
+matrix var_diff = (var_b2 - var_b) / `tstep'
 
 //matrix list var_b
 //matrix list svar_b2
@@ -217,18 +264,18 @@ tsline gnews gn_proxy
 
 
 
-matrix delb = J(`numbeta',`numvar'*`numvar',0)
+matrix delb = J(`numbeta',`numvar'*`numv',0)
 
 * Outcome variables
 forvalues i = 1/`numvar' {
-	local js = `numvar'*(`i'-1)
+	local js = `numv'*(`i'-1)
 	
-	forvalues j = 1/`numvar' {
+	forvalues j = 1/`numv' {
 		
-		matrix dBij = J(`numvar',`numvar',0)
+		matrix dBij = J(`numv',`numv',0)
 		matrix dBij[`i',`j'] = 1
 		
-		matrix dxsel = J(`numbeta',`numvar',0)
+		matrix dxsel = J(`numbeta',`numv',0)
 		matrix dxsel[1,1] = `rho'*dsel'*matv*dBij*matv
 		
 		//matrix dxselt = (xselt - xsel) / `tstep'
@@ -243,17 +290,17 @@ forvalues i = 1/`numvar' {
 		//matrix list dgnselt
 		
 		
-		matrix t1 = inv(xx)*xsel*varsig*dgsel 
+		matrix t1 = inv(xx)*xsel*varsigbig*dgsel 
 		//matrix list t1
 		//matrix t1t = (t1test - betas) / `tstep'
 		//matrix list t1t
 		
-		matrix t2 = inv(xx)*dxsel*varsig*gnews_mat'
+		matrix t2 = inv(xx)*dxsel*varsigbig*gnews_mat'
 		//matrix list t2
 		//matrix t2t = (t2test - betas) / `tstep'
 		//matrix list t2t
 		
-		matrix t3 = -inv(xx)*(dxsel*varsig*xsel'+xsel*varsig*dxsel')*inv(xx)*xy
+		matrix t3 = -inv(xx)*(dxsel*varsigbig*xsel'+xsel*varsigbig*dxsel')*inv(xx)*xy
 		//matrix list t3
 		//matrix t3t = (t3test - betas) / `tstep'
 		//matrix list t3t
@@ -265,6 +312,11 @@ forvalues i = 1/`numvar' {
 		//matrix list delb
 	}
 }
+
+matrix list var_diff
+matrix temp = delb[1..`numbeta',(`testi'-1)*`numv'+`testj']
+matrix list temp
+
 
 matrix var_V = delb * varV * delb'
 
