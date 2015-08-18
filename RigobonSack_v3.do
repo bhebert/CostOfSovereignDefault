@@ -131,7 +131,7 @@ else {
 }
 
 if `use_exrates' == 0 {
-	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"ADRBaltdata")
+	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS")
 }
 
 if `use_ndf'==0 {
