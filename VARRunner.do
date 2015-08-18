@@ -263,7 +263,7 @@ matrix var_diff = (var_b2 - var_b) / `tstep'
 //matrix list var_b
 //matrix list svar_b2
 
-gen gn_proxy = dnews * svar_b[1,1] + exnews*svar_b[2,1]
+gen gn_proxy = dnews * var_b[1,1] + exnews*var_b[2,1]
 
 tsline gnews gn_proxy
 
