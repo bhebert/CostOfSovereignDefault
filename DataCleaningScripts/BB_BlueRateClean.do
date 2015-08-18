@@ -31,8 +31,8 @@ replace v`i'=subinstr(v`i'," ","_",.) if _n==1
 local temp=v`i'[1]
 gen ticker= "`temp'"
 rename v`i' date
-rename v`y' px_open
-rename v`z' px_last
+rename v`y' px_last
+rename v`z' px_open
 rename v`w' total_return
 drop if _n==1 | _n==2
 local x=`w'/4
