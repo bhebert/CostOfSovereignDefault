@@ -138,6 +138,7 @@ drop if Ticker == ""
 drop if market != "`mark'"
 keep date px_open px_last Ticker total_return market
 
+
 //rename Ticker ticker
 //replace ticker = ticker + " US Equity" if market == "US"
 drop if date < mdy(1,1,1995)
@@ -163,6 +164,8 @@ gen bdate = bofd("basic",date)
 format bdate %tbbasic
 tsset tid bdate
 sort tid bdate
+
+
 drop if bdate==.
 
 
