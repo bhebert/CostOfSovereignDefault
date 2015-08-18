@@ -1,6 +1,10 @@
-version 13
-purpose "Example for manual"
-dateformat dmy
-range 03jan2011 30oct2014
-centerdate 03jan2011
+* Business calendar "basic" created by -bcal create-
+* Created/replaced on 18 Aug 2015
+
+version 14
+dateformat ymd
+
+range 1995jan02 2015jul31
+centerdate 1995jan02
+
 omit dayofweek (Sa Su)
