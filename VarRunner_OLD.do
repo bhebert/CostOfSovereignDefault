@@ -17,8 +17,8 @@ if `post2003'==1 {
 }
 
 
-local rho = (1/1.1) ^ (1/4)
-
+//local rho = (1/1.1) ^ (1/4)
+local rho = 0.995
 
 /*
 gen exrate=log(ADRBlue)
