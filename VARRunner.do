@@ -3,17 +3,20 @@ set more off
 
 
 *DROP RER pre 2003 if post2003=1
-local post2003=1
+local varpost2003=1
+
+* do everything (including DOLS) post 2003
+local allpost2003 = 0
 
 //options: log_div4_real log_div_real log_div_real_sa
-local divvar log_div_real_sa
+local divvar log_div4_real
 
-local useqtr 1
+local useqtr 0
 local use_dummies 1
 local nwlags 4
 local dols_lags 4
 
-local varlags 4
+local varlags 1
 
 local run_svar 0
 
@@ -56,8 +59,12 @@ gen log_exrate = log(ADRBlue)
 gen log_cpi = log(cpi)
 gen log_us_cpi = log(us_cpi)
 
-if `post2003'==1 {
+if `varpost2003'==1 {
 	replace log_exrate=. if year<2002
+
+}
+if `allpost2003'==1 {
+	replace log_rgdp = . if year < 2002
 }
 
 /* DOLS + SVAR APPROACH-- MAYBE A BETTER APPROACH? */
