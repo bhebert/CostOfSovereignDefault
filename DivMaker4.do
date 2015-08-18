@@ -82,7 +82,7 @@ levelsof Ticker, local(inds_adr) clean
 
 
 *ADDIGN SOME ADDITIONAL VARIABLES
-mmerge quarter using "$miscdata/rer_gdp_dataset.dta", unmatched(master) ukeep(Real_GDP* Nominal_GDP_GFD ADRBlue cpi us_cpi)
+mmerge quarter using "$apath/rer_gdp_dataset.dta", unmatched(master) ukeep(Real_GDP* Nominal_GDP_GFD ADRBlue cpi us_cpi)
 gen log_rer = log((ADRBlue / cpi) * us_cpi)
 gen log_rel_cpi = log(cpi / us_cpi)
 gen Nominal_GDPusd = Nominal_GDP_GFD / ADRBlue
