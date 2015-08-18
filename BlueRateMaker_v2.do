@@ -96,13 +96,13 @@ bysort date: replace exclude=1 if (px_close==min_px_close | px_close==max_px_clo
 *replace px_close=. if sd_px_close>r(p99)  & sd_px_close~=. & yofd(date)<2009
 drop if exclude==1
 collapse (mean) px_open px_close total_return, by(date)
-gen Ticker="adrdb"
+gen Ticker="ADRBlue"
 append using "$apath/ADRBlue_All.dta"
 save "$apath/ADRBlue_All.dta", replace
 
 use "$apath/ADRBlue_All.dta", clear
 keep date px_open px_close total_return Ticker
-keep if Ticker=="adrdb"
-save "$apath/adrdb_merge.dta", replace
+keep if Ticker=="ADRBlue"
+save "$apath/blue_rate.dta", replace
 
 
