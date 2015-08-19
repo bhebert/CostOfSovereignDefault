@@ -15,6 +15,8 @@ do ${csd_dir}/CDSMaker.do
 
 do ${csd_dir}/ADR_Value.do
 
+do ${csd_dir}/ADR_ValueNew.do
+
 do ${csd_dir}/CDS_Other_Countries.do
 
 do ${csd_dir}/ThirdAnalysis.do
