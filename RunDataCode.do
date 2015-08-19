@@ -9,7 +9,7 @@ do ${csd_dir}/StaticTable.do
 
 do ${csd_dir}/GlobalFactors.do
 
-do ${csd_dir}/BlueRateMaker.do
+do ${csd_dir}/BlueRateMaker_v2.do
 
 do ${csd_dir}/CDSMaker.do
 
