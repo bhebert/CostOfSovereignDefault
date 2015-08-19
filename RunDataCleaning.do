@@ -21,6 +21,8 @@ do ${csd_dir}/DataCleaningScripts/US_Inflation.do
 
 do ${csd_dir}/DataCleaningScripts/BCS.do
 
+do ${csd_dir}/DataCleaningScripts/GDP_Inflation_Cleaning.do
+
 do ${csd_dir}/DataCleaningScripts/RER_GDP_Maker.do
 
 
