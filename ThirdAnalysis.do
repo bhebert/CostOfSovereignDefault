@@ -69,6 +69,18 @@ sort Ticker date market
 
 tempfile temp
 
+foreach mark in US AR {
+	foreach indtype in BankValue NonFinValue Value {
+		local filename= "`indtype'Index_`mark'_New"
+		append using "$apath/`indtype'Index_`mark'_New.dta"
+		
+		drop if date >= td(30jul2014)
+		drop if date < td(1jan$startyear)
+		
+		replace industry_sector = "`indtype'INDEXNew" if regexm(industry_sector,"`indtype'IndexNew")
+	}
+}
+
 save "`temp'", replace
 
 use "$apath/blue_rate.dta", clear
@@ -108,7 +120,7 @@ foreach cntry in $latam {
 reshape long total_return, i(date) j(Ticker) string
 gen industry_sector = Ticker
 gen market = "Index"
-append using "$apath/Other_CDS.dta"
+//append using "$apath/Other_CDS.dta"
 
 append using "`temp'"
 
@@ -411,7 +423,7 @@ sort date day_type market firmname
 by date day_type market: egen indreturn_ = mean(temp_)
 drop temp_
 
-expand 2 if regexm(industry_sector,"INDEX"), gen(eqind)
+expand 2 if regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"Value"), gen(eqind)
 replace return_ = eqreturn_ if eqind
 replace firmname = "EqIndex" if eqind
 replace industry_sector = "EqIndex" if eqind
