@@ -1,3 +1,5 @@
+set more off
+
 use "$apath/blue_rate.dta", clear
 browse
 gen quarter=qofd(date)

@@ -1,3 +1,5 @@
+set more off
+
 *Clean industrial production data
 *Industrial Production
 local horizon 3 12 24
