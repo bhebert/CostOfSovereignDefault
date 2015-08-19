@@ -1,4 +1,16 @@
-*THE CLOSES FOR BLOOMBERG LOCAL DON'T SEEM RELIABLE... Not using this for now.
+
+use "$dpath/ARS_Blue.dta", clear
+keep ARSUSDS TDARSSP date
+drop if date >= td(30jul2014)
+*drop if date < td(1jan2011)
+rename ARSUSDS total_returnDSBlue
+rename TDARSSP total_returnOfficialRate
+reshape long total_return, i(date) j(Ticker) string
+gen px_close = total_return
+gen px_open=.
+tempfile temp
+save "`temp'", replace
+
 
 tempfile eqtemp ADR_temp
 use "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta", clear
@@ -103,6 +115,7 @@ save "$apath/ADRBlue_All.dta", replace
 use "$apath/ADRBlue_All.dta", clear
 keep date px_open px_close total_return Ticker
 keep if Ticker=="ADRBlue"
+append using "`temp'"
 save "$apath/blue_rate.dta", replace
 
 
