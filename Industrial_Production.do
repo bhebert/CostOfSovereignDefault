@@ -25,7 +25,7 @@ label var ipg_lag`x' "IP growth, Previous `x' months"
 save "$apath/IP_data.dta", replace
 
 
-
+/*
 ****************
 *FACTOR LEVELS**
 ****************
@@ -60,7 +60,7 @@ renpfix close
 tempfile factor_temp
 save "`factor_temp'", replace
 *DON'T GO BACK FAR ENOUGH, USE SUBSTIUTES FOR NOW
-
+*/
 
 ***************************
 *IMPORT AND CLEAN GDF STUFF
