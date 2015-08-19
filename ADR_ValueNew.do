@@ -129,7 +129,7 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 foreach mark in US AR {
 
-	foreach indtype in BankValue NonFinValue Value {
+	foreach indtype in ValueBank ValueNonFin Value {
 
 		local filename= "`indtype'Index_`mark'_New"
 		
@@ -156,11 +156,11 @@ foreach mark in US AR {
 		
 		local minstocks 4
 		
-		if "`indtype'" == "BankValue" {
+		if "`indtype'" == "ValueBank" {
 			drop if finvar != 1
 			local minstocks 2
 		}
-		if "`indtype'" == "NonFinValue" {
+		if "`indtype'" == "ValueNonFin" {
 			drop if finvar != 0
 		}
 		

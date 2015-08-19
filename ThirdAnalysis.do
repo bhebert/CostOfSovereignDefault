@@ -70,7 +70,7 @@ sort Ticker date market
 tempfile temp
 
 foreach mark in US AR {
-	foreach indtype in BankValue NonFinValue Value {
+	foreach indtype in ValueBank ValueNonFin Value {
 		local filename= "`indtype'Index_`mark'_New"
 		append using "$apath/`indtype'Index_`mark'_New.dta"
 		
@@ -423,7 +423,7 @@ sort date day_type market firmname
 by date day_type market: egen indreturn_ = mean(temp_)
 drop temp_
 
-expand 2 if regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"Value"), gen(eqind)
+expand 2 if industry_sector=="INDEX", gen(eqind)
 replace return_ = eqreturn_ if eqind
 replace firmname = "EqIndex" if eqind
 replace industry_sector = "EqIndex" if eqind
