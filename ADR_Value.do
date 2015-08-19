@@ -178,13 +178,21 @@ gen return_nightbefore = return_onedayN - return_intra
 gen return_twoday = log(total_return / L2.total_return) 
 gen return_1_5 = return_twoday - return_intra
 
+foreach x in `rtypes' {
+	bysort date: egen count_`x'=count(`x')
+}	
+foreach x in `rtypes' {
+	replace `x'=. if count_`x'<6
+	}
+
+
 //gen ret1 = total_return / L.total_return - 1
 //gen ret2=total_return / L2.total_return - 1
 
 //local rtypes ret px_ret 
 
-bysort date: egen temp2=count(total_return)
-drop if temp2==1
+*bysort date: egen temp2=count(total_return)
+*drop if temp2==1
 
 sort tid bdate
 
@@ -197,25 +205,12 @@ foreach rt in `rtypes' {
 	drop total_`rt'
 }
 
-/*gen weight1=weight
-gen weight2=weight
-replace weight1=0 if ret1==.
-replace weight2=0 if ret2==.
 
-bysort date: egen total_w1=sum(weight1)
-bysort date: egen total_w2=sum(weight2)
-
-replace weight1=0.9*weight1/total_w1 
-replace weight2=0.9*weight2/total_w2 
-
-drop total_w**/
 
 sort date Ticker
 by date: egen valid = count(total_return)
 ta Ticker valid
 
-drop if valid <= 6
-drop valid
 
 
 sort date tid
@@ -227,20 +222,95 @@ foreach rtype  in `rtypes' {
 	replace `rtype'mxar = . if `rtype'mxar_cnt == 0
 	replace `rtype'mxar = `rtype'mxar / `rtype'mxar_cnt 
 	replace `rtype'mxar = 100*log(1+`rtype'mxar)
-	
 	drop `rtype'mxar_cnt temp
 	local mxarrets `mxarrets' `rtype'mxar
 }
 
-collapse (firstnm) `mxarrets' bdate, by(date)
+
+/*sort tid bdate
+gen ret1=(total_return/l.total_return)-1
+replace weight=0 if ret1==.
+bysort date: egen total_w=sum(weight)
+replace weight=0.9*weight/total_w 
+drop if total_w==0
+replace weight=0.1 if Ticker=="Tbill"
+replace weight=0 if Ticker=="ADRBlue"
+by date: egen ValueIndexRet = sum(weight*ret1)
+collapse (firstnm) `mxarrets' ValueIndexRet bdate count*, by(date)
+*/
+
+collapse (firstnm) `mxarrets'  bdate count*, by(date)
+*replace ValueIndexRet=. if count_return_onedayN<6
+gen n=_n
+gen ValueIndex=1 if n==1
+
+tsset bdate
+
+*replace ValueIndexRet=log(1+ValueIndexRet)
+*gen lag_V=0
+*replace lag_V=1 if ValueIndexRet~=.
+
+gen lag_V=0
+replace lag_V=1 if return_onedayNmxar~=.
+replace lag_V=1 if n==2
+
+summ n
+local maxtemp=r(max)
+/*forvalues i=2/`maxtemp' {
+	if lag_V[`i']==1 {
+		replace ValueIndex=l.ValueIndex*(1+ValueIndexRet) if n>1 & n==`i'
+		}
+	else if lag_V[`i']==0 {
+		local y=`i'-1
+		local temp=ValueIndex[`y']
+		replace ValueIndex=`temp' if n==`i'
+	}
+	}
+*/	
+	forvalues i=2/`maxtemp' {
+	if lag_V[`i']==1 {
+		replace ValueIndex=l.ValueIndex*(exp(return_onedayNmxar/100)) if n>1 & n==`i'
+		}
+	else if lag_V[`i']==0 {
+		local y=`i'-1
+		local temp=ValueIndex[`y']
+		replace ValueIndex=`temp' if n==`i'
+	}
+	}
+ 	
+keep if yofd(date)<=2014
+
+*COMPARE
+/*gen return_onedayN_test = 100*log(ValueIndex / L.ValueIndex)
+gen return_twoday_test = 100*log(ValueIndex / L2.ValueIndex) 
+replace return_twoday_test=. if count_return_twoday<6
+replace return_twoday_test=. if ValueIndex==L2.ValueIndex
+
+corr return_onedayN_test return_onedayNmxar
+summ ValueIndexRet return_onedayNmxar	
+scatter return_twoday_test return_twodaymxar
+scatter return_onedayNmxar return_onedayN_test
+*/
+
+	
 keep if bdate~=.
 gen Ticker="ValueIndex"
 gen industry_sector="ValueIndex"
 gen market="`mark'"
+drop lag_V n count* 
+
 
 foreach rtype  in `rtypes' {
 	rename `rtype'mxar `rtype'
 }
+
+tempfile temp
+save "`temp'", replace
+keep date bdate ValueIndex
+save "$apath/ValueIndex_`mark'_Only.dta", replace
+
+use "`temp'", clear
+drop ValueIndex
 
 //rename ret1mxar return_onedayN
 //rename ret2mxar return_twoday
@@ -250,9 +320,10 @@ mmerge  date using "`factor_temp'", unmatched(master)
 drop _merge
 *replace return_o=return_o*100
 *replace return_t=return_t*100
-
 save "$apath/`filename'.dta", replace
 }
+
+
 
 
 
