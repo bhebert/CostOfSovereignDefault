@@ -199,5 +199,13 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var tri_conH_def`x'`y' "`x' Cumulative Default Probability, Constant 39.5% Recovery, Credit Triangle, `y'"
 	}	
 	}
+
+	mmerge date using "$mpath/Sensitivities_Merge.dta", ukeep (markitC5_def10y  markitC5_def1y  markitC5_def2y markitC5_def3y markitC5_def4y markitC5_def5y markitC5_def6m markitC5_def7y)
+foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
+	label var markitC5_def`x' "`x' Cumulative Default Probability, Markit, "
+	}	
+	
+	
+	
 save  "$mpath/Default_Prob_All.dta", replace
 
