@@ -267,7 +267,7 @@ forvalues i=1/2 {
 	
 	
 	tsset quarter
-	graph drop pgraph_`mark'
+	capture graph drop pgraph_`mark'
 	tsline px_close_qe, name(pgraph_`mark')
 	
 	rename quarter prev_quarter
@@ -286,6 +286,8 @@ forvalues i=1/2 {
 	gen market = "`mark'"
 	replace Ticker = "ValueIndexNew"
 	gen industry_sector = "ValueIndexNew"
+	
+	sort quarter date
 	
 	save "$apath/`filename'.dta", replace
 	
