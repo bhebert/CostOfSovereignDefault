@@ -218,7 +218,7 @@ forvalues i=1/2 {
 	
 	* this covers days with no tbill returns
 	bysort date: egen total_weight2=sum(weight)
-	replace weight=. if total_weight2 < 1
+	replace weight=. if total_weight2 < 0.999
 	
 	gen shares_px_open = weight / qe_price
 	gen shares_px_close = shares_px_open
@@ -239,7 +239,9 @@ forvalues i=1/2 {
 	
 	collapse (firstnm) px_closemxar px_openmxar total_returnmxar quarter prev_quarter, by(date)
 	
-	sort prev_quarter
+	sort prev_quarter date
+	
+	
 	save "`temp'", replace
 	
 	drop prev_quarter
@@ -263,6 +265,9 @@ forvalues i=1/2 {
 	gen px_close_qe = exp(px_close)
 	gen total_return_qe = exp(total_return)
 	
+	tsset quarter
+	tsline px_close_qe, name(pgraph_`mark')
+	
 	rename quarter prev_quarter
 	keep px_close_qe prev_quarter total_return_qe
 	
@@ -274,7 +279,7 @@ forvalues i=1/2 {
 	replace px_openmxar = px_openmxar * px_close_qe
 	replace total_returnmxar = total_returnmxar * total_return_qe
 	
-	keep date px_closemxar px_openmxar total_returnmxar
+	keep date quarter px_closemxar px_openmxar total_returnmxar
 	reshape long px_close px_open total_return, i(date) j(Ticker) string
 	gen market = "`mark'"
 	replace Ticker = "ValueIndex"
