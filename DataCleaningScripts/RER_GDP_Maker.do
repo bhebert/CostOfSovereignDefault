@@ -27,6 +27,6 @@ label var us_cpi_r "US CPI, rescaled"
 label var cpi_r "Argentina CPI, rescaled"
 label var rer "Real Exchange rate, 2003q4=1"
 replace Nominal_GDP=Nominal_GDP_GFD if quarter==tq(2014q3) | quarter==tq(2014q4)
-gen Real_GDP_cpi=Nominal_GDP/cpi_r
+gen Real_GDP_cpi=Nominal_GDP_GFD/cpi_r
 *gen Real_GDP_cpi2=Nominal_GDP_GFD/cpi_r
 save "$apath/rer_gdp_dataset.dta", replace
