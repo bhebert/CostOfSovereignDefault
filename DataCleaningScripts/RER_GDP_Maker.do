@@ -6,9 +6,9 @@ collapse (lastnm) px_close, by(quarter Ticker)
 reshape wide px_close, i(quarter) j(Ticker) string
 renpfix px_close
 keep quarter ADRBlue
-save "$apath/ADRBlue_quarter.dta"
+save "$apath/ADRBlue_quarter.dta", replace
 
-use "$miscdata/GDP_inflation.dta", clear
+use "$apath/GDP_inflation.dta", clear
 mmerge quarter using "$apath/ADRBlue_quarter.dta"
 drop if quarter==tq(2015q1)
 browse
@@ -22,11 +22,17 @@ drop maxtemp temp
 }
 gen rer_r=ADRBlue_r*us_cpi_r/cpi_r
  gen rer=ADRBlue*us_cpi/cpi
-label var ADRBlue_r "ADRBlue, rescaled"
-label var us_cpi_r "US CPI, rescaled"
-label var cpi_r "Argentina CPI, rescaled"
-label var rer "Real Exchange rate, 2003q4=1"
+
 replace Nominal_GDP=Nominal_GDP_GFD if quarter==tq(2014q3) | quarter==tq(2014q4)
-gen Real_GDP_cpi=Nominal_GDP_GFD/cpi_r
-*gen Real_GDP_cpi2=Nominal_GDP_GFD/cpi_r
+drop Nominal_GDP_GFD
+gen Real_GDP_cpi=Nominal_GDP/cpi_r
+drop GDP_Deflator GDP_Deflator_change Nominal_GDP_change Nominal_GDP_GFD_change Real_GDP_change  _merge rer_r cpi_r ADRBlue_r us_cpi_r
+label var us_cpi "US CPI"
+label var us_inflation "US Inflation"
+label var cpi "Argentina CPI"
+label var inflation "Argentina Inflation"
+label var rer "Real Exchange Rate"
+label var Real_GDP_cpi "Argentina Real GDP (Constructed as Nominal GDP/CPI)"
+drop if quarter==. | quarter>tq(2014q4)
 save "$apath/rer_gdp_dataset.dta", replace
+
