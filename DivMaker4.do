@@ -80,6 +80,25 @@ drop log_px_ret cum_px_ret
 drop if Ticker != "ValueIndex"
 levelsof Ticker, local(inds_adr) clean
 
+tempfile temp
+
+save "`temp'", replace
+
+use "$apath/ValueIndex_ADR_New.dta", clear
+
+collapse (lastnm) px_close total_return, by(quarter)
+
+sort quarter
+mmerge quarter using "`temp'", unmatched(both)
+
+sort quarter
+tsset quarter
+
+gen divnew = total_return / L.total_return * L.px_close - px_close
+
+capture graph drop ValueIndexComp DivComp
+twoway (tsline px_last) (tsline px_close, yaxis(2)), name("ValueIndexComp")
+twoway (tsline div) (tsline divnew, yaxis(2)), name("DivComp")
 
 *ADDIGN SOME ADDITIONAL VARIABLES
 mmerge quarter using "$apath/rer_gdp_dataset.dta", unmatched(master) ukeep(Real_GDP* Nominal_GDP ADRBlue cpi us_cpi)
