@@ -6,7 +6,7 @@ set more off
 local varpost2003=1
 
 * do everything (including DOLS) post 2003
-local allpost2003 = 0
+local allpost2003 = 1
 
 //options: log_div4_real log_div_real log_div_real_sa
 local divvar log_div4_real
@@ -52,7 +52,8 @@ disp "rho_est: `rho_est'"
 local rho `rho_est'
 
 
-gen log_rgdp = log(Nominal_GDPusd) - log(us_cpi)
+//gen log_rgdp = log(Nominal_GDPusd) - log(us_cpi)
+gen log_rgdp = log(Real_GDP_cpi)
 gen log_rgdp4 = log(Nominal_GDPusd/us_cpi+L.Nominal_GDPusd/L.us_cpi+L2.Nominal_GDPusd/L2.us_cpi+L3.Nominal_GDPusd/L3.us_cpi)
 
 gen log_exrate = log(ADRBlue)
