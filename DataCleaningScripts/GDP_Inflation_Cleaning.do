@@ -1,11 +1,11 @@
 *Inflation
-import delimited "$miscdata/Inflation/PriceStats_Argentina_monthly_series.csv", clear
-tostring trade_date, gen(tds)
-gen date=date(tds,"YMD")
+import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series.xlsx", sheet("PriceStats_Argentina_monthly_se") firstrow clear
+tostring TRADE_DATE, replace
+gen date=date(TRADE_DATE,"YMD")
 format date %td
 order date
-drop trade_date tds
-rename argentina ps_inflation
+drop TRADE
+rename Argentina ps_inflation
 gen month=mofd(date)
 format month %tm
 save "$miscdata/Inflation/ps_daily.dta", replace
