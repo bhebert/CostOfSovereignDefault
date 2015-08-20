@@ -54,18 +54,18 @@ local rho `rho_est'
 
 //gen log_rgdp = log(Nominal_GDPusd) - log(us_cpi)
 gen log_rgdp = log(Real_GDP_cpi)
-gen log_rgdp4 = log(Nominal_GDPusd/us_cpi+L.Nominal_GDPusd/L.us_cpi+L2.Nominal_GDPusd/L2.us_cpi+L3.Nominal_GDPusd/L3.us_cpi)
+//gen log_rgdp4 = log(Nominal_GDPusd/us_cpi+L.Nominal_GDPusd/L.us_cpi+L2.Nominal_GDPusd/L2.us_cpi+L3.Nominal_GDPusd/L3.us_cpi)
 
 gen log_exrate = log(ADRBlue)
 gen log_cpi = log(cpi)
 gen log_us_cpi = log(us_cpi)
 
 if `varpost2003'==1 {
-	replace log_exrate=. if year<2002
+	replace log_exrate=. if year<2003
 
 }
 if `allpost2003'==1 {
-	replace log_rgdp = . if year < 2002
+	replace log_rgdp = . if year < 2003
 }
 
 /* DOLS + SVAR APPROACH-- MAYBE A BETTER APPROACH? */
