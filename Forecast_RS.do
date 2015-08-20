@@ -117,6 +117,8 @@ drop ret6mValueIndex1y ret1yValueIndex6m
 rename ret1yValueIndex ValueIndex_US
 rename ret1yADRBlue ADRBlue
 
+local addvar IP
+
 reg N_GDP_ft Value  ADRBlue, r
 matrix temp = e(b)
 matrix consensus_b=temp[1,1..2]'
@@ -128,6 +130,21 @@ matrix temp = e(b)
 matrix consensus03_b=temp[1,1..2]'
 matrix temp = e(V)
 matrix consensus03_V=temp[1..2,1..2]
+
+foreach x in `addvar' {
+reg N_`x'_ft Value  ADRBlue, r
+matrix temp = e(b)
+matrix consensus`x'_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus`x'_V=temp[1..2,1..2]
+
+reg N_`x'_ft Value  ADRBlue if yofd(date)>2003, r
+matrix temp = e(b)
+matrix consensus`x'03_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus`x'03_V=temp[1..2,1..2]
+}
+
 
 rename ValueIndex_US ret1yValueIndex
 rename ADRBlue ret1yADRBlue 
@@ -145,6 +162,22 @@ matrix temp = e(b)
 matrix consensus036m_b=temp[1,1..2]'
 matrix temp = e(V)
 matrix consensus036m_V=temp[1..2,1..2]
+
+foreach x in `addvar' {
+reg N_`x'_ft_6m Value  ADRBlue, r
+matrix temp = e(b)
+matrix consensus`x'6m_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus`x'6m_V=temp[1..2,1..2]
+
+reg N_`x'_ft_6m Value  ADRBlue if yofd(date)>2003, r
+matrix temp = e(b)
+matrix consensus`x'036m_b=temp[1,1..2]'
+matrix temp = e(V)
+matrix consensus`x'036m_V=temp[1..2,1..2]
+}
+
+
 
 
 
