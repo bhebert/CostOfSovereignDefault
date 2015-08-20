@@ -13,6 +13,8 @@ do ${csd_dir}/BlueRateMaker_v2.do
 
 do ${csd_dir}/CDSMaker.do
 
+do ${csd_dir}/DataCleaningScripts/RER_GDP_Maker.do
+
 do ${csd_dir}/ADR_Value.do
 
 do ${csd_dir}/ADR_ValueNew.do
