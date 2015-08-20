@@ -84,7 +84,7 @@ tempfile temp
 
 save "`temp'", replace
 
-use "$apath/ValueIndex_ADR_New.dta", clear
+use "$apath/ValueIndex_US_New.dta", clear
 
 collapse (lastnm) px_close total_return, by(quarter)
 
@@ -99,6 +99,11 @@ gen divnew = total_return / L.total_return * L.px_close - px_close
 capture graph drop ValueIndexComp DivComp
 twoway (tsline px_last) (tsline px_close, yaxis(2)), name("ValueIndexComp")
 twoway (tsline div) (tsline divnew, yaxis(2)), name("DivComp")
+
+* use new indices
+//replace px_last = px_close
+//replace div = divnew
+//replace ret = total_return / L.total_return
 
 *ADDIGN SOME ADDITIONAL VARIABLES
 mmerge quarter using "$apath/rer_gdp_dataset.dta", unmatched(master) ukeep(Real_GDP* Nominal_GDP ADRBlue cpi us_cpi)
