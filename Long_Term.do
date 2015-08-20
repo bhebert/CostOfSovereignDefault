@@ -4,8 +4,8 @@ local rho=10/11
 *local macrovar C GDP IP invest infl
 *local macrovarstar C* GDP* IP* invest* infl*
 
-local macrovar  GDP
-local macrovarstar GDP* C*
+local macrovar  GDP IP
+local macrovarstar GDP* IP* C*
 
 gen horizon=year-fyear
 gen discount=`rho'^horizon
@@ -45,11 +45,13 @@ foreach x in `macrovar'  {
 gen n=_n
 tsset n
 
-		 gen N_GDP_ft=PV_GDP-l2.PV_GDP_tmin1
-		 
+foreach x in `macrovar'  {
+		 gen N_`x'_ft=PV_`x'-l2.PV_`x'_tmin1	 
 		 *VERSION WITH 6 month gaps
-		 gen N_GDP_ft_6m=PV_GDP-l.PV_GDP if month(fdate)==10
-		 replace N_GDP_ft_6m=PV_GDP-l.PV_GDP_tmin1 if month(fdate)==4
+		 gen N_`x'_ft_6m=PV_`x'-l.PV_`x' if month(fdate)==10
+		 replace N_`x'_ft_6m=PV_`x'-l.PV_`x'_tmin1 if month(fdate)==4
+}
+
 drop n
 
 save "$apath/Simple_Weight.dta", replace
