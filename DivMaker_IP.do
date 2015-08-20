@@ -40,7 +40,7 @@ drop if date < mdy(1,1,1995)
 drop if date>mdy(4,1,2015)
 gen quarter=qofd(date)
 format quarter %tq
-mmerge quarter Ticker using "$dpath/ADR_weighting.dta", ukeep(weight_exypf)
+mmerge quarter Ticker using "$apath/ADR_weighting.dta", ukeep(weight_exypf)
 rename weight_exypf weight
 keep if _merge==3
 

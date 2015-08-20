@@ -16,7 +16,7 @@ drop if date < mdy(1,1,1995)
 drop if date>mdy(4,1,2015)
 gen quarter=qofd(date)
 format quarter %tq
-mmerge quarter Ticker using "$dpath/ADR_weighting.dta", ukeep(weight_exypf)
+mmerge quarter Ticker using "$apath/US_weighting.dta", ukeep(weight_exypf)
 rename weight_exypf weight
 keep if _merge==3
 
@@ -96,9 +96,16 @@ tsset quarter
 
 gen divnew = total_return / L.total_return * L.px_close - px_close
 
-capture graph drop ValueIndexComp DivComp
-twoway (tsline px_last) (tsline px_close, yaxis(2)), name("ValueIndexComp")
-twoway (tsline div) (tsline divnew, yaxis(2)), name("DivComp")
+capture graph drop ValueIndexComp 
+capture graph drop DivComp
+capture graph drop DivYComp
+twoway (tsline px_last) (tsline px_close, yaxis(2)), name(ValueIndexComp)
+twoway (tsline div) (tsline divnew, yaxis(2)), name(DivComp)
+
+gen divyield = div / L.px_last
+gen divyield2 = divnew / L.px_close
+
+twoway (tsline divyield) (tsline divyield2), name(DivYComp)
 
 * use new indices
 //replace px_last = px_close
