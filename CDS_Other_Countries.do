@@ -4,6 +4,7 @@ set more off
 use "$mpath/Master_all_EOD.dta", clear
 keep if DocC=="CR"
 keep if Ccy=="USD"
+keep if Tier=="SNRFOR"
 keep date Ticker Country Spread* Recov
 foreach x in "6m" "1y" "2y" "3y" "4y" "5y" "7y" "10y" "15y" "20y" "30y"{
 	gen haz_tri_`x'=(Spread`x'/100)/(1-Recovery/100)
@@ -22,8 +23,6 @@ sort bdate
 encode Ticker, gen(tid)
 bysort tid bdate: gen n = _n
 bysort tid bdate: egen maxn = max(n)
-drop if n==2
-drop n maxn
 tsset tid bdate
 
 keep date Ticker Country tri_def5y
