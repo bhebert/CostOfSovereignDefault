@@ -12,7 +12,7 @@ do ${csd_dir}/BlueRateMaker.do
 
 do ${csd_dir}/GlobalFactors.do
 
-forvalues cdsii=1/15 {
+forvalues cdsii=1/14 {
 if `cdsii'==1 {
 	global cds_app "_3y"
 	global cds_e "def3y_europe"
@@ -102,12 +102,7 @@ else if `cdsii'==14 {
 	global cds_n "def7y_newyork"
 }
 
-else if `cdsii'==15 {
-	*TEMP
-	global cds_app "_PUFNY"
-	global cds_e "Upfront5Y"
-	global cds_n "Upfront4Y"
-}
+
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/ThirdAnalysis.do
 do ${csd_dir}/RunAnalysis.do
@@ -138,12 +133,12 @@ import excel "$rpath/RS_CDS_IV_reshapeADRs_7y.xls", sheet("Sheet1") firstrow cle
 	order cds_type
 	save "$rpath/temp.dta", replace
 	
-	import excel "$rpath/RS_CDS_IV_reshapeADRs_PUFNY.xls", sheet("Sheet1") firstrow clear
+	/*import excel "$rpath/RS_CDS_IV_reshapeADRs_PUFNY.xls", sheet("Sheet1") firstrow clear
 	keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 	gen cds_type="PUFNY"
 	append using "$rpath/temp.dta"
 	order cds_type
-	save "$rpath/temp.dta", replace
+	save "$rpath/temp.dta", replace*/
 	
 	
 	foreach var of varlist _all {
