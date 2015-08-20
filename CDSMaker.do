@@ -12,7 +12,7 @@ set more off
 * 6 for Markit implied default prob, 5yr, Composite and Europe
 * If 2/4 is chosen, there is only 1 day and 2day events.
 
-local cds_i_marks 6
+local cds_i_marks 8
 
 
 * This code loads CDS returns
@@ -99,9 +99,15 @@ else if `cds_i_marks' == 6 {
 
 else if `cds_i_marks' == 7 {
 	use "$mpath/Default_Prob_All.dta", clear
-	keep date $cds_n $cds_e 
+	keep date $markitC5_def5y $cds_e 
 	rename $cds_e  Spread5yE
 	rename $cds_n Spread5yN
+}
+
+else if `cds_i_marks' == 8 {
+	use "$mpath/Default_Prob_All.dta", clear
+	keep date markitC5_def5y 
+	rename  markitC5_def5y Spread5yN
 }
 
 * We use a business day calendar to figure out
@@ -171,6 +177,22 @@ else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 | `cds_i_ma
 	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
 
 }
+
+else if `cds_i_marks' == 8  {
+
+	gen cds_intra = .
+	gen cds_nightbefore = .
+
+	* This is used for holiday issues
+	gen cds_1_5 = .
+	gen cds_onedayN = Spread5yN - L.Spread5yN
+	gen cds_onedayL = .
+	gen cds_twoday = Spread5yN - L2.Spread5yN
+
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+
+}
+
 else{
 	* I think the tokyo marks are often stale.
 	gen cds_intra = px_last`nyc_i' - px_open`nyc_i'
