@@ -11,6 +11,8 @@ keep quarter ADRBlue
 save "$apath/ADRBlue_quarter.dta", replace
 
 use "$apath/GDP_inflation.dta", clear
+*TOGGLE ON TO USE SEASONALLY ADJUST DATA
+*mmerge quarter using "$csd_dir/Seasonal/Seasonally_Adjusted_GDP.dta"
 mmerge quarter using "$apath/ADRBlue_quarter.dta"
 drop if quarter==tq(2015q1)
 browse
@@ -25,6 +27,8 @@ drop maxtemp temp
 gen rer_r=ADRBlue_r*us_cpi_r/cpi_r
  gen rer=ADRBlue*us_cpi/cpi
 
+*SWITCH Nominal_GDP to Nominal_GDP_SA here.  We probably no longer want to add these 
+*two extras quarters anymore.
 replace Nominal_GDP=Nominal_GDP_GFD if quarter==tq(2014q3) | quarter==tq(2014q4)
 drop Nominal_GDP_GFD
 gen Real_GDP_cpi=Nominal_GDP/cpi_r
