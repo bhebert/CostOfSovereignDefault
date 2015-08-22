@@ -1,3 +1,5 @@
+set more off
+
 *Inflation
 import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series.xlsx", sheet("PriceStats_Argentina_monthly_se") firstrow clear
 tostring TRADE_DATE, replace
