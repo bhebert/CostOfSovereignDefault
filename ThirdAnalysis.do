@@ -470,13 +470,17 @@ format prevdate %tbbasic
 * For ADRs, this uses June24, whereas for locals, exchange rates, and indices it uses Jun23
 * The reason is that the ADRBlue is available only on the 23rd.
 
-replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
+/*replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
 replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
-replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"
+replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & F.event_day == 1 & market == "US"*/
 
 replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
 replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
 replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market != "US"
+
+replace return_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "US"
+replace cds_ = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "US"
+replace return_local = . if regexm(day_type,"twoday") & event_day == 1 & L.event_day == 1 & market == "US"
 
 
 * Exclude days with missing S&P 500
