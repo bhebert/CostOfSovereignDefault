@@ -3,43 +3,76 @@ set more off
 
 * Implement Lamont-2001 style tracking returns
 
-local factors SPX hybonds oil soybean VIX emasia igbonds
+local factors SPX oil soybean VIX emasia igbonds //hybonds
 
-use "$apath/monthly_controls.dta", clear
+local forecast_years 3
+local nw_years 1
 
-gen quarter = qofd(dofm(month))
+foreach outcome in gdp ip {
 
-collapse (sum) SPX VIX emasia hybonds igbonds oil soybean, by(quarter)
+	use "$apath/monthly_controls.dta", clear
+	
+	if "`outcome'" == "gdp" {
+		local time quarter
+		local ovar Real_GDP_cpi
+		gen quarter = qofd(dofm(month))
+		collapse (sum) SPX VIX emasia hybonds igbonds oil soybean, by(`time')
+		local yearlen 4
+		local timecut quarter > tq(2002,4)
+	}
+	else {
+		local time month
+		local ovar IndustrialProduction
+		local yearlen 12
+		local timecut month > tm(2002m12)
+	}
+	disp "`ovar' `time'"
+	
+	local forlen = `forecast_years' * `yearlen'
+	local nw_len = `nw_years' * `yearlen'
+	
+	mmerge `time' using "$apath/dataset_`outcome'.dta", unmatched(both)
 
-mmerge quarter using "$apath/dataset_temp.dta", unmatched(both)
+	//drop if `timecut'
+	
+	sort `time'
+	tsset `time'
 
-sort quarter
-tsset quarter
+	gen log_outcome = log(`ovar')
 
-//use "$apath/dataset_temp.dta", clear
+	gen outcome_growth = (F`forlen'.log_outcome - log_outcome)
 
-gen log_div4_real = log(div/us_cpi+L.div/L.us_cpi+L2.div/L2.us_cpi+L3.div/L3.us_cpi)
+	gen log_exrate = log(ExRate)
 
-gen log_pd = log(px_last / us_cpi) - log_div4_real
+	//newey gdp_growth ret `factors' L.S4.log_rgdp L.log_pd if quarter > tq(2002,4), lag(4)
+
+	keep if `timecut'
+	
+	sort `time'
+	tsset `time'
+
+	capture drop ADRBlue
+	gen ADRBlue = D.log_exrate
+	
+	ivreg2 outcome_growth ValueIndex_US ADRBlue `factors' L.S`yearlen'.log_outcome L.log_pd L.log_rer if `timecut', robust bw(`nw_len')
+
+	matrix temp = e(b)
+	matrix `outcome'_tracking_b=temp[1,1..2]'
+	//matrix list `outcome'_tracking_b
+	//matrix list e(b)
+	matrix temp = e(V)
+	matrix `outcome'_tracking_V=temp[1..2,1..2]
+	//matrix list `outcome'_tracking_V
+	//matrix list e(V)
+}
 
 
-su log_pd
-
-local mean_pd = `r(mean)'
-
-local rho_est = (exp(`mean_pd') / (exp(`mean_pd') + 1)) ^ (1/4)
-disp "rho_est: `rho_est'"
-
-local rho `rho_est'
 
 
-gen log_rgdp = log(Real_GDP_cpi)
-
-gen gdp_growth = (F12.log_rgdp - log_rgdp)
 
 
-gen log_exrate = log(ADRBlue)
 
-newey gdp_growth ret `factors' L.S4.log_rgdp L.log_pd if quarter > tq(2002,4), lag(4)
 
-newey gdp_growth ret D.log_exrate `factors' L.S4.log_rgdp L.log_pd L.log_rer if quarter > tq(2002,4), lag(4)
+
+
+

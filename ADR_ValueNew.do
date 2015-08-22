@@ -108,17 +108,17 @@ gen total_return_d=1+(tbill/36500) if date==td(01jan1980)
 replace total_return_d=l.total_return_d*(1+tbill/36500) if  date>td(01jan1980)
 carryforward total_return, replace
 order quarter date total_return*
-keep date total_return_d 
+keep date total_return_d
 rename total_return total_return
 
 *Assuming the interest is earned overnight and there is no price movement
-gen px_open=total_return
+gen px_open=1
 
 *Assuming the interest is earned between open and close
 *gen px_open=l.total_return
+*gen px_close=total_return
+gen px_close = 1
 
-
-gen px_close=total_return
 gen Ticker="Tbill"
 gen weight=.1
 save "$apath/Tbill_daily.dta", replace
@@ -166,12 +166,6 @@ foreach mark in US AR {
 		
 		keep date px_open px_last Ticker total_return market
 	
-	
-	
-		gen quarter=qofd(date)
-		format quarter %tq
-		
-		gen prev_quarter = quarter - 1
 		rename px_last px_close
 		
 		*MERGE IN BILLS
@@ -182,6 +176,11 @@ foreach mark in US AR {
 		
 		drop if date < mdy(1,1,1995)
 		drop if date>mdy(4,1,2015)
+		
+		gen quarter=qofd(date)
+		format quarter %tq
+		
+		gen prev_quarter = quarter - 1
 		
 		*JUST HERE TO FIX WEIGHT
 		encode Ticker, gen(tid)
@@ -260,7 +259,12 @@ foreach mark in US AR {
 			drop `rtype'mxar_cnt
 		}
 		
-		//gen tot_ret = total_return / qe_total_return
+		/*gen tot_ret = total_return / qe_total_return
+		gen px_ret = px_close / qe_price
+		
+		gen divyield = tot_ret - px_ret
+		
+		return*/
 		
 		collapse (firstnm) px_closemxar px_openmxar total_returnmxar quarter prev_quarter, by(date)
 		
