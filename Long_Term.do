@@ -1,6 +1,6 @@
 use "$forpath/Longterm_Forecasts_Apr2013.dta", clear
 
-local rho=10/11
+local rho=${rho_quarter}^4
 *local macrovar C GDP IP invest infl
 *local macrovarstar C* GDP* IP* invest* infl*
 
