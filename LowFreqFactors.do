@@ -1,5 +1,7 @@
 set more off
 
+global lf_factors SPX oil soybean VIX emasia igbonds //hybonds
+
 * Load controls data
 import excel "$miscdata/IP/Controls_GFD.xlsx", firstrow sheet("Price Data") clear
 keep Date Ticker Close
