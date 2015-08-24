@@ -32,7 +32,35 @@ append using "$apath/Additional_CRSP.dta"
 gen name="Petrobras" if Ticker=="APBR" | Ticker=="PBR"
 replace name="Arcos Dorados" if Ticker=="ARCO"
 replace name="Tenaris" if Ticker=="TS"
+tempfile temp
+save "`temp'.dta", replace
+drop name
+replace Ticker=Ticker+"_"+market
+drop if market=="AR"
+replace market="Index"
+gen industry_sector=Ticker
 save "$apath/Additonal_Securities.dta", replace
+
+
+use "`temp'.dta", clear
+drop if Ticker=="ARCO"
+replace Ticker="PBR" if Ticker=="APBR"
+drop total name
+gen name=Ticker+"_"+market
+drop Ticker market
+reshape wide px*, i(date) j(name) string
+gen blue_open_PBR=px_openPBR_AR/px_openPBR_US
+gen blue_close_PBR=px_closePBR_AR/px_closePBR_US
+gen blue_open_TS=px_openTS_AR/px_openTS_US
+gen blue_close_TS=px_closeTS_AR/px_closeTS_US
+drop px*
+gen px_open=(blue_open_PBR+blue_open_TS)/2
+gen px_close=(blue_close_PBR+blue_close_TS)/2
+keep if yofd(date)>=2011
+keep date px_*
+gen Ticker="ADRB_PBRTS"
+gen total_return=px_close
+save "$apath/ADRB_PBRTS.dta"
 
 /*
 *CHECK IT IS FINE TO USE CRSP
