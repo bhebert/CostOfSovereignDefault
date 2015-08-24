@@ -15,6 +15,9 @@ local use_exrates 1
 *Run with NDF rates
 local use_ndf 0
 
+*Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
+local use_addeq 1
+
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
 
@@ -131,7 +134,7 @@ else {
 }
 
 if `use_exrates' == 0 {
-	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS")
+	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"ADRB_PBRTS")
 }
 
 if `use_ndf'==0 {
@@ -148,6 +151,10 @@ if `use_mexbrl' == 0 {
 
 if `use_otherdefp' == 0 {
 	drop if regexm(industry_sector,"DTRI")
+}
+
+if `use_addeq' == 0 {
+	drop if regexm(industry_sector,"ARCO") | regexm(industry_sector,"PBR")  | regexm(industry_sector,"TS") 
 }
 
 if `use_singlenames' == 0 {
