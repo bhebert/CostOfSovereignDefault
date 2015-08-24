@@ -115,9 +115,9 @@ foreach outcome in gdp ip {
 	matrix `outcome'_dols_b = J(1,1,`phi')
 	matrix `outcome'_dols_V = J(1,1,`phi_se'*`phi_se')
 
-	matrix rownames dols_b = ValueIndex_US
-	matrix rownames dols_V = ValueIndex_US
-	matrix colnames dols_V = ValueIndex_US
+	matrix rownames `outcome'_dols_b = ValueIndex_US
+	matrix rownames `outcome'_dols_V = ValueIndex_US
+	matrix colnames `outcome'_dols_V = ValueIndex_US
 
 	// Test cointegrating relationship for relative CPI and exchange rate
 	newey log_rel_cpi log_exrate L(-`dols_lags'/`dols_lags').D.log_exrate `dnames' `qname', lag(`nw_len')
