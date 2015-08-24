@@ -20,7 +20,7 @@ drop var4
 gen bdate = bofd("basic",date)
 tsset bdate
 gen px_close=total_return
-gen px_open=l.total_return
+gen px_open=.
 label var Ticker "Ticker"
 label var total_return ""
 *twoway (line dolarblue date) (line official date)

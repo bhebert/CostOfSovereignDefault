@@ -66,7 +66,7 @@ tsset tid bdate
 
 rename p_ total_return
 gen px_close=total_return
-gen px_open=l.total_return
+gen px_open=.
 drop tid	
 drop bdate
 order date Ticker total px_cl px_open

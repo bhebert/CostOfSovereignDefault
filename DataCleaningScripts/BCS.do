@@ -107,7 +107,7 @@ format bdate %tbbasic
 sort bdate
 rename blue px_close
 tsset bdate
-gen px_open =l.px_close
+gen px_open =.
 gen Ticker="BCS"
 gen total_return=px_close
 drop bdate
