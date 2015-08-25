@@ -48,6 +48,27 @@ rename N_GDP* N_gdp*
 rename N_IP* N_ip*
 rename N_*_ft N_*_ft_1y
 
+tempfile temp
+save "`temp'", replace
+
+do $csd_dir/AbnormalReturns.do
+
+use "`temp'", clear
+
+foreach horizon in 6m 1y {
+	foreach var in ValueIndexNew ADRBlue {
+	
+		gen ret_`var'_abnormal`horizon' = ret_`var'`horizon'
+		
+		foreach factor in $lf_factors {
+			matrix temp = `var'_b[1,"ret_`factor'"]
+			local coef = temp[1,1]
+			replace ret_`var'_abnormal`horizon' = ret_`var'_abnormal`horizon' - `coef' * ret_`factor'`horizon'
+		}
+	}
+}
+
+
 gen month = mofd(fdate) - 1
 
 sort month fdate
@@ -59,6 +80,10 @@ rename log_rer lag_log_rer
 
 sort half
 tsset half
+format half %th
+
+capture graph drop AbnormalVNormal
+tsline ret_ValueIndexNew_abnormal6m ret_ValueIndexNew6m, name(AbnormalVNormal)
 
 gen lagyear6m = year(L.fdate)
 gen lagyear1y = year(L2.fdate)
@@ -90,7 +115,8 @@ foreach var in gdp ip {
 		//lagnews`var'_`horizon' lag_log_pd lag_log_rer
 		
 		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon', robust bw(4)
-		ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon' if lagyear`horizon' >= 2003, robust bw(4)
+		ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew_abnormal`horizon' ret_ADRBlue_abnormal`horizon' if lagyear`horizon' >= 2003, robust bw(4)
+		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon' if lagyear`horizon' >= 2003, robust bw(4)
 		
 		matrix temp = e(b)
 		matrix `var'_con`horizon'_b=temp[1,1..2]'
