@@ -1,5 +1,5 @@
 set more off
-tempfile temp fred_temp SPI_Temp
+tempfile temp fred_temp SPI_Temp 
 
 *Load Fred
 import excel "$miscdata/IP/Fred_Controls.xls", sheet("Daily") firstrow clear
@@ -80,8 +80,17 @@ replace spifc_total_return=spifc_total_return/`spifc_norm'
 replace emasia=emasia/`emasia_norm'
 replace emasia=spifc_total_return if date>=date[`start']
 drop first* spi* n _merge
+
+save "`temp'.dta", replace
+
+foreach x in SPX VIX emasia oil soybean igbonds hybonds {
+	rename `x' Close`x'
+	}
+reshape long Close, i(date month) j(Ticker) str
+
 save "$apath/daily_factors.dta", replace
 
+use "`temp'.dta", clear
 collapse (lastnm) SPX VIX emasia oil soybean igbonds hybonds, by(month)
 
 tsset month
