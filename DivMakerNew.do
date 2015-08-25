@@ -29,7 +29,7 @@ foreach outcome in gdp ip {
 	sort `time'
 	tsset `time'
 	
-	gen ValueIndex_US = total_return / L.total_return
+	gen ValueINDEXNew_US = total_return / L.total_return
 	gen div = total_return / L.total_return * L.px_close - px_close
 
 	gen div_real = div / us_cpi

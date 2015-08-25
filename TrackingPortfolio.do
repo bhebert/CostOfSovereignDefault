@@ -54,7 +54,7 @@ foreach outcome in gdp ip {
 	capture drop ADRBlue
 	gen ADRBlue = D.log_exrate
 	
-	ivreg2 outcome_growth ValueIndex_US ADRBlue `factors' L.S`yearlen'.log_outcome L.log_pd L.log_rer if `timecut', robust bw(`nw_len')
+	ivreg2 outcome_growth ValueINDEXNew_US ADRBlue `factors' L.S`yearlen'.log_outcome L.log_pd L.log_rer if `timecut', robust bw(`nw_len')
 
 	matrix temp = e(b)
 	matrix `outcome'_tracking_b=temp[1,1..2]'

@@ -115,7 +115,7 @@ foreach outcome in gdp ip {
 	matrix `outcome'_dols_b = J(1,1,`phi')
 	matrix `outcome'_dols_V = J(1,1,`phi_se'*`phi_se')
 
-	matrix rownames `outcome'_dols_b = ValueIndex_US
+	matrix rownames `outcome'_dols_b = ValueINDEXNew_US
 	matrix rownames `outcome'_dols_V = ValueIndex_US
 	matrix colnames `outcome'_dols_V = ValueIndex_US
 
@@ -351,16 +351,16 @@ foreach outcome in gdp ip {
 	
 	matrix `outcome'_var_V = delb * varV * delb'
 	
-	matrix rownames `outcome'_var_b = ValueIndex_US ADRBlue
-	matrix rownames `outcome'_var_V = ValueIndex_US ADRBlue
-	matrix colnames `outcome'_var_V = ValueIndex_US ADRBlue
+	matrix rownames `outcome'_var_b = ValueINDEXNew_US ADRBlue
+	matrix rownames `outcome'_var_V = ValueINDEXNew_US ADRBlue
+	matrix colnames `outcome'_var_V = ValueINDEXNew_US ADRBlue
 	
 	matrix list `outcome'_var_b
 	matrix list `outcome'_var_V
 	
-	matrix rownames `outcome'_dols_b = ValueIndex_US
-	matrix rownames `outcome'_dols_V = ValueIndex_US
-	matrix colnames `outcome'_dols_V = ValueIndex_US
+	matrix rownames `outcome'_dols_b = ValueINDEXNew_US
+	matrix rownames `outcome'_dols_V = ValueINDEXNew_US
+	matrix colnames `outcome'_dols_V = ValueINDEXNew_US
 	
 	matrix list `outcome'_dols_b
 	matrix list `outcome'_dols_V
