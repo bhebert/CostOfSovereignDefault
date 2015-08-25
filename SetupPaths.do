@@ -14,6 +14,7 @@ global gdppath "$droppath/Cost of Sovereign Default/GDP Weighting"
 global miscdata "$droppath/Cost of Sovereign Default/Misc Data"
 global forpath "$droppath/Cost of Sovereign Default/Forecasts"
 global fweo_path "$droppath/Cost of Sovereign Default/Forecasts/WEO"
+global crsp_path "$droppath/Cost of Sovereign Default/CRSP"
 
 global mainpath "$droppath/Cost of Sovereign Default"
 
