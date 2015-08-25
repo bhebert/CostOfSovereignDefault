@@ -24,7 +24,7 @@ local sysdate = subinstr(c(current_date)," ","",.)
 
 global rpath "$droppath/Cost of Sovereign Default/Results/${whoami}_`sysdate'"
 
-capture confirm file "`rpath'/nul"
+capture confirm file "$rpath/nul"
 if _rc { 
 	!md "$rpath"
 	!mkdir "$rpath"
