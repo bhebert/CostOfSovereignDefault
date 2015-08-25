@@ -2,7 +2,9 @@
 * Setup paths-- in case it hasn't been done yet.
 do ${csd_dir}/SetupPaths.do
 
-global GDP_models gdp_var ip_var gdp_dols ip_dols consensus consensus03 consensus6m consensus036m consensusIP consensusIP03 consensusIP6m consensusIP036m gdp_tracking ip_tracking
+//global GDP_models gdp_var ip_var gdp_dols ip_dols consensus consensus03 consensus6m consensus036m consensusIP consensusIP03 consensusIP6m consensusIP036m gdp_tracking ip_tracking
+
+global GDP_models gdp_var ip_var gdp_dols ip_dols gdp_con1y gdp_con6m ip_con1y ip_con6m gdp_tracking ip_tracking
 // vecm 
 *global GDP_models vecm 
 
@@ -16,7 +18,7 @@ do "$csd_dir/VarRunner.do"
 do "$csd_dir/Long_Term.do"
 
 *Make the forecast index weights
-do "$csd_dir/Forecast_RS.do"
+do "$csd_dir/Forecast_RSNew.do"
 
 *Make the Industrial Production weights
 *do "$csd_dir/Industrial_Production.do"
