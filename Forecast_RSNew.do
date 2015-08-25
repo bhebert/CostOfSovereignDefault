@@ -20,7 +20,10 @@ reshape wide total_return, i(date) j(Ticker) string
 
 gen year = yofd(date)
 sort year date
-by year: carryforward total_return*, replace
+
+foreach x of varlist total_return* {
+by year: carryforward `x', replace
+}
 
 
 rename total_return* *
