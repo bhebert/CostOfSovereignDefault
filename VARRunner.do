@@ -351,9 +351,9 @@ foreach outcome in gdp ip {
 	
 	matrix `outcome'_var_V = delb * varV * delb'
 	
-	matrix rownames `outcome'_var_b = ValueINDEXNew_US ADRBlue
-	matrix rownames `outcome'_var_V = ValueINDEXNew_US ADRBlue
-	matrix colnames `outcome'_var_V = ValueINDEXNew_US ADRBlue
+	matrix rownames `outcome'_var_b = ValueINDEXNew_US $HFExName
+	matrix rownames `outcome'_var_V = ValueINDEXNew_US $HFExName
+	matrix colnames `outcome'_var_V = ValueINDEXNew_US $HFExName
 	
 	matrix list `outcome'_var_b
 	matrix list `outcome'_var_V

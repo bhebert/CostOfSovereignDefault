@@ -3,6 +3,9 @@
 do ${csd_dir}/SetupPaths.do
 
 global GDP_models gdp_var ip_var gdp_dols ip_dols gdp_con1y gdp_con6m ip_con1y ip_con6m gdp_tracking ip_tracking
+
+global HFExName BCS
+
 *global GDP_models gdp_var 
 
 * Build the data for VAR/tracking/consensus

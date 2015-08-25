@@ -120,10 +120,10 @@ foreach var in gdp ip {
 		
 		matrix temp = e(b)
 		matrix `var'_con`horizon'_b=temp[1,1..2]'
-		matrix rownames `var'_con`horizon'_b = ValueINDEXNew_US ADRBlue
+		matrix rownames `var'_con`horizon'_b = ValueINDEXNew_US $HFExName
 		matrix temp = e(V)
 		matrix `var'_con`horizon'_V=temp[1..2,1..2]
-		matrix rownames `var'_con`horizon'_V = ValueINDEXNew_US ADRBlue
-		matrix colnames `var'_con`horizon'_V = ValueINDEXNew_US ADRBlue
+		matrix rownames `var'_con`horizon'_V = ValueINDEXNew_US $HFExName
+		matrix colnames `var'_con`horizon'_V = ValueINDEXNew_US $HFExName
 	}
 }
