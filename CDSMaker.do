@@ -423,7 +423,11 @@ replace event_intra = 1 if date==td(16jun2014)
 * Griesa forbids argentine law exchange
 * possible confound: Argentina proposes debt swap plan on 19th
 * Doc written at 2:54pm
-replace event_onedayL = 1 if date==td(23jun2014)
+
+* Changed to be post-close, due to Christina's speech during the day and
+* media reports of a later afternoon release.
+//replace event_onedayL = 1 if date==td(23jun2014)
+replace event_nightbefore = 1 if date==td(23jun2014)
 
 * Griesa appoints special master. 1:05pm
 * http://www.bloomberg.com/news/2014-06-23/argentina-bond-judge-picks-special-master-to-guide-negotiations.html
