@@ -1,6 +1,6 @@
 *NOT INTEGRATED INTO THIRD ANALYSIS YET
 
-use "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/CRSP/CRSP_Additional_ADR.dta", clear
+use "$crsp_path/CRSP_Additional_ADR.dta", clear
 drop if ticker=="BRO"
 order ticker date ret prc openprc
 keep ticker date ret prc openprc
