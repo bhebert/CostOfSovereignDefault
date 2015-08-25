@@ -49,10 +49,10 @@ drop total name
 gen name=Ticker+"_"+market
 drop Ticker market
 reshape wide px*, i(date) j(name) string
-gen blue_open_PBR=px_openPBR_AR/px_openPBR_US
-gen blue_close_PBR=px_closePBR_AR/px_closePBR_US
-gen blue_open_TS=px_openTS_AR/px_openTS_US
-gen blue_close_TS=px_closeTS_AR/px_closeTS_US
+gen blue_open_PBR=2*px_openPBR_AR/px_openPBR_US
+gen blue_close_PBR=2*px_closePBR_AR/px_closePBR_US
+gen blue_open_TS=2*px_openTS_AR/px_openTS_US
+gen blue_close_TS=2*px_closeTS_AR/px_closeTS_US
 drop px*
 gen px_open=(blue_open_PBR+blue_open_TS)/2
 gen px_close=(blue_close_PBR+blue_close_TS)/2
@@ -60,7 +60,7 @@ keep if yofd(date)>=2011
 keep date px_*
 gen Ticker="ADRB_PBRTS"
 gen total_return=px_close
-save "$apath/ADRB_PBRTS.dta"
+save "$apath/ADRB_PBRTS.dta", replace
 
 /*
 *CHECK IT IS FINE TO USE CRSP
