@@ -46,6 +46,12 @@ foreach outcome in gdp ip {
 	
 	use "$apath/dataset_`outcome'.dta", clear
 
+	if `yearlen' == 4 {
+		format `time' %tq
+	}
+	else if `yearlen' == 12 {
+		format `time' %tm
+	}
 
 	gen season = mod(`time',`yearlen')
 
@@ -96,7 +102,14 @@ foreach outcome in gdp ip {
 		gen ddiv_lag`j' = F`dols_lags'.L`j'.D.`divvar'
 		local ddiv_lags `ddiv_lags' ddiv_lag`j'
 	}
-
+	
+	label var log_annual_`outcome' "ln(real annual `outcome')"
+	label var log_annual_div "ln(real annual dividends)"
+	
+	capture graph drop `outcome'_vs_div
+	twoway (tsline log_annual_`outcome') (tsline log_annual_div, yaxis(2)) if log_outcome != ., name(`outcome'_vs_div) xtitle("")
+	graph export "$rpath/`outcome'_vs_div.png", replace
+	
 	// DOLS to estimate phi //quarter
 	newey log_outcome `divvar' `ddiv_lags' `dnames' `qname', lag(`nw_len')
 	
