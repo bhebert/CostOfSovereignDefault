@@ -112,6 +112,7 @@ foreach outcome in gdp ip {
 	
 	// DOLS to estimate phi //quarter
 	newey log_outcome `divvar' `ddiv_lags' `dnames' `qname', lag(`nw_len')
+	outreg2 using "$rpath/dols_`outcome'.xls", replace
 	
 	foreach lagvar in `ddiv_lags' {
 		replace `lagvar' = 0
@@ -272,6 +273,50 @@ foreach outcome in gdp ip {
 	
 	rename resid_4 exnews
 	
+	tempfile temp
+	save "`temp'"
+	
+	use "$apath/Simple_Weight.dta", clear
+	
+	if `yearlen' == 4 {
+		gen `time' = qofd(fdate)
+	}
+	else if `yearlen' == 12 {
+		gen `time' = mofd(fdate)
+	}
+	
+	keep `time' N_* fdate
+	rename N_GDP* N_gdp*
+	rename N_IP* N_ip*
+	
+	mmerge `time' using "`temp'", unmatched(using)
+	
+	gen half = hofd(fdate)
+	format half %th
+	
+	if `yearlen' == 4 {
+		format `time' %tq
+	}
+	else if `yearlen' == 12 {
+		format `time' %tm
+	}
+	
+	
+	
+	sort `time'
+	tsset `time'
+	gen cum_news = sum(gnews)
+	gen annual_gnews = cum_news - L`yearlen'.cum_news
+	replace annual_gnews = . if F.L`yearlen'.gnews == .
+	
+	capture graph drop VARvsConsensus_`outcome'
+	label var annual_gnews "VAR"
+	label var N_`outcome'_ft "Survey"
+	twoway (line annual_gnews `time' ) (line N_`outcome'_ft `time') if annual_gnews != ., name(VARvsConsensus_`outcome')
+	graph export "$rpath/VARvsConsensus_`outcome'.png", replace
+	
+	use "`temp'", clear
+	
 	capture graph drop GDPDivNews
 	tsline gnews dnews, name(GDPDivNews)
 	
@@ -387,21 +432,24 @@ foreach outcome in gdp ip {
 	matrix list sd
 	
 	
-	if `run_svar' != 0 {
+	if `run_svar' != 0 & "`outcome'" == "gdp" {
 	
 		matrix sshocks = I(5)
-		matrix sshocks[1,1] = rsel' //dnews_mat
+		matrix sshocks[1,1] = dnews_mat
 		matrix sshocks[2,1] = gnews_mat
 		
 		matrix list sshocks
 		
+		local coef_v = -39.35
+		local coef_e = 14.80
+		
 		* results from Rigobon-Sack estimator
 		matrix cmat = I(5)
-		matrix cmat[1,1] = -42.82
-		matrix cmat[2,1] = -42.82 * svar_b2[1,1] + 35.33 * svar_b2[2,1]
-		matrix cmat[3,1] = -42.82 * `rho'
-		matrix cmat[4,1] = 35.33
-		matrix cmat[5,1] = 35.33
+		matrix cmat[1,1] = -`coef_v'
+		matrix cmat[2,1] = -`coef_v' * gdp_var_b[1,1] + `coef_e' * gdp_var_b[2,1]
+		matrix cmat[5,1] = -`coef_v' * `rho'
+		matrix cmat[4,1] = `coef_e'
+		matrix cmat[3,1] = `coef_e'
 		
 		matrix list cmat
 		
@@ -412,7 +460,7 @@ foreach outcome in gdp ip {
 		matrix list atilde
 		matrix list btilde
 		
-		svar D.log_outcome gdratio log_pd D.log_exrate log_rer, lag(1) exog(q1 q2 q3 D_log_us_cpi) aeq(atilde) beq(btilde) var
+		svar D.log_outcome gdratio log_rer D.log_exrate log_pd, lag(1) exog(`dummies' D_log_us_cpi) aeq(atilde) beq(btilde) var
 		
 		irf create temp, set("$rpath/`outcome'svar_irf",replace) step(20) nose
 		irf table sirf, impulse(D.log_outcome)
