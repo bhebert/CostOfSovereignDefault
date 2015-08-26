@@ -1,14 +1,15 @@
+ set more off
  use "$apath/GDP_inflation.dta", clear
   order quarter   Nominal_GDP Nominal_GDP_GFD Nominal_GDP_GFD_change Nominal_GDP_change Real_GDP Real_GDP_change cpi 
   keep quarter   Nominal_GDP Nominal_GDP_GFD Nominal_GDP_GFD_change Nominal_GDP_change Real_GDP Real_GDP_change 
   replace Nominal_GDP_GFD=. if quarter<=tq(1992q3)
   drop if quarter<=tq(1989q4)
-  export excel using "/Users/jesseschreger/Documents/CostOfSovereignDefault/Seasonal/Seasonal.xls", firstrow(variables) replace
-  export delimited using "/Users/jesseschreger/Documents/CostOfSovereignDefault/Seasonal/Seasonal.csv", replace
+  export excel using "$csd_dir/Seasonal/Seasonal.xls", firstrow(variables) replace
+  export delimited using "$csd_dir/Seasonal/Seasonal.csv", replace
 
   
   *DATA BACK FROM HBS RESEARCH SERVICES
-  import excel "/Users/jesseschreger/Documents/CostOfSovereignDefault/Seasonal/Seasonal_20150821.xlsx", sheet("Sheet2") firstrow clear
+  import excel "$csd_dir/Seasonal/Seasonal_20150821.xlsx", sheet("Sheet2") firstrow clear
 	foreach x in Nominal_GDP Nominal_GDP_GFD Nominal_GDP_GFD_Change Nominal_GDP_Change Real_GDP Real_GDP_Change Nominal_GDP_D11 Nominal_GDP_GFD_D11 Real_GDP_D11 {
 		destring `x', force replace
 		}
@@ -31,4 +32,4 @@
 	order quarter
 	format quarter %tq
 	drop quarterstr n
-	save "/Users/jesseschreger/Documents/CostOfSovereignDefault/Seasonal/Seasonally_Adjusted_GDP.dta", replace
+	save "$csd_dir/Seasonal/Seasonally_Adjusted_GDP.dta", replace
