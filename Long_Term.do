@@ -23,6 +23,7 @@ foreach x in `macrovar'   {
 	drop `x'_LT_temp
 	gen PV_`x'_cont=(LT_`x')*(`rho'^11)/(1-`rho')
 	gen PV_`x'_cont_calc=(LT_`x')*(`rho'^10)/(1-`rho')
+	gen PV_`x'_cont_trunc=(LT_`x')*(`rho'^10)
 	}
 	
 	
@@ -39,6 +40,7 @@ order fdate `macrovarstar'
 foreach x in `macrovar'  {
 	gen PV_`x'=`x'+PV_`x'_cont
 	gen PV_`x'_tmin1=`x'_3+PV_`x'_cont_calc
+	gen PV_trunc_`x'_tmin1=`x'_3+PV_`x'_cont_trunc
 	}
 	*THIS IS FOR CALCULATING THE NEW PV
 
@@ -46,10 +48,13 @@ gen n=_n
 tsset n
 
 foreach x in `macrovar'  {
-		 gen N_`x'_ft=PV_`x'-l2.PV_`x'_tmin1	 
+		 gen N_`x'_ft=PV_`x'-l2.PV_`x'_tmin1
+		 gen N_`x'_ft_trunc=`x'-l2.PV_trunc_`x'_tmin1	 
 		 *VERSION WITH 6 month gaps
 		 gen N_`x'_ft_6m=PV_`x'-l.PV_`x' if month(fdate)==10
 		 replace N_`x'_ft_6m=PV_`x'-l.PV_`x'_tmin1 if month(fdate)==4
+		 gen N_`x'_ft_6m_trunc=`x'-l.`x' if month(fdate)==10
+		 replace N_`x'_ft_6m_trunc=`x'-l.PV_trunc_`x'_tmin1 if month(fdate)==4		 
 }
 
 drop n
