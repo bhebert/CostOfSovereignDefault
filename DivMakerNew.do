@@ -8,6 +8,7 @@ foreach outcome in gdp ip {
 	if "`outcome'" == "gdp" {
 		local time quarter
 		local ovar Real_GDP_cpi
+		//local ovar Real_GDP_SA
 		local yearlen 4
 	}
 	else {
@@ -22,7 +23,7 @@ foreach outcome in gdp ip {
 	sort `time'
 
 	*ADDING IN SOME ADDITIONAL VARIABLES
-	mmerge `time' using "$apath/rer_`outcome'_dataset.dta", unmatched(master) ukeep(`ovar' ADRBlue cpi us_cpi)
+	mmerge `time' using "$apath/rer_`outcome'_dataset.dta", unmatched(master) ukeep(`ovar' ADRBlue cpi us_cpi OfficialRate)
 	gen log_rer = log((ADRBlue / cpi) * us_cpi)
 	gen log_rel_cpi = log(cpi / us_cpi)
 	
@@ -32,14 +33,21 @@ foreach outcome in gdp ip {
 	gen ValueINDEXNew_US = total_return / L.total_return
 	gen div = total_return / L.total_return * L.px_close - px_close
 
-	gen div_real = div / us_cpi
+	//gen div_real = div / us_cpi
+	gen div_real = div * OfficialRate / cpi
 	gen cum_div = sum(div_real)
 	
-	gen log_annual_div = log(cum_div - L`yearlen'.cum_div)
-	drop cum_div
-	replace log_annual_div = . if F.L`yearlen'.div_real == .
+	gen cum_ovar = sum(`ovar')
 	
-	gen log_pd = log(px_close / us_cpi) - log_annual_div
+	gen log_annual_div = log(cum_div - L`yearlen'.cum_div)
+	gen log_annual_`outcome' = log(cum_ovar - L`yearlen'.cum_ovar)
+	
+	drop cum_div cum_ovar
+	replace log_annual_div = . if F.L`yearlen'.div_real == .
+	replace log_annual_`outcome' = . if F.L`yearlen'.`ovar' == .
+	
+	//gen log_pd = log(px_close / us_cpi) - log_annual_div
+	gen log_pd = log(px_close * OfficialRate / cpi) - log_annual_div
 	
 	su log_pd
 

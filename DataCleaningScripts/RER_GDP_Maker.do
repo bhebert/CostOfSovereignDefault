@@ -7,12 +7,16 @@ format quarter %tq
 collapse (lastnm) px_close, by(quarter Ticker)
 reshape wide px_close, i(quarter) j(Ticker) string
 renpfix px_close
-keep quarter ADRBlue
+
+keep quarter ADRBlue OfficialRate
+replace OfficialRate = 1 if quarter < yq(2001,4)
+replace OfficialRate = ADRBlue if quarter >= yq(2001,4) & quarter <= yq(2007,3)
+
 save "$apath/ADRBlue_quarter.dta", replace
 
 use "$apath/GDP_inflation.dta", clear
 *TOGGLE ON TO USE SEASONALLY ADJUST DATA
-*mmerge quarter using "$csd_dir/Seasonal/Seasonally_Adjusted_GDP.dta"
+mmerge quarter using "$csd_dir/Seasonal/Seasonally_Adjusted_GDP.dta"
 mmerge quarter using "$apath/ADRBlue_quarter.dta"
 drop if quarter==tq(2015q1)
 browse

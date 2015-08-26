@@ -24,14 +24,21 @@ save "`temp'", replace
 
 *SET UP Exchange rates
 use "$apath/blue_rate.dta", clear
-keep if Ticker=="ADRBlue"
-tsset date
+keep if Ticker=="ADRBlue" | Ticker == "OfficialRate"
+encode Ticker, gen(tid)
+sort tid date
+tsset tid date
 tsfill
-carryforward total_return, replace
-keep date total_return
-rename total_return ADRBlue
+by tid: carryforward Ticker total_return, replace
+keep date total_return Ticker
+reshape wide total_return, i(date) j(Ticker) string
+rename total_return* *
 gen month = mofd(date)
-collapse (lastnm) ADRBlue, by(month)
+format month %tm
+collapse (lastnm) ADRBlue OfficialRate, by(month)
+
+replace OfficialRate = 1 if month <= ym(2001,11)
+replace OfficialRate = ADRBlue if month >= ym(2001,12) & month <= ym(2007,10)
 
 mmerge month using "`temp'"
 drop _merge
