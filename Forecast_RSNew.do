@@ -30,7 +30,7 @@ rename total_return* *
 
 rename date fdate
 
-mmerge fdate using "$apath/Simple_Weight.dta", unmatched(using) ukeep(fdate N_*)
+mmerge fdate using "$apath/Simple_Weight.dta", unmatched(using) ukeep(fdate N_*trunc)
 
 gen half = hofd(fdate)
 
@@ -46,7 +46,7 @@ keep ret* N_* fdate half
 
 rename N_GDP* N_gdp*
 rename N_IP* N_ip*
-rename N_*_ft N_*_ft_1y
+rename N_*_ft_trunc N_*_ft_1y_trunc
 
 tempfile temp
 save "`temp'", replace
