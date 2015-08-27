@@ -125,5 +125,16 @@ foreach var in gdp ip {
 		matrix `var'_con`horizon'_V=temp[1..2,1..2]
 		matrix rownames `var'_con`horizon'_V = ValueINDEXNew_US $HFExName
 		matrix colnames `var'_con`horizon'_V = ValueINDEXNew_US $HFExName
+		
+		/*ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew_abnormal`horizon' if lagyear`horizon' >= 2003, robust bw(4)
+		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon' if lagyear`horizon' >= 2003, robust bw(4)
+		
+		matrix temp = e(b)
+		matrix `var'_con`horizon'_noex_b=temp[1,1]'
+		matrix rownames `var'_con`horizon'_b = ValueINDEXNew_US
+		matrix temp = e(V)
+		matrix `var'_con`horizon'_noex_V=temp[1,1]
+		matrix rownames `var'_con`horizon'_V = ValueINDEXNew_US
+		matrix colnames `var'_con`horizon'_V = ValueINDEXNew_US*/
 	}
 }
