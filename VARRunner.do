@@ -107,7 +107,7 @@ foreach outcome in gdp ip {
 	label var log_annual_div "ln(real annual dividends)"
 	
 	capture graph drop `outcome'_vs_div
-	twoway (tsline log_annual_`outcome') (tsline log_annual_div, yaxis(2)) if log_outcome != ., name(`outcome'_vs_div) xtitle("")
+	twoway (tsline log_annual_`outcome') (tsline log_annual_div, yaxis(2)) if log_outcome != ., name(`outcome'_vs_div) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
 	graph export "$rpath/`outcome'_vs_div.png", replace
 	
 	// DOLS to estimate phi //quarter
@@ -306,13 +306,14 @@ foreach outcome in gdp ip {
 	sort `time'
 	tsset `time'
 	gen cum_news = sum(gnews)
-	gen annual_gnews = cum_news - L`yearlen'.cum_news
+	gen annual_gnews = 100*(cum_news - L`yearlen'.cum_news)
 	replace annual_gnews = . if F.L`yearlen'.gnews == .
+	replace N_`outcome'_ft_trunc = 100*N_`outcome'_ft_trunc
 	
 	capture graph drop VARvsConsensus_`outcome'
 	label var annual_gnews "VAR"
 	label var N_`outcome'_ft "Survey"
-	twoway (line annual_gnews `time' ) (line N_`outcome'_ft `time') if annual_gnews != ., name(VARvsConsensus_`outcome')
+	twoway (line annual_gnews `time' ) (line N_`outcome'_ft_trunc `time') if annual_gnews != ., name(VARvsConsensus_`outcome') legend(order(1 "VAR" 2 "Survey")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`outcome' growth news (%)") graphregion(fcolor(white) lcolor(white))
 	graph export "$rpath/VARvsConsensus_`outcome'.png", replace
 	
 	use "`temp'", clear
