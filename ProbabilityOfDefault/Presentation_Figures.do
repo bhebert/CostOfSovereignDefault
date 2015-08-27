@@ -1,4 +1,4 @@
-*MAKE figure for presentation
+*Make the CDS Figures for the Presentation
 discard
 use "$mpath/Composite_USD.dta", clear
 twoway (line Spread6m date) (line Spread1y date) (line Spread2y date) (line Spread3y date) (line Spread4y date) (line Spread5y date) if date>=td(01jan2011) & date<=td(30jul2014), legend(order(1 "6 Months" 2  "1 Year" 3 "2 Year"  4 "3 Year" 5 "4 Year" 6 "5 Year")) ytitle("Par Spread") ///
