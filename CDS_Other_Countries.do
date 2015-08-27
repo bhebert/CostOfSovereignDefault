@@ -24,21 +24,23 @@ encode Ticker, gen(tid)
 bysort tid bdate: gen n = _n
 bysort tid bdate: egen maxn = max(n)
 tsset tid bdate
-
-keep date Ticker Country tri_def5y
+keep if date>=td(01jan2011) & date<=td(30jul2014)
 *To keep units sensible vs. cds in ThirdAnalysis.
 replace tri_def5y=tri_def5y/100
 *make it exp so returns are calculated correctly
 replace tri_def5y=exp(tri_def5y)
+gen test=log(tri_def5y)-log(l.tri_def5y)
 replace Ticker="HK" if Ticker=="CHINA-HongKong"
-bysort Ticker: egen obs_count=count(tri)
+replace test=. if test==0
+bysort Ticker: egen obs_count=count(test) 
 keep if obs_count>900
 drop Country obs
-rename tri_def total_return
+rename tri_def5y total_return
 gen market="Index"
 *keep if Ticker=="ARGENT" |  Ticker=="BRAZIL" |  Ticker=="CHILE" |  Ticker=="COLOM" |  Ticker=="KOREA" |  Ticker=="PERU" |  Ticker=="MEX" 
 replace Ticker=Ticker+"_DTRI"
 gen industry_sector=Ticker
+keep date Ticker total_return
 save "$apath/Other_CDS.dta", replace
 
 	*gen tri5y_oneday = tri_def5y - L.tri_def5y

@@ -123,9 +123,10 @@ foreach cntry in $latam {
 	rename `cntry' total_return`cntry'CDS
 }
 reshape long total_return, i(date) j(Ticker) string
+append using "$apath/Other_CDS.dta"
+
 gen industry_sector = Ticker
 gen market = "Index"
-//append using "$apath/Other_CDS.dta"
 
 append using "`temp'"
 
