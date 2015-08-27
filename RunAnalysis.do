@@ -11,11 +11,11 @@ global HFExName dolarblue
 * Build the data for VAR/tracking/consensus
 do "$csd_dir/DivMakerNew.do"
 
-*Make the Dividend VAR indices
-do "$csd_dir/VarRunner.do"
-
 *Creates NGF and the different indices of Forecasts from the Consensus Data
 do "$csd_dir/Long_Term.do"
+
+*Make the Dividend VAR indices
+do "$csd_dir/VarRunner.do"
 
 *Make the forecast index weights
 do "$csd_dir/Forecast_RSNew.do"
