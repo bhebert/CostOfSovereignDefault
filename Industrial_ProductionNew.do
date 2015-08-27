@@ -29,7 +29,9 @@ encode Ticker, gen(tid)
 sort tid date
 tsset tid date
 tsfill
-by tid: carryforward Ticker total_return, replace
+by tid: carryforward Ticker , replace
+by tid: carryforward total_return, replace
+
 keep date total_return Ticker
 reshape wide total_return, i(date) j(Ticker) string
 rename total_return* *
