@@ -45,7 +45,7 @@ foreach outcome in gdp ip {
 	local nw_len = `nw_years' * `yearlen'
 	
 	use "$apath/dataset_`outcome'.dta", clear
-
+	
 	if `yearlen' == 4 {
 		format `time' %tq
 	}
@@ -62,6 +62,7 @@ foreach outcome in gdp ip {
 	predict log_div_real_sa, residuals
 
 	capture graph drop `time'DivComparison
+	
 	tsline log_div_real log_div_real_sa log_annual_div, name(`time'DivComparison)
 	
 	local rho = ${rho_`time'}
@@ -112,7 +113,7 @@ foreach outcome in gdp ip {
 	
 	// DOLS to estimate phi //quarter
 	newey log_outcome `divvar' `ddiv_lags' `dnames' `qname', lag(`nw_len')
-	outreg2 using "$rpath/dols_`outcome'.xls", replace
+	outreg2 using "$rpath/dols_`outcome'.xls", replace stats(coef se ci) level(95)
 	
 	foreach lagvar in `ddiv_lags' {
 		replace `lagvar' = 0
@@ -135,7 +136,8 @@ foreach outcome in gdp ip {
 
 	// Test cointegrating relationship for relative CPI and exchange rate
 	newey log_rel_cpi log_exrate L(-`dols_lags'/`dols_lags').D.log_exrate `dnames' `qname', lag(`nw_len')
-
+	outreg2 using "$rpath/rer_`time'.xls", replace stats(coef se ci) level(95)
+	
 	gen D_log_us_cpi = D.log_us_cpi
 	gen D_log_outcome = D.log_outcome
 	gen D_log_exrate = D.log_exrate
@@ -310,10 +312,14 @@ foreach outcome in gdp ip {
 	replace annual_gnews = . if F.L`yearlen'.gnews == .
 	replace N_`outcome'_ft_trunc = 100*N_`outcome'_ft_trunc
 	
+	gen phitr = 100*`phi'*log(total_return / L`yearlen'.total_return)
+	label var phitr "Index Return (scaled by phi)"
+	
 	capture graph drop VARvsConsensus_`outcome'
 	label var annual_gnews "VAR"
 	label var N_`outcome'_ft "Survey"
-	twoway (line annual_gnews `time' ) (line N_`outcome'_ft_trunc `time') if annual_gnews != ., name(VARvsConsensus_`outcome') legend(order(1 "VAR" 2 "Survey")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`outcome' growth news (%)") graphregion(fcolor(white) lcolor(white))
+	tsline annual_gnews N_`outcome'_ft_trunc phitr if annual_gnews != ., name(VARvsConsensus_`outcome') legend(order(1 "VAR" 2 "Survey" 3 "{&phi}*Return")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`outcome' growth news (%)") graphregion(fcolor(white) lcolor(white))
+	//twoway (line annual_gnews `time' ) (line N_`outcome'_ft_trunc `time') if annual_gnews != ., name(VARvsConsensus_`outcome') legend(order(1 "VAR" 2 "Survey")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`outcome' growth news (%)") graphregion(fcolor(white) lcolor(white))
 	graph export "$rpath/VARvsConsensus_`outcome'.png", replace
 	
 	use "`temp'", clear
