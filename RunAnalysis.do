@@ -28,3 +28,7 @@ do "$csd_dir/TrackingPortfolio.do"
 
 *Run Regressions
 do "$csd_dir/RigobonSack_v3.do"
+
+*Create Figures
+do "$csd_dir/Summary_Plots.do"
+
