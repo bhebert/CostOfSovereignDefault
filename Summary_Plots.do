@@ -17,6 +17,7 @@ bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1
 sort industry_sector market day_type  eventcloses date
 bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
 
+*
 /*local indplot ADRB_PBRTS ADRBlue BCS Contado_Ambito DSBlue dolarblue ValueINDEXNew MexicoEquity
 discard
 foreach x of local indplot {
@@ -44,6 +45,11 @@ local y=`y'+1
 *Twoday_MexicoEquity
 
 *Can add versions here to get old numbers back
+use "$apath/data_for_summary.dta", clear
+sort industry_sector market day_type event_day date
+bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1
+sort industry_sector market day_type  eventcloses date
+bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
 gen event_desc="Stay, 11/29/12" if date==td(29nov2012) & day_type=="twoday"
 replace event_desc="Supreme Court Denial, 6/16/14" if date==td(17jun2014) & day_type=="twoday"
 discard
@@ -53,12 +59,15 @@ twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatte
 graph export "$rpath/ValueINDEXNew_2.eps", replace
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=13, mlabel(n2)) (scatter return_ cds_ if n2==13, mlabel(event_desc)  mlabposition(9) mlabcolor(blue) mcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew3") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueINDEXNew_3.eps", replace
-
-
+*This way it won't crash if we exclude Mexico
+cap {
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="MexicoEquity" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Mexico") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/MexicoEquityScatter.eps", replace
+}
  
 *********************
 *EXCHANGE RATE Plots
-
+*********************
 use "$apath/blue_rate_old.dta", clear
 keep if Ticker=="YPFDBlue"
 append using "$apath/ADRBlue_All.dta"
@@ -94,4 +103,66 @@ twoway (line px_close date if Ticker=="OfficialRate", sort lwidth(med)) (line px
 graph export "$rpath/fx5.eps", replace
 twoway (line px_close date if Ticker=="OfficialRate", sort lwidth(med)) (line px_close date if Ticker=="dolarblue", sort  lwidth(med))  (line px_close date if Ticker=="BCS", sort lwidth(med)) (line px_close date if Ticker=="ADRBlue", sort lwidth(med)) (line px_close date if Ticker=="NDF12M", sort lwidth(med))  if date>=td(01jan2011) & date<=td(30jun2014),  legend(order(1 "Official" 2 "Dolar Blue" 3 "ADR" 4 "Blue Chip Swap" 5 "NDF - 12 Months"))  xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("ARS/USD") graphregion(fcolor(white) lcolor(white))  name("fx6")
 graph export "$rpath/fx6.eps", replace
+
+
+*SUMMARY TABLE
+foreach var in ValueINDEXNew dolarblue{
+use "$apath/data_for_summary.dta", clear
+keep if  industry_sec=="`var'"
+replace cds_=cds_*100
+summ cds_ if event_day==1
+local event_mean_deltad=r(mean)
+local event_sd_deltad=r(sd)
+local event_n=r(N)
+summ return_ if event_day==1
+local event_mean_return=r(mean)
+local event_sd_return=r(sd)
+summ cds if event_day==0
+local nonevent_mean_deltad=r(mean)
+local nonevent_sd_deltad=r(sd)
+local nonevent_n=r(N)
+summ return_ if event_day==0
+local nonevent_mean_return=r(mean)
+local nonevent_sd_return=r(sd)
+corr cds_ return_ if event_day==1, cov
+local event_cov=r(cov_12)
+
+corr cds_ return_ if event_day==0, cov
+local nonevent_cov=r(cov_12)
+
+gen Ticker="`var'"
+gen event_mean_deltad = `event_mean_deltad'
+gen event_sd_deltad =`event_sd_deltad'
+gen event_n =`event_n'
+gen nonevent_mean_deltad =`nonevent_mean_deltad'
+gen nonevent_sd_deltad =`nonevent_sd_deltad'
+gen nonevent_n =`nonevent_n'
+gen event_cov =`event_cov'
+gen nonevent_cov=`nonevent_cov'
+gen event_mean_return = `event_mean_return'
+gen event_sd_return = `event_sd_return'
+gen nonevent_mean_return = `nonevent_mean_return'
+gen nonevent_sd_return = `nonevent_sd_return'
+
+keep Ticker event_mean_deltad event_sd_deltad event_n nonevent_mean_deltad nonevent_sd_deltad nonevent_n event_cov nonevent_cov event_mean_return event_sd_return nonevent_mean_return nonevent_sd_return
+keep if _n==1
+gen point_est=100*(event_cov-nonevent_cov)/(event_sd_deltad^2-nonevent_sd_deltad^2)
+reshape long event_ nonevent_, i(Ticker) j(var) str
+gen order=.
+replace order=1 if var=="mean_deltad"
+replace order=2 if var=="sd_deltad"
+replace order=3 if var=="mean_return"
+replace order=4 if var=="sd_return"
+replace order=5 if var=="cov"
+replace order=6 if var=="n"
+sort order 
+drop order
+replace point_est=. if _n~=1
+order Ticker point_est
+rename event event
+rename nonevent nonevent
+replace event=round(event,.01) if var~="n"
+replace nonevent=round(nonevent,.01) if var~="n"
+export excel using "$rpath/Summary_`var'.xls", firstrow(variables) replace
+}
 
