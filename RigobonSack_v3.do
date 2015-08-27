@@ -26,7 +26,7 @@ local use_usbeinf 0
 local use_gdpmodels 1
 
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
-local use_mexbrl 0
+local use_mexbrl 1
 
 * Run with other default probabilities
 local use_otherdefp 0
@@ -220,6 +220,9 @@ replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
 
 drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
+
+*Save dataset at this point to construct summary states
+save "$apath/data_for_summary.dta", replace
 
 * This constructs the factor variables.
 * On some days, some factor returns are missing but the 
