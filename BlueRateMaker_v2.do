@@ -1,3 +1,4 @@
+set more off
 
 use "$dpath/ARS_Blue.dta", clear
 keep ARSUSDS TDARSSP date
@@ -40,11 +41,23 @@ replace Under_Ticker="TECO2" if ADR_Ticker=="TEO"
 
 keep date px_open px_last  ADR_Ticker Under_Ticker ADR
 reshape wide px_open px_last , i(date ADR_T Und) j(ADR) 
-gen ratio=2
+
+gen ADRticker = ADR_Ticker + " US Equity"
+mmerge ADRticker using "$apath/FirmTable.dta", ukeep(ADRratio) unmatched(master)
+
+rename ADRratio ratio
+
+drop ADRticker
+replace ratio = 2 if ADR_T == "TS" | ADR_T == "PBR"
+drop if ratio == .
+
+sort ADR_T date
+
+/*gen ratio=2
 replace ratio=10 if ADR_T=="BMA" | ADR_T=="GGAL" | ADR_T=="PZE"
 replace ratio=3 if ADR_T=="BFR" 
 replace ratio=5 if ADR_T=="TEO"
-replace ratio=25 if ADR_T=="PAM"
+replace ratio=25 if ADR_T=="PAM"*/
 
 replace px_open1=px_open1/ratio
 replace px_last1=px_last1/ratio
