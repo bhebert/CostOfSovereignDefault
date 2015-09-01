@@ -15,6 +15,12 @@ keep ticker ticker_short Primary_Exchange
 
 rename ticker ADRticker
 
+gen ADRratio=2 if ADRticker != ""
+replace ADRratio=10 if regexm(ADRticker,"BMA") | regexm(ADRticker,"GGAL")| regexm(ADRticker,"PZE")
+replace ADRratio=3 if regexm(ADRticker,"BFR") 
+replace ADRratio=5 if regexm(ADRticker,"TEO")
+replace ADRratio=25 if regexm(ADRticker,"PAM")
+
 save "`adrtemp'", replace
 
 use "$dpath/DS_BB_Static_v2.dta", clear
@@ -51,6 +57,7 @@ drop indicator_adr
 rename indicator_adr2 indicator_adr
 
 replace ADRticker = "" if regexm(Primary_Exchange,"OTC")
+replace ADRratio = . if regexm(Primary_Exchange,"OTC")
 
 * This is a telecom argentina holding company
 drop if ticker_short == "NORT6"
