@@ -1,6 +1,7 @@
 ***************************
 *Quarterly Characteristics*
 ***************************
+tempfile ds1 ds2
 set more off
 import excel "$dpath/Datastream_042915.xlsx",  sheet("Sheet2") clear
 foreach x of varlist _all {
@@ -8,12 +9,11 @@ foreach x of varlist _all {
 	 drop `x'
 	 }
 	 }
-
+local i=1
 foreach x of varlist _all {
 	rename `x' v`i'
 	local i=`i'+1
 	}
-	rename v date
 	
 	drop if _n==1
 	foreach x of varlist _all {
@@ -68,7 +68,7 @@ foreach x in MV WC01705 WC01706 WC03051 WC03101 WC03251 WC03451 WC05101 WC05301 
 	rename qtr quarter
 	order quarter
 	sort Ticker quarter
-	save "$apath/Datastream_Quarterly.dta", replace
+	save "`ds1'", replace
 	
 **********************************
 *CONSTRUCT 	quarter_data.dta
@@ -80,12 +80,11 @@ foreach x of varlist _all {
 	 drop `x'
 	 }
 	 }
-
+local i=1
 foreach x of varlist _all {
 	rename `x' v`i'
 	local i=`i'+1
 	}
-	rename v date
 	
 	drop if _n==1
 	foreach x of varlist _all {
@@ -151,11 +150,15 @@ foreach x in DWEB EPS EPS1FD12 EPS1TR12 WC02999 WC03019 WC03101 WC03255 WC03351 
 	order quarter
 	
 sort Ticker quarter
-
 gen leverage=WC02999/WC03998
-	save "$apath/quarter_data.dta", replace
-
+label var leverage "WC02999 (Total Assets) /WC03998 (Total Capital)"
+mmerge quarter Ticker using "`ds1'"
+save "$apath/Datastream_Quarterly.dta", replace
 	
 
+browse if _merge==2 & yofd(dofq(quarter))>=2003 & yofd(dofq(quarter))<=2014
+*THE DATA MISSING IS PRE-2003, 2015, or FIRMS WE DON'T USE
 
-	
+
+
+
