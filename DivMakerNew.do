@@ -25,6 +25,7 @@ foreach outcome in gdp ip {
 	*ADDING IN SOME ADDITIONAL VARIABLES
 	mmerge `time' using "$apath/rer_`outcome'_dataset.dta", unmatched(master) ukeep(`ovar' ADRBlue cpi us_cpi OfficialRate)
 	gen log_rer = log((ADRBlue / cpi) * us_cpi)
+	gen log_orer = log((OfficialRate / cpi) * us_cpi)
 	gen log_rel_cpi = log(cpi / us_cpi)
 	
 	sort `time'
