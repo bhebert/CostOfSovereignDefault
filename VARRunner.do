@@ -15,6 +15,7 @@ local usetime 0
 local use_dummies 1
 local nw_years 1
 local dols_lagyears 1
+local dfstyle 
 
 local qvarlags 1
 local mvarlags 3
@@ -80,6 +81,8 @@ foreach outcome in gdp ip {
 
 	if `varpost2003'==1 {
 		replace log_exrate=. if `timecut'
+		replace log_rer = . if `timecut'
+		replace log_orer = . if `timecut'
 
 	}
 	if `allpost2003'==1 {
@@ -134,9 +137,24 @@ foreach outcome in gdp ip {
 	matrix rownames `outcome'_dols_V = ValueIndex_US
 	matrix colnames `outcome'_dols_V = ValueIndex_US
 
-	// Test cointegrating relationship for relative CPI and exchange rate
+	// Estimate
 	newey log_rel_cpi log_exrate L(-`dols_lags'/`dols_lags').D.log_exrate `dnames' `qname', lag(`nw_len')
 	outreg2 using "$rpath/rer_`time'.xls", replace stats(coef se ci) level(95)
+	
+	gen log_official = log(OfficialRate)
+	newey log_rel_cpi log_official L(-`dols_lags'/`dols_lags').D.log_official `dnames' `qname', lag(`nw_len')
+	outreg2 using "$rpath/rer_`time'.xls", append stats(coef se ci) level(95)
+	
+	reg log_outcome `divvar' `dnames' `qname'
+	predict gdrdf, residual
+	
+	dfuller gdrdf, regress lags(`yearlen') `dfstyle'
+	dfuller gdratio, regress lags(`yearlen') `dfstyle'
+	dfuller log_rer, regress lags(`yearlen') `dfstyle'
+	dfuller log_orer, regress lags(`yearlen') `dfstyle'
+	
+	newey log_rer L.log_rer, lag(`nw_len')
+	
 	
 	gen D_log_us_cpi = D.log_us_cpi
 	gen D_log_outcome = D.log_outcome
@@ -164,7 +182,7 @@ foreach outcome in gdp ip {
 		local dummies `dummies' dummy`i'
 	}
 	
-	var D_log_outcome gdratio log_rer D.log_exrate log_pd , lag(1/`varlags') exog(`dummies' D_log_us_cpi) //constraints(1)
+	var D_log_outcome gdratio log_orer D.log_exrate log_pd , lag(1/`varlags') exog(`dummies' D_log_us_cpi) //constraints(1)
 	
 	matrix varb = e(b)
 	matrix varsig = e(Sigma)
