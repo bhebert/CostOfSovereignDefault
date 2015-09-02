@@ -1,5 +1,6 @@
 
 *BCS: IMPORT ALL DATA
+tempfile tempbond
  set more off
 import excel "$mainpath/Bloomberg/BlueChipSwap08132015.xlsx", sheet("BULK_DL") clear
 *Note, this still generates output to dropbox, need to correct.
@@ -95,6 +96,8 @@ twoway (line px_last date  if Ticker=="EF106106", sort) if source=="`x'" & yofd(
 
 *Select median price by currency, bond, date
 collapse (median) px_last, by(date Ticker ARS)
+save "`tempbond'", replace
+
 reshape wide px_last, i(date Ticker) j(ARS)
 gen blue=px_last1/px_last0
 *Call Blue Chip Swap Rate the mean across the two bonds.
@@ -110,7 +113,22 @@ tsset bdate
 gen px_open =.
 gen Ticker="BCS"
 gen total_return=px_close
-drop bdate
+drop bdate 
 *ready to merge into ThirdAnalysis.dta
 save "$apath/bcs.dta", replace
+
+
+*SET UP FOR BOND LEVEL TO ADD TO THIRD ANALYSIS
+use "`tempbond'", clear
+replace Ticker="boden7_ars" if Ticker=="EG3581295" & ARS==1
+replace Ticker="boden7_usd" if Ticker=="EG3581295" & ARS==0
+replace Ticker="bonarx_ars" if Ticker=="EF106106" & ARS==1
+replace Ticker="bonarx_usd" if Ticker=="EF106106" & ARS==0
+drop ARS
+rename px_last px_close
+gen px_open=.
+gen total_return=px_close
+gen market="Index"
+gen industry_sector=Ticker
+save "$apath/domestic_bonds.dta", replace
 
