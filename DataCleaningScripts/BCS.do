@@ -120,8 +120,8 @@ save "$apath/bcs.dta", replace
 
 *SET UP FOR BOND LEVEL TO ADD TO THIRD ANALYSIS
 use "`tempbond'", clear
-replace Ticker="boden7_ars" if Ticker=="EG3581295" & ARS==1
-replace Ticker="boden7_usd" if Ticker=="EG3581295" & ARS==0
+replace Ticker="boden15_ars" if Ticker=="EG3581295" & ARS==1
+replace Ticker="boden15_usd" if Ticker=="EG3581295" & ARS==0
 replace Ticker="bonarx_ars" if Ticker=="EF106106" & ARS==1
 replace Ticker="bonarx_usd" if Ticker=="EF106106" & ARS==0
 drop ARS
