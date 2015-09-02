@@ -16,7 +16,7 @@ local use_exrates 1
 local use_ndf 0
 
 *Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 0
+local use_addeq 1
 
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
@@ -162,7 +162,7 @@ if `use_bonds' == 0 {
 	
 
 if `use_addeq' == 0 {
-	drop if regexm(industry_sector,"ARCO") | regexm(industry_sector,"PBR")  | regexm(industry_sector,"TS") 
+	drop if regexm(industry_sector,"ARCO") | regexm(industry_sector,"PBR")  | regexm(industry_sector,"TS") | regexm(industry_sector,"TX")
 }
 
 if `use_singlenames' == 0 {
