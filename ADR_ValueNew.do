@@ -3,14 +3,18 @@
 **********************
 set more off
 use "$apath/Datastream_Quarterly.dta", clear
+
 mmerge Ticker using "$apath/FirmTable.dta"
 keep if _merge==3
-split ADR, p(" ")
+split ADRticker, p(" ")
 drop ADRticker2 ADRticker3
 drop Ticker
 rename ADRticker1 Ticker
-keep Ticker quarter MV
+keep Ticker quarter MV EPS ADRratio WC05101 leverage
+rename WC05101 DivPerShare
 drop if Ticker==""
+
+sort Ticker quarter
 
 
 bysort quarter: egen total_market=sum(MV)
@@ -108,7 +112,7 @@ gen total_return_d=1+(tbill/36500) if date==td(01jan1980)
 replace total_return_d=l.total_return_d*(1+tbill/36500) if  date>td(01jan1980)
 carryforward total_return, replace
 order quarter date total_return*
-keep date total_return_d
+keep date total_return_d tbill
 rename total_return total_return
 
 *Assuming the interest is earned overnight and there is no price movement
@@ -127,9 +131,9 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-foreach mark in US AR {
+foreach mark in US /*AR*/ {
 
-	foreach indtype in ValueBank ValueNonFin Value {
+	foreach indtype in /*ValueBank ValueNonFin*/ Value {
 
 		local filename= "`indtype'Index_`mark'_New"
 		
@@ -204,7 +208,7 @@ foreach mark in US AR {
 		by quarter Ticker: egen end_day = max(date)
 		drop if end_day != date
 		
-		keep Ticker market px_close total_return quarter
+		keep Ticker market px_close total_return quarter 
 		rename quarter prev_quarter
 		rename px_close qe_price
 		rename total_return qe_total_return
@@ -216,10 +220,14 @@ foreach mark in US AR {
 		
 		
 		
-		mmerge quarter Ticker using "$apath/`weightfile'.dta", ukeep(weight_exypf) unmatched(master)
+		mmerge quarter Ticker using "$apath/`weightfile'.dta", ukeep(weight_exypf EPS DivPerShare ADRratio leverage) unmatched(master)
 		rename weight_exypf weight
 		keep if _merge==3 | Ticker == "Tbill"
 		
+		replace DivPerShare = tbill / 400 if Ticker == "Tbill"
+		replace EPS = tbill / 400 if Ticker == "Tbill"
+		replace ADRratio = 1 if Ticker == "Tbill"
+		replace leverage = 1 if Ticker == "Tbill"
 		
 		* Compute the returns for various event windows
 		gen bdate = bofd("basic",date)
@@ -230,7 +238,6 @@ foreach mark in US AR {
 		drop if bdate==.
 		
 		sort tid bdate
-		
 		
 		replace weight = 0 if px_close == . | qe_price == .
 		replace weight = 0 if Ticker=="Tbill"
@@ -248,14 +255,15 @@ foreach mark in US AR {
 		gen shares_px_close = shares_px_open
 		gen shares_total_return = weight / qe_total_return
 		
-		
+		gen shares_EPS = weight / qe_price * ADRratio
+		gen shares_DivPerShare = weight / qe_price * ADRratio
 		
 		sort date tid
 	
-		foreach rtype  in px_close px_open total_return {
+		foreach rtype  in px_close px_open total_return EPS DivPerShare {
 			by date: egen `rtype'mxar = sum(shares_`rtype'*`rtype')
-			by date: egen `rtype'mxar_cnt = sum(shares_`rtype'*(`rtype'!=.))
-			replace `rtype'mxar = . if `rtype'mxar_cnt == 0	
+			by date: egen `rtype'mxar_cnt = sum(weight*(`rtype'!=.))
+			replace `rtype'mxar = . if `rtype'mxar_cnt < 0.999
 			drop `rtype'mxar_cnt
 		}
 		
@@ -265,8 +273,8 @@ foreach mark in US AR {
 		gen divyield = tot_ret - px_ret
 		
 		return*/
-		
-		collapse (firstnm) px_closemxar px_openmxar total_returnmxar quarter prev_quarter, by(date)
+		//px_closemxar px_openmxar total_returnmxar 
+		collapse (firstnm) *mxar quarter prev_quarter, by(date)
 		
 		sort prev_quarter date
 		
@@ -310,8 +318,9 @@ foreach mark in US AR {
 		replace px_openmxar = px_openmxar * px_close_qe
 		replace total_returnmxar = total_returnmxar * total_return_qe
 		
-		keep date quarter px_closemxar px_openmxar total_returnmxar
-		reshape long px_close px_open total_return, i(date) j(Ticker) string
+		keep date quarter *mxar
+		
+		reshape long px_close px_open total_return EPS DivPerShare, i(date) j(Ticker) string
 		gen market = "`mark'"
 		replace Ticker = "`indtype'IndexNew"
 		gen industry_sector = "`indtype'IndexNew"
