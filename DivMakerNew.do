@@ -1,7 +1,7 @@
 
 set more off
 
-foreach outcome in gdp ip {
+foreach outcome in gdp /*ip*/ {
 
 	use "$apath/ValueIndex_US_New.dta", clear
 
@@ -19,7 +19,7 @@ foreach outcome in gdp ip {
 		gen month = mofd(date)
 	}
 
-	collapse (lastnm) px_close total_return, by(`time')
+	collapse (lastnm) px_close total_return DivPerShare EPS, by(`time')
 	sort `time'
 
 	*ADDING IN SOME ADDITIONAL VARIABLES
@@ -36,6 +36,7 @@ foreach outcome in gdp ip {
 
 	//gen div_real = div / us_cpi
 	gen div_real = div * OfficialRate / cpi
+	
 	gen cum_div = sum(div_real)
 	
 	gen cum_ovar = sum(`ovar')
@@ -49,6 +50,31 @@ foreach outcome in gdp ip {
 	
 	//gen log_pd = log(px_close / us_cpi) - log_annual_div
 	gen log_pd = log(px_close * OfficialRate / cpi) - log_annual_div
+	
+	if `yearlen' == 4 {
+		gen e_real = EPS / cpi
+		gen cum_e = sum(e_real)
+		gen log_annual_e = log(cum_e- L`yearlen'.cum_e)
+		drop cum_e
+		
+		replace log_annual_e = . if F.L`yearlen'.e_real == .
+		
+		gen log_pe = log(px_close * OfficialRate / cpi) - log_annual_e
+		gen payout_ratio = exp(log_annual_div - log_annual_e)
+		
+		capture graph drop DivEarnDataComparison
+		tsline div_real e_real if e_real != ., name(DivEarnDataComparison)
+		
+		capture graph drop PayoutRatio
+		tsline payout_ratio, name(PayoutRatio)
+		
+		capture graph drop PEPD
+		tsline log_pd log_pe, name(PEPD)
+		
+		capture graph drop `outcome'_vs_e
+		twoway (tsline log_annual_`outcome') (tsline log_annual_e, yaxis(2)), name(`outcome'_vs_e) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
+	}
+	
 	
 	su log_pd
 
