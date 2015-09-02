@@ -5,6 +5,8 @@ foreach outcome in gdp ip {
 
 	use "$apath/ValueIndex_US_New.dta", clear
 
+	keep if Ticker == "ValueIndexNew"
+	
 	if "`outcome'" == "gdp" {
 		local time quarter
 		local ovar Real_GDP_cpi
