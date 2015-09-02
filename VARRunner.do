@@ -66,8 +66,13 @@ foreach outcome in gdp ip {
 	
 	tsline log_div_real log_div_real_sa log_annual_div, name(`time'DivComparison)
 	
-	local rho = ${rho_`time'}
-	disp "rho: `rho'"
+	
+	if $alt_rho == 0 {
+		local rho = ${rho_`time'}
+	}
+	else {
+		local rho = $alt_rho ^ (1/`yearlen')
+	}
 	
 	
 	sort `time'

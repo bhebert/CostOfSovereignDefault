@@ -1,6 +1,13 @@
 use "$forpath/Longterm_Forecasts_Apr2013.dta", clear
 
-local rho=${rho_quarter}^4
+
+if $alt_rho == 0 {
+		local rho = ${rho_quarter}^4
+}
+else {
+	local rho = $alt_rho 
+}
+
 *local macrovar C GDP IP invest infl
 *local macrovarstar C* GDP* IP* invest* infl*
 

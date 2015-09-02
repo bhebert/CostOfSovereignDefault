@@ -6,6 +6,9 @@ global GDP_models gdp_var ip_var gdp_dols ip_dols gdp_con1y gdp_con6m ip_con1y i
 
 global HFExName dolarblue
 
+* Set this to an annual discount rate to run with something different
+global alt_rho 0
+
 *global GDP_models gdp_var 
 
 * Build the data for VAR/tracking/consensus
