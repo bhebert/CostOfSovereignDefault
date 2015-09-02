@@ -174,7 +174,7 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 foreach mark in US AR {
 
-	foreach indtype in ValueNonFin ValueBank  Value {
+	foreach indtype in Value ValueNonFin ValueBank  {
 
 		local filename= "`indtype'Index_`mark'_New"
 		
@@ -328,13 +328,15 @@ foreach mark in US AR {
 		gen shares_DivPerShareDelev = weight2 / qe_price * ADRratio
 		
 		sort date tid
+		rename weight weightValue
+		rename weight2 weightDelev
 	
 		foreach ind in Value Delev {
 			foreach rtype  in px_close px_open total_return EPS DivPerShare {
 				by date: egen `rtype'`ind' = sum(shares_`rtype'`ind'*`rtype')
-				//by date: egen `rtype'`ind'_cnt = sum(weight*(`rtype'!=.))
-				//replace `rtype'mxar = . if `rtype'mxar_cnt < 0.999
-				//drop `rtype'mxar_cnt
+				by date: egen `rtype'`ind'_cnt = sum(weight`ind'*(`rtype'!=.))
+				replace `rtype'`ind' = . if `rtype'`ind'_cnt < 0.999
+				drop `rtype'`ind'_cnt
 			}
 		}
 		/*gen tot_ret = total_return / qe_total_return
