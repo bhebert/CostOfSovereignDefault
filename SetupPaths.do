@@ -22,8 +22,13 @@ global mainpath "$droppath/Cost of Sovereign Default"
 
 local sysdate = subinstr(c(current_date)," ","",.)
 
-global rpath "$droppath/Cost of Sovereign Default/Results/${whoami}_`sysdate'"
-
+if "$alt_rho" == "" | "$alt_rho" == "0" {
+	global rpath "$droppath/Cost of Sovereign Default/Results/${whoami}_`sysdate'"
+}
+else {
+	local ext = string($alt_rho)
+	global rpath "$droppath/Cost of Sovereign Default/Results/${whoami}_`sysdate'_`ext'"
+}
 capture confirm file "$rpath/nul"
 if _rc { 
 	!md "$rpath"

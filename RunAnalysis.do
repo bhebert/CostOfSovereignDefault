@@ -1,13 +1,14 @@
 
+
+* Set this to an annual discount rate to run with something different
+global alt_rho 0.95
+
 * Setup paths-- in case it hasn't been done yet.
 do ${csd_dir}/SetupPaths.do
 
 global GDP_models gdp_var ip_var gdp_dols ip_dols gdp_con1y gdp_con6m ip_con1y ip_con6m gdp_tracking ip_tracking
 
 global HFExName dolarblue
-
-* Set this to an annual discount rate to run with something different
-global alt_rho 0
 
 *global GDP_models gdp_var 
 
