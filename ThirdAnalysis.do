@@ -78,6 +78,7 @@ foreach mark in US AR {
 		drop if date < td(1jan$startyear)
 		
 		replace industry_sector = "`indtype'INDEXNew" if regexm(industry_sector,"`indtype'IndexNew")
+		replace industry_sector = "`indtype'INDEXDelev" if regexm(industry_sector,"`indtype'IndexDelev")
 	}
 }
 
