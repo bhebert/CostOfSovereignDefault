@@ -5,7 +5,7 @@ set more off
 use "$apath/Datastream_Quarterly.dta", clear
 mmerge Ticker using "$apath/FirmTable.dta"
 keep if _merge==3
-split ADR, p(" ")
+split ADRticker, p(" ")
 drop ADRticker2 ADRticker3
 drop Ticker
 rename ADRticker1 Ticker
