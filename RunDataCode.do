@@ -27,6 +27,6 @@ do ${csd_dir}/LowFreqFactors.do
 
 do ${csd_dir}/Industrial_ProductionNew.do
 
-do ${csd_dir}/DivMaker4.do
+//do ${csd_dir}/DivMaker4.do
 
 
