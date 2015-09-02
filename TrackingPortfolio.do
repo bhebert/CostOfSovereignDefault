@@ -3,7 +3,7 @@ set more off
 
 * Implement Lamont-2001 style tracking returns
 
-local factors $lf_factors
+local factors SPX
 
 local forecast_years 3
 local nw_years 1
