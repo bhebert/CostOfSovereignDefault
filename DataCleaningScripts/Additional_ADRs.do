@@ -1,4 +1,3 @@
-*NOT INTEGRATED INTO THIRD ANALYSIS YET
 
 use "$crsp_path/CRSP_Additional_ADR.dta", clear
 drop if ticker=="BRO"
@@ -75,3 +74,29 @@ replace total_return=total_return/tr2
 twoway (line total_return date if Ticker=="TS", sort) (line  total_return date if Ticker=="TS_CRSP", yaxis(2) sort) if yofd(date)>=2011
 twoway (line total_return date if Ticker=="PBR", sort) (line  total_return date if Ticker=="PBR_CRSP", yaxis(2) sort) if yofd(date)>=2011
 */
+
+
+*TERNIUM
+use "$crsp_path/Ternium.dta", clear
+order ticker date ret prc openprc
+keep ticker date ret prc openprc
+encode ticker, gen(tid)
+gen bdate = bofd("basic",date)
+format bdate %tbbasic
+tsset tid bdate
+sort tid bdate
+bysort ticker: egen mindate=min(date)
+sort tid bdate
+bysort ticker: gen n=_n
+gen total_return=1 if date==mindate
+tsset tid n
+sort tid n
+replace total_return=l.total_return*(1+ret) if mindate~=date
+keep date ticker prc openprc total_return 
+keep if yofd(date)>=2011
+gen market="US"
+rename ticker Ticker
+rename openprc px_open 
+rename prc px_close
+save "$apath/Ternium_CRSP.dta", replace
+
