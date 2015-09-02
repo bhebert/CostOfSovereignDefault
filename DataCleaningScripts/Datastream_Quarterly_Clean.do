@@ -153,10 +153,21 @@ sort Ticker quarter
 gen leverage=WC02999/WC03998
 label var leverage "WC02999 (Total Assets) /WC03998 (Total Capital)"
 mmerge quarter Ticker using "`ds1'"
+
+* Build a better EPS number
+
+gen qtnum = quarter(dofq(quarter))
+
+gen EPSNew = WC05291 
+replace EPSNew = WC05292 if qtnum == 2
+replace EPSNew = WC05293 if qtnum == 3
+replace EPSNew = WC05294 if qtnum == 4
+
+
 save "$apath/Datastream_Quarterly.dta", replace
 	
 
-browse if _merge==2 & yofd(dofq(quarter))>=2003 & yofd(dofq(quarter))<=2014
+browse if yofd(dofq(quarter))>=2003 & yofd(dofq(quarter))<=2014
 *THE DATA MISSING IS PRE-2003, 2015, or FIRMS WE DON'T USE
 
 
