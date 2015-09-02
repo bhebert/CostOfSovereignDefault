@@ -352,6 +352,8 @@ foreach mark in US AR {
 		
 		sort Ticker prev_quarter date
 		
+		
+		
 		save "`temp'", replace
 		
 		drop prev_quarter
@@ -370,6 +372,8 @@ foreach mark in US AR {
 		
 		by Ticker: gen px_close_sum = sum(px_close)
 		by Ticker: gen total_return_sum = sum(total_return)
+		
+		
 		
 		replace px_close_sum = . if px_close == .
 		replace total_return_sum = . if total_return == .
