@@ -196,3 +196,21 @@ xtitle("") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2
 graph export "$rpath/Default_Plot2.eps", replace
 
 
+
+*JUST FOR THE VERSION WITH BONDS
+/*
+use "$apath/data_for_summary.dta", clear
+replace cds=cds_*100
+sort industry_sector market day_type event_day date
+bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1
+sort industry_sector market day_type  eventcloses date
+bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
+gen event_desc="Stay, 11/29/12" if date==td(29nov2012) & day_type=="twoday"
+replace event_desc="Supreme Court Denial, 6/16/14" if date==td(17jun2014) & day_type=="twoday"
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="defbond_eur" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_defbond_eur") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/defbond_eur.eps", replace
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_disc" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_rsbond_usd_disc") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/rsbond_usd_disc.eps", replace
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_par" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_rsbond_usd_par") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/rsbond_usd_par.eps", replace
+
