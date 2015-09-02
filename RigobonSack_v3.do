@@ -157,7 +157,7 @@ if `use_otherdefp' == 0 {
 }
 
 if `use_bonds' == 0 {
-	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") 
+	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") 
 }
 	
 
