@@ -116,7 +116,8 @@ foreach var in gdp ip {
 		
 		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon', robust bw(4)
 		ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew_abnormal`horizon' ret_ADRBlue_abnormal`horizon' if lagyear`horizon' >= 2003, robust bw(4)
-		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon' if lagyear`horizon' >= 2003, robust bw(4)
+		
+		//ivreg2 N_`var'_ft_`horizon' ret_ValueIndexNew`horizon' ret_ADRBlue`horizon' ret_SPX`horizon' if lagyear`horizon' >= 2003, robust bw(4)
 		
 		matrix temp = e(b)
 		matrix `var'_con`horizon'_b=temp[1,1..2]'
