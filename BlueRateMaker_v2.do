@@ -77,6 +77,27 @@ twoway (line px_close date if ADR_T=="BFR") (line px_close date if ADR_T=="BMA")
 graph export "$rpath/ADR_Blue_db.png", replace
 save "$apath/ADRBlue_All.dta", replace
 
+
+*CALCULATE DISPERSION NUMBER FOR PAPER
+
+use "$apath/ADRBlue_All.dta", clear
+gen ADRBluetemp=px_close if Ticker=="ADRBlue"
+bysort date: egen ADRBlue=max(ADRBluetemp)
+keep date px_close ADR_Tick ADRBlue
+keep if ADR_T~=""
+keep if date>=td(01jan2011) & date<=td(30jul2014)
+summ px_close
+bysort date: egen mean=mean(px_close)
+gen px_close2=px_close
+collapse (max) px_close (min) px_close2 (firstnm) mean ADRBlue, by(date)
+rename px_close max
+rename px_close2 min
+gen gap=max-min
+gen share_mean=100*(gap/mean)
+gen share_ADRBlue=100*(gap/ADRBlue)
+summ share_ADRBlue
+
+
 /*use "$apath/ADRBlue_All.dta", clear
 order date ADR_ Under_ px_open px_close total_return
 collapse (mean) px_open px_close total_return, by(date)
