@@ -41,7 +41,8 @@ split bb_ticker, p(" ")
 order bb_ticker*
 replace Ticker=bb_ticker1
 drop bb_tic*
-keep Ticker quarter MV
+keep Ticker quarter MV EPS ADRratio WC05101 leverage
+rename WC05101 DivPerShare
 drop if Ticker==""
 
 bysort quarter: egen total_market=sum(MV)
@@ -131,9 +132,9 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-foreach mark in US /*AR*/ {
+foreach mark in US AR {
 
-	foreach indtype in /*ValueBank ValueNonFin*/ Value {
+	foreach indtype in ValueBank ValueNonFin Value {
 
 		local filename= "`indtype'Index_`mark'_New"
 		
