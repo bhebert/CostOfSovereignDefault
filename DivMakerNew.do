@@ -1,7 +1,7 @@
 
 set more off
 
-foreach outcome in gdp /*ip*/ {
+foreach outcome in gdp ip {
 
 	use "$apath/ValueIndex_US_New.dta", clear
 
