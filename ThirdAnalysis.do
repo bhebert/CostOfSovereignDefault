@@ -99,8 +99,11 @@ gen industry_sector = Ticker
 gen market = "Index"
 
 append using "`temp'"
-*Append Additioanl equities
+*Append Additional equities
 append using "$apath/Additonal_Securities.dta"
+
+*Append Bond level data
+append using "$apath/bondlevel.dta"
 save "`temp'", replace
 
 use "$bbpath/Latam_equities.dta", clear

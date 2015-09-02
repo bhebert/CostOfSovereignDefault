@@ -16,17 +16,20 @@ local use_exrates 1
 local use_ndf 0
 
 *Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 1
+local use_addeq 0
 
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
 
 * Run with the GDP models
 * Requires use_adrs and use_exrates
-local use_gdpmodels 1
+local use_gdpmodels 0
+
+* Run with individual bond returns
+local use_bonds 1
 
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
-local use_mexbrl 1
+local use_mexbrl 0
 
 * Run with other default probabilities
 local use_otherdefp 0
@@ -152,6 +155,11 @@ if `use_mexbrl' == 0 {
 if `use_otherdefp' == 0 {
 	drop if regexm(industry_sector,"DTRI")
 }
+
+if `use_bonds' == 0 {
+	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") 
+}
+	
 
 if `use_addeq' == 0 {
 	drop if regexm(industry_sector,"ARCO") | regexm(industry_sector,"PBR")  | regexm(industry_sector,"TS") 
