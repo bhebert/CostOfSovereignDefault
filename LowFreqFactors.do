@@ -1,7 +1,7 @@
 set more off
 tempfile temp fred_temp SPI_Temp 
 
-global $lf_factors SPX VIX emasia oil soybean igbonds hybonds
+global lf_factors SPX VIX emasia oil soybean igbonds hybonds
 
 *Load Fred
 import excel "$miscdata/IP/Fred_Controls.xls", sheet("Daily") firstrow clear
