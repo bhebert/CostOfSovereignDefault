@@ -1,7 +1,7 @@
 
 
 * Set this to an annual discount rate to run with something different
-global alt_rho 0.95
+global alt_rho 0
 
 * Setup paths-- in case it hasn't been done yet.
 do ${csd_dir}/SetupPaths.do
