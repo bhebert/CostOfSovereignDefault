@@ -16,7 +16,7 @@ local use_exrates 1
 local use_ndf 0
 
 *Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 1
+local use_addeq 0
 
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
@@ -26,7 +26,7 @@ local use_usbeinf 0
 local use_gdpmodels 0
 
 * Run with individual bond returns
-local use_bonds 1
+local use_bonds 0
 
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
 local use_mexbrl 0
@@ -114,6 +114,10 @@ if `relative_perf' == 1 {
 		local ext_style _relative
 	}
 }	
+
+if `exclusions' == 0 {
+	local ext_style `ext_style'_noexcl
+}
 
 local ext 
 
