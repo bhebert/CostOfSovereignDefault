@@ -2,23 +2,26 @@
 ***************************
 *FILES NOW BACK FROM MATLAB
 ***************************
+
+tempfile temp1 temp2
+set more off
 foreach y in "" "_europe" "_newyork" {
 
 forvalues i=1/4 {
 if `i'==1 {
-import delimited "$mpath/Bootstrap`y'_results.csv", clear
+import delimited "$apath/Bootstrap`y'_results.csv", clear
 local name="cumdef_hazard`y'"
 }
 else if `i'==2 {
-import delimited "$mpath/Bootstrap`y'_resultsConH.csv", clear
+import delimited "$apath/Bootstrap`y'_resultsConH.csv", clear
 local name="cumdef_hazard_ConH`y'"
 }
 else if `i'==3 { 
-import delimited "$mpath/Bootstrap`y'_results_UST.csv", clear
+import delimited "$apath/Bootstrap`y'_results_UST.csv", clear
 local name "cumdef_hazard_UST`y'"
 }
 else if `i'==4 { 
-import delimited "$mpath/Bootstrap`y'_resultsConH_UST.csv", clear
+import delimited "$apath/Bootstrap`y'_resultsConH_UST.csv", clear
 local name "cumdef_hazard_ConH_UST`y'"
 }
 
@@ -70,7 +73,7 @@ save "$mpath/`name'.dta", replace
 
 ***************
 *June 16, 2014
-import delimited "$mpath/Bootstrap_June16.csv", clear
+import delimited "$apath/Bootstrap_June16.csv", clear
 rename v1 date
 format date %td
 rename v2 def6m
@@ -152,8 +155,8 @@ mmerge date using "$mpath/PUF_NY.dta", ukeep(Upfront*)
 drop if _merge==2
 save "$mpath/Default_Prob_All.dta", replace
 
-foreach y in "_europe" "_newyork"{
 use "$mpath/Default_Prob_All.dta", clear
+foreach y in "_europe" "_newyork"{
 
 mmerge date using "$mpath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
@@ -181,9 +184,8 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	rename tri_def`x' tri_def`x'`y'
 	rename tri_conH_def`x' tri_conH_def`x'`y' 
 }	
-
-save  "$mpath/Default_Prob_All.dta", replace
 }
+save  "$mpath/Default_Prob_All.dta", replace
 
 mmerge date using "$mpath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 mmerge date using "$mpath/cumdef_hazard_triangle.dta", ukeep(tri*)
@@ -200,12 +202,35 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	}	
 	}
 
-	mmerge date using "$mpath/Sensitivities_Merge.dta", ukeep (markitC5_def10y  markitC5_def1y  markitC5_def2y markitC5_def3y markitC5_def4y markitC5_def5y markitC5_def6m markitC5_def7y)
+	mmerge date using "$mpath/Sensitivities_Merge.dta", ukeep (markitC5_def10y  markitC5_def1y  markitC5_def2y markitC5_def3y markitC5_def4y markitC5_def5y markitC5_def6m markitC5_def7y PUF_markitC1_def7y PUF_markitC5_def10y  PUF_markitC5_def1y  PUF_markitC5_def2y  PUF_markitC5_def3y PUF_markitC5_def4y PUF_markitC5_def5y PUF_markitC5_def6m PUF_markitC5_def7y)
 foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var markitC5_def`x' "`x' Cumulative Default Probability, Markit, "
+	label var PUF_markitC5_def`x' "`x' Points Upfront, Markit, "	
+	rename markitC5_def`x' mC5_`x'
+	rename PUF_markitC5_def`x' PUF_`x'
 	}	
 	
+	mmerge date using "$mpath/Composite_USD.dta", ukeep (Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y)
+	save "`temp1'", replace
+
+use "$mpath/Sameday_USD.dta", clear
+keep if snaptime=="NewYork" | snaptime=="Europe"
+replace snaptime="_newyork" if snaptime=="NewYork"
+replace snaptime="_europe" if snaptime=="Europe"
+keep date snaptime Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y
+reshape wide Spread*, i(date) j(snaptime) str
+mmerge date using "`temp1'"
+keep if date>=td(01jan2011) 
+
+foreach y in "" "_europe" "_newyork" {
+	foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
+		label var Spread`x'`y' "`x' Par Spread, `y'"
+	}
+	}
 	
+	foreach x in 6M 1Y 2Y 3Y 4Y 5Y 7Y 10Y {
+		label var Upfront`x' "Points Upfront, 5% coupon, `x'"
+		}
 	
 save  "$mpath/Default_Prob_All.dta", replace
 
