@@ -14,6 +14,10 @@ set more off
 
 local cds_i_marks 8
 
+if $cds_robust==1 {
+	local cds_i_marks 7
+	}
+
 
 * This code loads CDS returns
 * The procedure depends on the data source.
@@ -99,15 +103,14 @@ else if `cds_i_marks' == 6 {
 
 else if `cds_i_marks' == 7 {
 	use "$mpath/Default_Prob_All.dta", clear
-	keep date $markitC5_def5y $cds_e 
-	rename $cds_e  Spread5yE
+	keep date  $cds_n
 	rename $cds_n Spread5yN
 }
 
-else if `cds_i_marks' == 8 {
+else if `cds_i_marks' == 8  {
 	use "$mpath/Default_Prob_All.dta", clear
-	keep date markitC5_def5y 
-	rename  markitC5_def5y Spread5yN
+	keep date mC5_5y 
+	rename  mC5_5y Spread5yN
 }
 
 * We use a business day calendar to figure out
@@ -162,7 +165,7 @@ else if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
 
 }
-else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 | `cds_i_marks' == 7 {
+else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
 
 	gen cds_intra = Spread5yN - Spread5yE
 	gen cds_nightbefore = Spread5yE - L.Spread5yN
@@ -178,7 +181,7 @@ else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 | `cds_i_ma
 
 }
 
-else if `cds_i_marks' == 8  {
+else if `cds_i_marks' == 8 | `cds_i_marks' == 7 {
 
 	gen cds_intra = .
 	gen cds_nightbefore = .
