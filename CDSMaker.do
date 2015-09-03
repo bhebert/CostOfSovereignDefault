@@ -478,12 +478,14 @@ drop if date >= td(30jul2014)
 
 * If we're using Markit/DS data, a lot of these event windows must be 
 * widened. This code implements that.
-if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
+
+if `cds_i_marks' == 2 | `cds_i_marks' == 4 | `cds_i_marks' == 8 | `cds_i_marks' == 7 {
 
 	replace event_onedayN = 1 if event_intra == 1
 	replace event_intra = .
 
-	replace event_twoday = 1 if event_nightbefore == 1
+	//replace event_twoday = 1 if event_nightbefore == 1
+	replace event_onedayN = 1 if event_nightbefore == 1
 	replace event_nightbefore = .
 
 	replace event_twoday = 1 if event_1_5 == 1
@@ -491,8 +493,6 @@ if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 
 	replace event_twoday = 1 if event_onedayL == 1
 	replace event_onedayL = .
-
-	replace event_special = .
 
 }
 
