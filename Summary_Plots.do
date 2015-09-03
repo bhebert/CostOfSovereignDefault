@@ -64,6 +64,13 @@ cap {
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="MexicoEquity" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Mexico") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/MexicoEquityScatter.eps", replace
 }
+
+
+keep if event_day==1 &  industry_sec=="ValueINDEXNew"
+order n2 date cds_ return_
+sort n2
+export excel n2 date cds_ return_ using "$rpath/Event_Summary.xls", firstrow(variables) replace datestring("%tdMonth_DD,_CCYY")
+
  
 *********************
 *EXCHANGE RATE Plots
