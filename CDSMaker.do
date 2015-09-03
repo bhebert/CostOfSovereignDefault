@@ -14,7 +14,7 @@ set more off
 
 local cds_i_marks 8
 
-if $cds_robust==1 {
+if "$cds_robust"=="1" {
 	local cds_i_marks 7
 	}
 
