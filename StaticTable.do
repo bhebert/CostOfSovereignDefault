@@ -21,6 +21,7 @@ replace ADRratio=3 if regexm(ADRticker,"BFR")
 replace ADRratio=5 if regexm(ADRticker,"TEO")
 replace ADRratio=25 if regexm(ADRticker,"PAM")
 
+
 save "`adrtemp'", replace
 
 use "$dpath/DS_BB_Static_v2.dta", clear
@@ -118,7 +119,5 @@ gen finvar = 0
 replace finvar = 1 if regexm(industry_sector,"Financial") | regexm(industry_sector,"Banks")
 replace finvar = . if regexm(industry_sector,"Real Estate") | regexm(industry_sector,"RlEst")
 
-* Dropping this because it's not obviously an Argentine firm.
-drop if Ticker == "SID"
 
 save "$apath/FirmTable.dta", replace
