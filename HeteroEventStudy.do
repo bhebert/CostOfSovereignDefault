@@ -18,7 +18,7 @@ local exclusions 1
 
 
 //local example_sec INDEX_US
-local example_sec ValueIndex_US
+local example_sec ValueINDEXNew_US
 
 
 local use_singlenames 0
@@ -36,11 +36,15 @@ use "$apath/ThirdAnalysis.dta", clear
 
 * The datastream and official rate can't be used for this analysis
 * neither can Brazil or Mexico. The issue is no open/close data, just close to close.
-drop if regexm(industry_sector,"DSBlue") | regexm(industry_sector,"OfficialRate") | regexm(industry_sector,"Brazil") | regexm(industry_sector,"Mexico") | regexm(industry_sector,"ADRMinusDS")
+//drop if regexm(industry_sector,"DSBlue") | regexm(industry_sector,"OfficialRate") | regexm(industry_sector,"Brazil") | regexm(industry_sector,"Mexico") | regexm(industry_sector,"ADRMinusDS")
 
 
 // Right now, this cannot be run, because it is misssing open/close data.
-drop if regexm(firmname,"INDEX_US")
+//drop if regexm(firmname,"INDEX_US")
+
+sort ind_id date daynum
+by ind_id: egen icount = sum( return_ != . & day_type == "intra")
+drop if icount == 0
 
 if `use_singlenames' == 0 {
 	drop if isstock == 1 & ports == 0
