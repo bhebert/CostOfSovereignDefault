@@ -95,6 +95,9 @@ else if `cds_i_marks' == 6 {
 	*rename europe Spread5yE
 	*rename composite Spread5yN
 	use "$mpath/Default_Prob_All.dta", clear
+	/*keep date ust_def5y ust_def5y_europe 
+	rename ust_def5y_europe Spread5yE
+	rename ust_def5y Spread5yN*/
 	keep date def5y def5y_europe 
 	rename def5y_europe Spread5yE
 	rename def5y Spread5yN
