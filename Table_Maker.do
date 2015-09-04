@@ -171,13 +171,14 @@ if "`reg'"~="OLS" & "`reg'"~="2SLS_IV" {
 *************
 use "`temp2'", clear
 keep _var1 _var2 _var3 _var4 _var9 _var11
-keep if _var1=="variables" |  _var1=="hml_es_industry_ar" |  _var1=="hml_import_intensity_ar" |  _var1=="hml_finvar_ar"  |  _var1=="hml_foreign_own_ar"  |  _var1=="eqindex_ar"
+keep if _var1=="variables" |  _var1=="hml_es_industry_ar" |  _var1=="hml_import_intensity_ar" |  _var1=="hml_finvar_ar"  |  _var1=="hml_foreign_own_ar"  | _var1=="hml_indicator_adr_ar" | _var1=="eqindex_ar"
 gen output_num=1
 replace output_num=2 if _var1=="hml_es_industry_ar"
 replace output_num=3 if _var1=="hml_import_intensity_ar"
 replace output_num=4 if _var1=="hml_finvar_ar"
 replace output_num=5 if _var1=="hml_foreign_own_ar"
-replace output_num=6 if _var1=="eqindex_ar"
+replace output_num=6 if _var1=="hml_indicator_adr_ar"
+replace output_num=7 if _var1=="eqindex_ar"
 
 sort output_num
 drop output_num
@@ -248,6 +249,20 @@ mmerge _var1 using "$mainpath/Markit/Other_CDS_labels.dta", umatch(code)
 keep if _merge==3
 drop _var1 _merge
 order country _var2
+split _var2, p("*")
+destring _var21, replace
+replace _var21=_var21*100
+tostring _var21, replace force
+gen test=_var2 
+forvalues i=0/9 {
+	replace test=subinstr(test,"`i'","",.)
+	}
+	replace test=subinstr(test,".","",.)
+		replace test=subinstr(test,"-","",.)
+
+	gen deltad=_var21+test
+	keep country deltad
+	
 export excel using "$rpath/Table_Other_CDS_`reg'.xls", replace
 }
 
