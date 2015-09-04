@@ -23,14 +23,15 @@ foreach x in PUF_1y PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC
 
 
 *ORGANIZE RESULTS
-import excel "$rpath/RS_CDS_IV_reshapeADRs_PUF_1y.xls", sheet("Sheet1") firstrow clear
+global rpathben "$mainpath/Results/BenH_3Sep2015"
+import excel "$rpathben/RS_CDS_IV_reshapeADRs_PUF_1y.xls", firstrow sheet("Sheet1") clear
 gen cds_type="PUF_1Y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
 foreach x in PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC5_1y mC5_3y mC5_5y mC5_7y conh_ust_def1y conh_ust_def3y conh_ust_def5y conh_ust_def7y tri_def5y {
 	cap{
-	import excel "$rpath/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
+	import excel "$rpathben/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
 	keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 	gen cds_type="`x'"
 	append using "$rpath/temp.dta"
@@ -58,19 +59,17 @@ foreach x in PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC5_1y mC
 	gen varnum=2
 	replace varnum=1 if vari=="cds2"
 	replace varnum=3 if vari=="Robust_SE"
-	foreach x of varlist con* vec* {
-	
-		replace `x'=subinstr(`x',"(","",.) if varnum==3
-		replace `x'=subinstr(`x',")","",.) if varnum==3
-		replace `x'=substr(`x',1,4) if varnum==3
-		replace `x'="("+`x'+")" if varnum==3
-		}
+
 	sort cds_type varnum
+		drop adrminusds contado_ambito dsblue eqindex_us valueindex_us varnum
+	order cds_type variables officialrate dolarblue adrblue bcs  index_us valueindexnew_us valuebankindexnew_us   valuenonfinindexnew_us valueindexdelev_us  valuebankindexdelev_us   valuenonfinindexdelev_us
+	
 	save "$rpath/Robustness_Table.dta", replace
-	export excel using "$rpath/Robustness_Table.xls", firstrow(variables)
+export excel using "$rpath/Robustness_Table.xls", firstrow(variables) replace
 
-
-
+use "$rpath/Robustness_Table.dta", clear
+keep if variables=="cds2"
+export excel using "$rpath/Robustness_Table_Compact.xls", replace
 
 
 
