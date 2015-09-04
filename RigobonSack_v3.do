@@ -186,7 +186,7 @@ else {
 }
 
 * These ones are not built correctly.
-drop if regexm(firmname,"INDEX") & regexm(firmname,"AR")
+drop if regexm(firmname,"INDEX") & regexm(firmname,"Value") & regexm(firmname,"AR")
 
 local ext_style `ext'`ext_style'
 
