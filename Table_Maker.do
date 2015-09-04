@@ -111,7 +111,7 @@ sort order
 export excel using "$rpath/Table_GDP_`reg'.xls", replace
 
 ****************************
-*Deleverage results * Table 4
+*Deleverage results * 
 use "`temp1'", clear
 replace _var3="("+_var9+")" if _var9~="" & _n~=1
 keep _var1 _var2 _var3 _var4 _var10
@@ -136,6 +136,34 @@ replace order=6 if _var1=="R_squared"
 sort order
  drop order
 export excel using "$rpath/Table_Delever_`reg'.xls", replace
+
+****************************
+*Bond Level *
+use "`temp1'", clear
+replace _var3="("+_var9+")" if _var9~="" & _n~=1
+keep _var1 _var2 _var3 _var4 _var10
+keep if _var1=="variables" |  _var1=="boden15_usd" |  _var1=="bonarx_usd" |  _var1=="defbond_eur" |  _var1=="rsbond_usd_disc" |  _var1=="rsbond_usd_par" 
+gen output_num=1
+replace output_num=2 if _var1=="defbond_eur"
+replace output_num=3 if _var1=="boden15_usd"
+replace output_num=4 if _var1=="bonarx_usd"
+replace output_num=5 if _var1=="rsbond_usd_disc"
+replace output_num=6 if _var1=="rsbond_usd_par"
+sort output_num
+drop output_num
+foreach x of varlist _all {
+	rename `x' v_`x'
+	}
+sxpose, clear 
+
+gen order=1
+replace order=2 if _var1=="cds2"
+replace order=3 if _var1=="Robust_SE"
+replace order=4 if _var1=="CI_95"
+replace order=5 if _var1=="Observations"
+sort order
+ drop order
+export excel using "$rpath/Table_bond_`reg'.xls", replace
 
 if "`reg'"~="OLS" & "`reg'"~="2SLS_IV" {
 *************
@@ -226,13 +254,10 @@ export excel using "$rpath/Table_Other_CDS_`reg'.xls", replace
 }
 
 
-
-******************
-*ROBUSTNESS TABLE*
-******************
-global robust "$mainpath/Results/BenH_3Sep2015"
-foreach x in PUF_1y PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC5_1y mC5_3y mC5_5y mC5_7y conh_ust_def1y conh_ust_def3y conh_ust_def5y conh_ust_def7y tri_def5y {
-import excel "$robust/RS_CDS_IV_reshapeADRs_PUF_1y.xls", sheet("Sheet1") clear
+*INDIVIDUAL BONDS
+import excel "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Results/BenH_2Sep2015/RS_CDS_IV_reshapeADRs.xls", sheet("Sheet1") clear
+sxpose, clear
+save "`temp1'", replace
 
 
 
