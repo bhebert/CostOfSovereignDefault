@@ -487,8 +487,8 @@ if `cds_i_marks' == 2 | `cds_i_marks' == 4 | `cds_i_marks' == 8 | `cds_i_marks' 
 	replace event_onedayN = 1 if event_intra == 1
 	replace event_intra = .
 
-	//replace event_twoday = 1 if event_nightbefore == 1
-	replace event_onedayN = 1 if event_nightbefore == 1
+	replace event_twoday = 1 if event_nightbefore == 1
+	//replace event_onedayN = 1 if event_nightbefore == 1
 	replace event_nightbefore = .
 
 	replace event_twoday = 1 if event_1_5 == 1
