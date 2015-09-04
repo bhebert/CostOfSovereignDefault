@@ -50,8 +50,10 @@ split bb_ticker, gen(ticker_short) limit(1)
 rename ticker_short ticker_short
 
 mmerge ticker_short using "`adrtemp'", unmatched(both)
+
+* this was not correct
 *FIX SIDERAR /Ternium
-replace  ADRticker="TX US Equity" if Ticker=="SID"
+//replace  ADRticker="TX US Equity" if Ticker=="SID"
 
 replace indicator_adr = "X" if ADRticker != ""
 
