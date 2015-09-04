@@ -69,7 +69,7 @@ export excel using "$rpath/Robustness_Table.xls", firstrow(variables) replace
 
 use "$rpath/Robustness_Table.dta", clear
 keep if variables=="cds2"
-export excel using "$rpath/Robustness_Table_Compact.xls", replace
+export excel using "$rpath/Robustness_Table_Compact.xls", firstrow(variables) replace
 
 
 
