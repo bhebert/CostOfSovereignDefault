@@ -270,24 +270,29 @@ expand 2 if isstock == 1, gen(ports)
 
 expand 2 if nonfinancial == 1 & ports == 1, gen(nf)
 
+expand 2 if ports == 1 & nf == 0, gen(allstocks)
+
 replace industry_sector = "NonFinancial" if nf == 1
 
 	
 foreach svar in $static_vars {
 	disp "svar: `svar' ``svar'_cut'"
 	
-	if "`svar'" != "finvar" {
+	if "`svar'" != "finvar" & "`svar'" != "foreign_own" & "`svar'" != "indicator_adr" {
 		expand 2 if nf == 1 & `svar' != ., gen(counter2)
 	}
 	else {
-		expand 2 if ports == 1 & (nf == 1 | finvar == 1) & `svar' != ., gen(counter2)
+		expand 2 if allstocks == 1 & `svar' != ., gen(counter2)
 	}
+	
 	replace industry_sector = "High_`svar'" if counter2 == 1 & `svar' > ``svar'_cut'
 	replace industry_sector = "Low_`svar'" if counter2 == 1 & `svar' <= ``svar'_cut'
 	replace nf = 0 if counter2 == 1
+	replace allstocks = 0 if counter2 == 1
 	drop counter2
 }
 
+drop if allstocks == 1
 
 replace Ticker = "" if ports == 1
 
