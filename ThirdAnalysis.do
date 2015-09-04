@@ -360,8 +360,9 @@ local crtypes2
 foreach rt in $rtypes {
 	local crtypes2 `crtypes2' cnt2_`rt'=`rt'
 }
-		
+				
 collapse (mean) `fnames' isstock nonfinancial `rtypes' ports (sum) cnt_* (count) `crtypes2', by(date industry_sector Ticker market ishml)
+
 
 foreach rt in `rtypes' {
 	replace `rt' = . if ishml == 1 & cnt2_`rt' < 2
@@ -413,8 +414,8 @@ sort date day_type firmname
 by date day_type: egen madrreturn = mean(adrreturn)
 
 gen return_local=return_
-replace return_ = return_ - madrreturn if market == "AR"
-replace return_local = return_local + madrreturn if market == "US"
+replace return_ = return_ - madrreturn if market == "AR" & ishml != 1
+replace return_local = return_local + madrreturn if market == "US"  & ishml != 1
 
 drop adrreturn
 
