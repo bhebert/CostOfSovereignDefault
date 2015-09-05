@@ -10,7 +10,7 @@ save "`temp1'", replace
 
 if "`reg'"~="OLS" & "`reg'"~="2SLS_IV" {
 *Local Results 
-import excel "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Results/BenH_3Sep2015/`reg'_reshapeLocalHML_relative_noex.xls", sheet("Sheet1") clear
+import excel "/Users/jesseschreger/Dropbox/Cost of Sovereign Default/Results/BenH_4Sep2015/`reg'_reshapeLocalHML_relative_noex.xls", sheet("Sheet1") clear
 sxpose, clear
 save "`temp2'", replace
 }
