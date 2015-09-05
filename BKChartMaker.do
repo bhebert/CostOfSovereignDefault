@@ -7,7 +7,7 @@ local droppath /Users/jesseschreger/Dropbox
 
 
 *import excel "`dir_resultsb'/RS_CDS_IVHMLLocal_relative_noex_fixed.xlsx", sheet("Sheet1") clear
-import excel "$mainpath/Results/BenH_3Sep2015/RS_CDS_IVLocalHML_relative_noex.xlsx", sheet("Sheet1") clear
+import excel "$mainpath/Results/BenH_4Sep2015/RS_CDS_IVLocalHML_relative_noex.xlsx", sheet("Sheet1") clear
 * 90, 95, or 99
 local CI_lvl 90
 local HML 1
@@ -114,8 +114,8 @@ graph drop _all
 
 
 	discard
-	local group1a Banks Enrgy Manuf RlEst Utils	
-	local group1b Chems Diverse Telcm	
+	local group1a Banks Enrgy Manuf RlEst Telcm Utils	
+	local group1b Chems Diverse 	
 local group1 Banks Chems Diverse Enrgy Manuf RlEst Telcm Utils
 	*twoway (rcap ci_high ci_low  capm_implied if regexm("`group1'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group1'",Ticker), sort range(-110 -30)) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mcolor(navy) mlabcolor(navy) ) (scatter pointest capm_implied if regexm("`group1a'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)) (scatter pointest capm_implied if regexm("`group1b'",Ticker),  mcolor(forest_green)), ytitle("Estimated Industry Response, {&alpha}", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("Graph`x'") xlabel(-110(20)-30) ylabel(-100(20)0) 
 	twoway (rcap ci_high ci_low  capm_implied if regexm("`group1'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group1'",Ticker), sort) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mcolor(navy) mlabcolor(navy) ) (scatter pointest capm_implied if regexm("`group1a'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)) (scatter pointest capm_implied if regexm("`group1b'",Ticker),  mcolor(forest_green)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("Graph`x'") xlabel(-80(20)-20) ylabel(-100(20)0) 
