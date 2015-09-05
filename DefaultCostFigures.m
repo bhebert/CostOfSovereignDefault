@@ -6,9 +6,9 @@ test=0;
 
 %ESTIMATE OF PV LOSS
 %GDP_VAR ESTIMATE
-pvest=9.792;
+pvest=9.953;
 %gdp_con1y ESTIMATE
-pvest_con=4.262;
+pvest_con=4.172;
 rho=.99552436;
 
 %*Forecast figures
