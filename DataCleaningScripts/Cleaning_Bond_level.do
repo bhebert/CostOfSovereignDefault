@@ -1,4 +1,18 @@
-*Bond level data
+*Bond level data]
+
+*Cleaning exchange rate data
+tempfile eur
+import excel "$miscdata/EURUSD_GFD/EURUSD_20150914_excel2007.xlsx", sheet("Price Data") firstrow clear
+gen date=date(Date,"MDY")
+format date %td
+keep  date Close
+rename Close eur
+tsset date
+tsfill
+carryforward eur, replace
+save "`eur'", replace
+
+
 *Cleaning Bloomberg data
 global dir_inter "~/Dropbox/Cost of Sovereign Default/Bloomberg/intermediate"
 global dir_datasets "~/Dropbox/Cost of Sovereign Default/Bloomberg/Datasets"
@@ -138,7 +152,10 @@ discard
 	replace ticker="rsbond_usd_disc" if ticker=="EI233619"
 	replace ticker="defbond_eur" if ticker=="EC131761"
 	replace ticker="rsbond_usd_par" if id_isin=="US040114GK09"
-	
+		mmerge date using "`eur'"
+	replace px_last=px_last/eur if ticker=="defbond_eur"
+	drop eur
+
 	twoway (line ytm_mid date if ticker=="rsbond_usd_disc") (line ytm_mid date if ticker=="defbond_eur"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("YTM")
 	graph export "$rpath/bond_ytm_compare.png", replace
 	twoway (line px_last date if ticker=="rsbond_usd_disc") (line px_last date if ticker=="defbond_eur"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("Price")
