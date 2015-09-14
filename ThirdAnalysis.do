@@ -22,7 +22,8 @@ global startyear 2011
 
 
 * Choose ADRBlue or DSBlue
-local excontrol ADRBlue
+*local excontrol ADRBlue
+local excontrol BCS
 
 local file ThirdAnalysis
 
