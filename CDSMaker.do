@@ -12,7 +12,7 @@ set more off
 * 6 for Markit implied default prob, 5yr, Composite and Europe
 * If 2/4 is chosen, there is only 1 day and 2day events.
 
-local cds_i_marks 9
+local cds_i_marks 8
 
 if "$cds_robust"=="1" {
 	local cds_i_marks 7
