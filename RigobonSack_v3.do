@@ -57,22 +57,21 @@ local use_index_beta 0
 * if using the relative perf, don't add in the exchange rate
 local no_exchange 1
 
-* use holdout bonds instead
+* use holdout bonds
+* must be on to run MULTI_CDS_IV, off otherwise
 local use_holdout 1
 
-* if using holdout
-local no_cds_control 1
 
 *local factors
 //local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
 local factors $all_factors
 
 * Different kinds of regressions that can be run
-* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV
+* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
 * RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
 
-local regs RS_CDS_IV
-
+//local regs RS_CDS_IV
+local regs MULTI_CDS_IV
 
 * This excludes days on which legal events occurred, but
 * there are other events or holidays that render the date unusable
@@ -195,7 +194,7 @@ else {
 if `use_holdout' == 1 {
 	local ext_style `ext_style'_holdout
 	
-	rename cds_ cdscontrol
+	/*rename cds_ cdscontrol
 	rename holdout_ret cds_
 	
 	if `no_cds_control' == 0 {
@@ -203,7 +202,9 @@ if `use_holdout' == 1 {
 	}
 	else {
 		local ext_style `ext_style'nocdscontrol
-	}
+	}*/
+	
+	drop if holdout_ret == .
 }
 
 
@@ -298,6 +299,7 @@ by firmname: egen nnum = sum(nonevent)
 
 gen ins_cds = eventvar * cds_ * (enum+nnum)/(enum) - (1-eventvar)*cds_*(enum+nnum)/(nnum)
 gen ins_ret = eventvar * return_ * (enum+nnum)/(enum) - (1-eventvar)*return_*(enum+nnum)/(nnum)
+gen ins_holdout = eventvar * holdout_ret * (enum+nnum)/(enum) - (1-eventvar)*holdout_ret*(enum+nnum)/(nnum)
 
 * These are the IV-style estimates (not Rigobon and Sack).
 * Just the simple event-style IV.
@@ -360,6 +362,8 @@ local 2SLS_IV_LC ivreg2 return_local `factors2' eventvar (cds_ = cds_iv)
 
 local RS_N_CDS_IV ivreg2 next_return  `factors2' (cds_ = ins_cds)
 
+local MULTI_CDS_IV ivreg2 return_  `factors2' (cds_ holdout_ret = ins_cds ins_holdout)
+
 sort firmname date
 
 tempfile backupfile // bsfile 
@@ -390,7 +394,13 @@ foreach rg in `regs' {
 		else {
 			local extrastat F-Stat, e(F)
 		}
-		local outopts keep(cds_) nocons ctitle("`ind_name'")
+		
+		if ~regexm("`rg'","MULTI") {
+			local outopts keep(cds_) nocons ctitle("`ind_name'")
+		}
+		else {
+			local outopts keep(cds_ holdout_ret) nocons ctitle("`ind_name'")
+		}
 		
 		if regexm("$GDP_models","`ind_name'") {
 			local extrastat `extrastat', Full_SE, e(se1), Num Events, e(num_e)
