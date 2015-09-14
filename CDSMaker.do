@@ -12,7 +12,7 @@ set more off
 * 6 for Markit implied default prob, 5yr, Composite and Europe
 * If 2/4 is chosen, there is only 1 day and 2day events.
 
-local cds_i_marks 8
+local cds_i_marks 9
 
 if "$cds_robust"=="1" {
 	local cds_i_marks 7
@@ -116,6 +116,14 @@ else if `cds_i_marks' == 8  {
 	rename  mC5_5y Spread5yN
 }
 
+else if `cds_i_marks' == 9  {
+	use "$apath/bondlevel.dta", clear
+	keep if Ticker=="defbond_eur"
+	keep date px_close
+	replace px_close=log(px_close)
+	rename  px_close Spread5yN
+}
+
 * We use a business day calendar to figure out
 * the financial returns. This only deals with 
 * weekends, not holidays.
@@ -184,7 +192,7 @@ else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
 
 }
 
-else if `cds_i_marks' == 8 | `cds_i_marks' == 7 {
+else if `cds_i_marks' == 8 | `cds_i_marks' == 7 | `cds_i_marks' == 9 {
 
 	gen cds_intra = .
 	gen cds_nightbefore = .
@@ -482,7 +490,7 @@ drop if date >= td(30jul2014)
 * If we're using Markit/DS data, a lot of these event windows must be 
 * widened. This code implements that.
 
-if `cds_i_marks' == 2 | `cds_i_marks' == 4 | `cds_i_marks' == 8 | `cds_i_marks' == 7 {
+if `cds_i_marks' == 2 | `cds_i_marks' == 4 | `cds_i_marks' == 8 | `cds_i_marks' == 7 | `cds_i_marks' == 9 {
 
 	replace event_onedayN = 1 if event_intra == 1
 	replace event_intra = .
