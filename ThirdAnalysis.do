@@ -123,6 +123,7 @@ gen market = "Index"
 append using "`temp'"
 save "`temp'", replace
 
+
 use "$bbpath/Latam_CDS.dta", clear
 drop if regexm(reporter,"CBIN")
 keep date $latam
@@ -425,6 +426,14 @@ replace return_ = return_ - madrreturn if market == "AR" & ishml != 1
 replace return_local = return_local + madrreturn if market == "US"  & ishml != 1
 
 drop adrreturn
+
+gen holdout_ret2 = .
+replace holdout_ret2 = return_ if regexm(firmname,"defbond_eur")
+sort date day_type firmname
+by date day_type: egen holdout_ret = mean(holdout_ret2)
+drop holdout_ret2
+
+
 
 gen temp_ = .
 
