@@ -4,13 +4,13 @@
 
 * One of these four must be run, to do anything useful
 * Run with local data
-local use_local 1
+local use_local 0
 
 * Run with ADR data
-local use_adrs 0
+local use_adrs 1
 
 * Run with exchange rates
-local use_exrates 0
+local use_exrates 1
 
 *Run with NDF rates
 local use_ndf 0
@@ -39,16 +39,16 @@ local use_otherdefp 0
 local use_singlenames 0
 
 * Run with "high" and "low" portfolios
-local use_highlow_ports 1
+local use_highlow_ports 0
 
 * Run with high minus low portfolios
-local use_hmls 1
+local use_hmls 0
 
 * Run with industries
-local use_industries 1
+local use_industries 0
 
 * add in market and exchange controls
-local relative_perf 1
+local relative_perf 0
 
 * If 0, uses equal-weighted index for relative performance.
 * if nonzero, uses MXAR or MERVAL (as appropriate).
@@ -56,6 +56,9 @@ local use_index_beta 0
 
 * if using the relative perf, don't add in the exchange rate
 local no_exchange 1
+
+* use holdout bonds instead
+local use_holdout 1
 
 *local factors
 //local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
@@ -114,6 +117,7 @@ if `relative_perf' == 1 {
 		local ext_style _relative
 	}
 }	
+
 
 if `exclusions' == 0 {
 	local ext_style `ext_style'_noexcl
@@ -184,6 +188,15 @@ if `use_hmls' == 0 {
 else {
 	local ext `ext'HML
 }
+
+if `use_holdout' == 1 {
+	local ext_style `ext_style'_holdout
+	
+	rename cds_ cdscontrol
+	rename holdout_ret cds_
+	local factors `factors' cdscontrol
+}
+
 
 * These ones are not built correctly.
 drop if regexm(firmname,"INDEX") & regexm(firmname,"Value") & regexm(firmname,"AR")
