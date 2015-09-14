@@ -60,6 +60,9 @@ local no_exchange 1
 * use holdout bonds instead
 local use_holdout 1
 
+* if using holdout
+local no_cds_control 1
+
 *local factors
 //local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
 local factors $all_factors
@@ -194,7 +197,13 @@ if `use_holdout' == 1 {
 	
 	rename cds_ cdscontrol
 	rename holdout_ret cds_
-	local factors `factors' cdscontrol
+	
+	if `no_cds_control' == 0 {
+		local factors `factors' cdscontrol
+	}
+	else {
+		local ext_style `ext_style'nocdscontrol
+	}
 }
 
 
