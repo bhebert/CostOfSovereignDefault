@@ -71,7 +71,7 @@ local factors $all_factors
 * RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
 
 //local regs RS_CDS_IV
-local regs MULTI_CDS_IV
+local regs MULTI_CDS_IV MULTI_OLS
 
 * This excludes days on which legal events occurred, but
 * there are other events or holidays that render the date unusable
@@ -363,6 +363,7 @@ local 2SLS_IV_LC ivreg2 return_local `factors2' eventvar (cds_ = cds_iv)
 local RS_N_CDS_IV ivreg2 next_return  `factors2' (cds_ = ins_cds)
 
 local MULTI_CDS_IV ivreg2 return_  `factors2' (cds_ holdout_ret = ins_cds ins_holdout)
+local MULTI_OLS ivreg2 return_ cds_ holdout_ret `factors2' 
 
 sort firmname date
 
@@ -388,7 +389,7 @@ foreach rg in `regs' {
 		local namenum = `namenum' + 1
 		
 		local stderrs `ivstderrs'
-		if "`rg'" ~= "OLS" {
+		if ~regexm("`rg'","OLS") {
 			local extrastat WID F-Stat, e(widstat)
 		}
 		else {
