@@ -59,7 +59,7 @@ local no_exchange 1
 
 * use holdout bonds
 * must be on to run MULTI_CDS_IV, off otherwise
-local use_holdout 1
+local use_holdout 0
 
 
 *local factors
@@ -70,8 +70,8 @@ local factors $all_factors
 * Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
 * RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
 
-//local regs RS_CDS_IV
-local regs MULTI_CDS_IV MULTI_OLS
+local regs RS_CDS_IV
+//local regs MULTI_CDS_IV MULTI_OLS
 
 * This excludes days on which legal events occurred, but
 * there are other events or holidays that render the date unusable
