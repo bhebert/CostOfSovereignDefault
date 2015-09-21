@@ -21,7 +21,7 @@ drop if Ticker==""
 sort  Ticker quarter
 encode Ticker, gen(tid)
 tsset tid quarter
-gen MV2 = L3.TotalAssets / 1000
+gen MV2 = (L3.TotalAssets - L3.BookCommon + MV * 1000) / 1000
 
 replace leverage = MV2 / MV
 
