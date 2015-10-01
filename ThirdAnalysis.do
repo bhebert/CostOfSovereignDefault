@@ -400,7 +400,8 @@ tsset ind_id bdate
 * We move the intraday events to include the next day
 * even if the event was of a different window size than the current data point.
 
-gen eventday = event_nightbefore == 1 | event_1_5 == 1 | L.event_onedayN == 1 | event_onedayL == 1 | event_twoday == 1 | L.event_intra == 1
+//gen eventday = event_nightbefore == 1 | event_1_5 == 1 | L.event_onedayN == 1 | event_onedayL == 1 | event_twoday == 1 | L.event_intra == 1
+//gen eventday_test = event_nightbefore == 1 | event_1_5 == 1 | event_onedayN == 1 | event_onedayL == 1 | event_twoday == 1 | event_intra == 1
 
 gen eventopens = event_nightbefore == 1 | event_1_5 == 1 | F.event_1_5 == 1 | event_onedayN == 1 | L.event_onedayN == 1 | event_onedayL == 1 | L.event_twoday == 1 | event_twoday == 1 | F.event_twoday == 1 | L.event_intra == 1
 gen eventcloses = event_nightbefore == 1 | event_1_5 == 1 | F.event_1_5 == 1 | event_onedayN == 1 | F.event_onedayL == 1 | event_onedayL == 1 | event_twoday == 1 | F.event_twoday == 1 | event_intra == 1

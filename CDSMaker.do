@@ -14,6 +14,8 @@ set more off
 
 local cds_i_marks 8
 
+local alt_dates 1
+
 if "$cds_robust"=="1" {
 	local cds_i_marks 7
 	}
@@ -241,7 +243,7 @@ gen event_onedayL = 0
 gen eventexcluded = 0
 gen event_twoday = 0
 
-
+gen eventday = 0
 
 * The first court ruling.
 replace eventexcluded = 1 if date==td(07dec2011)
@@ -292,7 +294,9 @@ replace eventexcluded = 1 if date==td(29oct2012)
 replace eventexcluded = 1 if date == td(22nov2012)
 *replace event_twoday = 1 if date == td(23nov2012)
 
+
 replace event_onedayL = 1 if date == td(27nov2012)
+replace eventday = 1 if date == td(27nov2012)
 
 *replace WSJ_date=1 if date==td(28nov2012)
 * The appeals court granted an emergency stay.
@@ -303,16 +307,28 @@ replace event_onedayL = 1 if date == td(27nov2012)
 *replace WSJ_date=1 if date==td(29nov2012)
 
 replace event_nightbefore = 1 if date==td(29nov2012)
+replace eventday = 1 if date == td(29nov2012)
 
 * Appeals court denies to stay order requiring Argentina to post security.
 * 1:15pm time stamp on order.
 replace event_intra = 1 if date == td(04dec2012)
+if `alt_dates' == 1 {
+	replace eventday = 1 if date == td(05dec2012)
+}
+else {
+	replace eventday = 1 if date == td(04dec2012)
+}
 
 * Appeals court allows BoNY to appear as interested party
 * 1:50pm time stamp on order.
 * This is misleading. Order created 
 replace event_onedayN = 1 if date == td(06dec2012)
-
+if `alt_dates' == 1 {
+	replace eventday = 1 if date == td(07dec2012)
+}
+else {
+	replace eventday = 1 if date == td(06dec2012)
+}
 
 
 
@@ -321,6 +337,7 @@ replace event_onedayN = 1 if date == td(06dec2012)
 * Listed as Jan10.
 * Therefore, I beleive this event was overnight.
 replace event_nightbefore = 1 if date==td(11jan2013)
+replace eventday = 1 if date == td(11jan2013)
 
 
 * Appeals court denies appeal for panel rehearing.
@@ -347,6 +364,7 @@ replace eventexcluded = 1 if date==td(28feb2013)
 *replace event_intra = 1 if date==td(01mar2013)
 *replace event_nightbefore = 1 if date==td(04mar2013)
 replace event_onedayL = 1 if date == td(04mar2013)
+replace eventday = 1 if date == td(04mar2013)
 
 * March 26 date in WSJ, missing in initial list
 * 2:38pm EST/3:38pm ART AP/UPI story
@@ -354,6 +372,7 @@ replace event_onedayL = 1 if date == td(04mar2013)
 * 2:35pm BBerg story
 *replace WSJ_date=1 if date==td(26mar2013)
 replace event_onedayL = 1 if date==td(27mar2013)
+replace eventday = 1 if date == td(27mar2013)
 
 
 *replace WSJ_date=1 if date==td(29mar2013)
@@ -390,6 +409,12 @@ replace event_onedayL = 1 if date==td(27mar2013)
 * However, the ruling is listed at 10:17am
 *replace WSJ_date=1 if date==td(23aug2013)
 replace event_onedayN = 1 if date==td(23aug2013)
+if `alt_dates' == 1 {
+	replace eventday = 1 if date == td(26aug2013)
+}
+else {
+	replace eventday = 1 if date == td(23aug2013)
+}
 
 * This one shows up as the supreme court agreeing to a re-hearing
 * http://www.bnamericas.com/story.jsp?sector=3&noticia=627132&idioma=I&source=
@@ -411,9 +436,12 @@ replace eventexcluded = 1 if date==td(26sep2013)
 *replace event_nightbefore = 1 if date==td(07oct2013)
 * The actual order was signed on the 3rd at 2:46pm.
 replace event_onedayL = 1 if date==td(04oct2013)
+replace eventday = 1 if date == td(04oct2013)
 
 * This was the denial of supreme court appeal
 replace event_intra = 1 if date==td(07oct2013)
+* must be the 8th, not 7th, to avoid overlap with the 4th
+replace eventday = 1 if date == td(08oct2013)
 * AP story at 9:35am EDT/10:35am ART.
 
 * Some appeals were denied here.
@@ -421,18 +449,23 @@ replace event_intra = 1 if date==td(07oct2013)
 * The order was created at 11am and modified at 5pm.
 *replace WSJ_date=1 if date==td(18nov2013)
 replace event_onedayL = 1 if date==td(19nov2013)
-
+replace eventday = 1 if date == td(19nov2013)
 
 * Supreme court grants cert.
 replace event_intra = 1 if date==td(10jan2014)
-
+if `alt_dates' == 1 {
+	replace eventday = 1 if date == td(13jan2014)
+}
+else {
+	replace eventday = 1 if date == td(10jan2014)
+}
 * Supreme court appeal rejection.
 * http://www.bloomberg.com/news/2014-06-16/argentine-bonds-plunge-after-u-s-supreme-court-rejects-appeal.html
 * This one is intraday. BBerg story 2:13pm EDT.
 * AP story filed at 12:52pm EDT/1:52 ART.
 *replace event_intra = 1 if date==td(16jun2014)
 replace event_intra = 1 if date==td(16jun2014)
-
+replace eventday = 1 if date == td(16jun2014)
 
 * Griesa forbids argentine law exchange
 * possible confound: Argentina proposes debt swap plan on 19th
@@ -443,25 +476,34 @@ replace event_intra = 1 if date==td(16jun2014)
 //replace event_onedayL = 1 if date==td(23jun2014)
 replace event_nightbefore = 1 if date==td(23jun2014)
 
+
 * Griesa appoints special master. 1:05pm
 * http://www.bloomberg.com/news/2014-06-23/argentina-bond-judge-picks-special-master-to-guide-negotiations.html
 * 7:35pm on the article
 * 
 replace event_onedayL = 1 if date==td(24jun2014)
-
+replace eventday = 1 if date == td(24jun2014)
 
 * Griesa denies stay.
 * http://www.bloomberg.com/news/2014-06-26/argentina-bond-fight-judge-rejects-stay-of-debt-ruling.html
 * 2:05pm EDT.
 * Possible confound: Argentina said some stuff at the UN on the same day.
 replace event_intra = 1 if date==td(26jun2014)
+if `alt_dates' == 1 {
+	replace eventday = 1 if date == td(27jun2014)
+}
+else {
+	replace eventday = 1 if date == td(26jun2014)
+}
 
 * Griesa allows Citi to pay Repsol bonds this month.
 * http://www.shearman.com/~/media/Files/Services/Argentine-Sovereign-Debt/2014/Arg134-072814-Order-re-payment.pdf
 * File dated 3:51pm.
 * http://www.bloomberg.com/news/2014-07-28/argentina-bond-judge-says-nation-may-pay-repsol-bonds.html
 * bberg story 12:01am
-replace event_onedayL = 1 if date==td(29jul2014)
+*replace event_onedayL = 1 if date==td(29jul2014)
+replace eventexcluded = 1 if date==td(29jul2014)
+replace eventexcluded = 1 if date==td(28jul2014)
 
 * This was the default date.
 *http://www.bloomberg.com/news/2014-07-30/argentina-defaults-according-to-s-p-as-debt-meetings-continue.html
@@ -495,8 +537,8 @@ if `cds_i_marks' == 2 | `cds_i_marks' == 4 | `cds_i_marks' == 8 | `cds_i_marks' 
 	replace event_onedayN = 1 if event_intra == 1
 	replace event_intra = .
 
-	replace event_twoday = 1 if event_nightbefore == 1
-	//replace event_onedayN = 1 if event_nightbefore == 1
+	//replace event_twoday = 1 if event_nightbefore == 1
+	replace event_onedayN = 1 if event_nightbefore == 1
 	replace event_nightbefore = .
 
 	replace event_twoday = 1 if event_1_5 == 1
