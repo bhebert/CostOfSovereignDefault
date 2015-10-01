@@ -47,12 +47,13 @@ local y=`y'+1
 use "$apath/data_for_summary.dta", clear
 replace cds=cds_*100
 sort industry_sector market day_type event_day date
-bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1
+bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1 & return_~=.
 sort industry_sector market day_type  eventcloses date
 bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
 gen event_desc="Stay, 11/29/12" if date==td(29nov2012) & day_type=="twoday"
 replace event_desc="Supreme Court Denial, 6/16/14" if date==td(17jun2014) & day_type=="twoday"
 discard
+
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew1") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueINDEXNew_1.eps", replace
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=2, mlabel(n2)) (scatter return_ cds_ if n2==2, mlabel(event_desc) mcolor(blue)  mlabcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew2") graphregion(fcolor(white) lcolor(white))
@@ -63,6 +64,17 @@ graph export "$rpath/ValueINDEXNew_3.eps", replace
 cap {
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="MexicoEquity" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Mexico") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/MexicoEquityScatter.eps", replace
+}
+
+cap {
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="defbond_eur" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("holdout") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/HoldoutScatter.eps", replace
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_disc" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("restructured") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/RestructuredScatter.eps", replace
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="bonarx_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("domestic_bonar") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/DomesticBonarScatter.eps", replace
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="boden15_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("domestic_boden") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/DomesticBodenScatter.eps", replace
 }
 
 *APPENDIX FIGURES
@@ -81,14 +93,38 @@ twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatte
 graph export "$rpath/ValueNonfin_Scatter.eps", replace
 
 
+********************************
+*BOND LEVEL PLOT
+use "$apath/bondlevel.dta", clear
+discard
+drop if Ticker==""
+keep date px_close Ticker
+reshape wide px_close, i(date) j(Ticker) str
+renpfix px_close
+twoway  (line rsbond_usd_disc date) (line defbond_eur date), legend(order( 1 "Restructured Bond" 2 "Holdout Bond")) xtitle("") ytitle("Price") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) name("holdoutres") ylabel(0(20)100) 
+graph export "$rpath/BondTimeSeries.eps", replace
+mmerge date using "$mpath/Default_Prob_all.dta"
+label var rsbond_usd_disc "Price"
+label var defbond "Price"
+
+label var mC5_5y "Default Probability"
+label var conh_ust_def5y "Default Probability"
+
+replace mC5_5y=mC5_5y*100
+replace conh_ust_def5y=conh_ust_def5y*100
+twoway (line rsbond_usd_disc date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Restructured Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev) name("defprob")  
+graph export "$rpath/Restructured_Defprob.eps", replace
+
+twoway (line rsbond_usd_disc date, yaxis(2)) (line conh_ust_def5y date),  legend(order(1 "Restructured Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev) name("defprobconh")  
+graph export "$rpath/Restructured_DefprobconH.eps", replace
+
+twoway (line defbond date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black))  name("defprob_defbond")  
+graph export "$rpath/Defaulted_Defprob.eps", replace
+
+twoway (line defbond date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev)  name("defprob_defbond_inv")  
+graph export "$rpath/Defaulted_Defprob_inv.eps", replace
 
 
-keep if event_day==1 &  industry_sec=="ValueINDEXNew"
-order n2 date cds_ return_
-sort n2
-export excel n2 date cds_ return_ using "$rpath/Event_Summary.xls", firstrow(variables) replace datestring("%tdMonth_DD,_CCYY")
-
- 
 *********************
 *EXCHANGE RATE Plots
 *********************
