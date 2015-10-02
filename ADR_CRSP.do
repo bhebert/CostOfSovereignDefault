@@ -51,7 +51,7 @@ gen bookeq = shareeq + txditcq - pstkq
 gen quarter = qofd(datadate)
 encode tic, gen(tid)
 
-drop if quarter < yq(2003,1)
+//drop if quarter < yq(2003,1)
 
 sort tid quarter
 tsset tid quarter
@@ -83,7 +83,8 @@ replace adrrq = 1 if adrrq == .
 replace epsfxq = epsfxq / currtrq / adrrq
 replace epspiq = epspiq / currtrq / adrrq
 replace epsf12 = epsf12 / currtrq / adrrq
-replace dvpsxq = dvpsxq / currtrq / adrrq
+
+replace dvpsxq = dvpsxq / currtrq /adrrq
 
 replace cshoq = cshoq * adrrq
 replace cshprq = cshprq * adrrq
@@ -103,9 +104,10 @@ format quarter %tq
 
 gen crsp_lev = (atq - bookeq + marketeq) / marketeq
 
-order datadate datacqtr datafqtr quarter Ticker epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
+order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
 
-keep quarter Ticker marketeq crsp_lev epsfxq epsf12 dvpsxq repurchases commonshares
+
+keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq
 
 sort Ticker quarter
 
