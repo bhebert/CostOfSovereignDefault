@@ -72,7 +72,7 @@ sort Ticker date market
 tempfile temp
 
 //took out AR value indices, since they aren't correct.
-foreach mark in US {
+foreach mark in US AR {
 	foreach indtype in ValueBank ValueNonFin Value {
 		local filename= "`indtype'Index_`mark'_New"
 		append using "$apath/`indtype'Index_`mark'_New.dta"
@@ -255,7 +255,7 @@ foreach x of local tickers {
 
 keep date bdate Ticker `rtypes' `fnames' industry_sector firm_id $static_vars market
 
-gen isstock = (market == "US" | market == "AR") & ~regexm(industry_sector,"INDEX")
+gen isstock = (market == "US" | market == "AR") & ~regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"Index")
 
 foreach x in  `gdp_indices' {
 	replace isstock=0 if industry_sector=="`x'"
@@ -448,13 +448,14 @@ replace eqreturn_ = eqreturn_ / firmavg
 drop firmavg
 
 replace temp_ = .
-replace temp_ = return_ if regexm(industry_sector,"INDEX")
+replace temp_ = return_ if industry_sector=="INDEX"
 sort date day_type market firmname
 by date day_type market: egen indreturn_ = mean(temp_)
 drop temp_
 
 expand 2 if industry_sector=="INDEX", gen(eqind)
 replace return_ = eqreturn_ if eqind
+replace return_local = eqreturn_ + madrreturn if eqind
 replace firmname = "EqIndex" if eqind
 replace industry_sector = "EqIndex" if eqind
 drop eqind
