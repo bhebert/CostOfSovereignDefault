@@ -211,8 +211,19 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-// not runing AR indices
-foreach mark in US {
+foreach mark in AR US {
+
+	local tweight = 0.1
+	local types Value Delev Acct
+	local avars EPS EPSgrowth DivPerShare DPS2 ADRratio leverage
+	local avars2 EPS EPSgrowth DivPerShare DPS2
+	
+	if "`mark'" == "AR" {
+		local tweight = 0
+		local types Value
+		local avars
+		local avars2
+	}
 
 	foreach indtype in Value ValueNonFin ValueBank  {
 
@@ -307,16 +318,18 @@ foreach mark in US {
 		
 		
 		
-		mmerge quarter Ticker using "$apath/`weightfile'.dta", ukeep(weight_exypf weight_exypf2 EPS EPSgrowth DivPerShare DPS2 ADRratio leverage) unmatched(master)
+		mmerge quarter Ticker using "$apath/`weightfile'.dta", ukeep(weight_exypf weight_exypf2 `avars') unmatched(master)
 		rename weight_exypf* weight*
 		keep if _merge==3 | Ticker == "Tbill"
 		
-		replace DivPerShare = tbill / 400 if Ticker == "Tbill"
-		replace DPS2 = tbill / 400 if Ticker == "Tbill"
-		replace EPS = tbill / 400 if Ticker == "Tbill"
-		replace EPSgrowth = 0 if Ticker == "Tbill"
-		replace ADRratio = 1 if Ticker == "Tbill"
-		replace leverage = 1 if Ticker == "Tbill"
+		if "`mark'" == "US" {
+			replace DivPerShare = tbill / 400 if Ticker == "Tbill"
+			replace DPS2 = tbill / 400 if Ticker == "Tbill"
+			replace EPS = tbill / 400 if Ticker == "Tbill"
+			replace EPSgrowth = 0 if Ticker == "Tbill"
+			replace ADRratio = 1 if Ticker == "Tbill"
+			replace leverage = 1 if Ticker == "Tbill"
+		}
 		
 		* Compute the returns for various event windows
 		gen bdate = bofd("basic",date)
@@ -334,83 +347,82 @@ foreach mark in US {
 		replace weight = 0 if Ticker=="Tbill"
 		bysort date: egen total_weight=sum(weight)
 		replace weight=. if total_weight == 0
-		replace weight=0.9*weight/total_weight  if Ticker~="Tbill" & total_weight > 0
-		replace weight=0.1 if Ticker=="Tbill" & total_weight > 0
+		replace weight=(1-`tweight')*weight/total_weight  if Ticker~="Tbill" & total_weight > 0
+		replace weight=`tweight' if Ticker=="Tbill" & total_weight > 0
 		* this covers days with no tbill returns
 		bysort date: egen total_weight_test=sum(weight)
 		replace weight=. if total_weight_test < 0.999
 		drop total_weight_test
 		
-		replace weight2 = 0 if px_close == . | qe_price == .
-		replace weight2 = 0 if Ticker=="Tbill"
-		bysort date: egen total_weight2=sum(weight2)
 		
+		if "`mark'" == "US" {
+			replace weight2 = 0 if px_close == . | qe_price == .
+			replace weight2 = 0 if Ticker=="Tbill"
+			bysort date: egen total_weight2=sum(weight2)
 		
-		
-		replace weight2=. if total_weight2 == 0
-		replace weight2=0.9*weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
-		replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
+			replace weight2=. if total_weight2 == 0
+			replace weight2=0.9*weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
+			replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
 
 		
-		gen tweight = weight2 * (leverage - 1) / leverage
-		replace tweight = weight2 if Ticker=="Tbill" 
-		replace weight2 = weight2 / leverage
-		bysort date: egen total_tweight = sum(tweight)
-		replace weight2 = total_tweight if Ticker=="Tbill" 
+			gen tweight = weight2 * (leverage - 1) / leverage
+			replace tweight = weight2 if Ticker=="Tbill" 
+			replace weight2 = weight2 / leverage
+			bysort date: egen total_tweight = sum(tweight)
+			replace weight2 = total_tweight if Ticker=="Tbill" 
 		
-		bysort date: egen total_weight_test=sum(weight2)
+			bysort date: egen total_weight_test=sum(weight2)
 		
-		replace weight2=. if total_weight_test < 0.999
-		drop total_weight_test
+			replace weight2=. if total_weight_test < 0.999
+			drop total_weight_test
 		
-		replace weight_acct = 0 if px_close == . | qe_price == . | EPSgrowth == .
-		replace weight_acct = 0 if Ticker=="Tbill"
-		bysort date: egen total_weight_acct=sum(weight_acct)
-		replace weight_acct=. if total_weight_acct == 0
-		replace weight_acct=weight_acct/total_weight_acct  if Ticker~="Tbill" & total_weight_acct > 0
-		* this covers days with no tbill returns
-		bysort date: egen total_weight_test=sum(weight_acct)
-		replace weight_acct=. if total_weight_test < 0.999
-		drop total_weight_test
+			replace weight_acct = 0 if px_close == . | qe_price == . | EPSgrowth == .
+			replace weight_acct = 0 if Ticker=="Tbill"
+			bysort date: egen total_weight_acct=sum(weight_acct)
+			replace weight_acct=. if total_weight_acct == 0
+			replace weight_acct=weight_acct/total_weight_acct  if Ticker~="Tbill" & total_weight_acct > 0
+			* this covers days with no tbill returns
+			bysort date: egen total_weight_test=sum(weight_acct)
+			replace weight_acct=. if total_weight_test < 0.999
+			drop total_weight_test
+			
+			rename weight2 weightDelev
+			rename weight_acct weightAcct
 		
+		}
 		rename weight weightValue
-		rename weight2 weightDelev
-		rename weight_acct weightAcct
+
 		
-		foreach ind in Value Delev Acct {
+		foreach ind in `types' {
 		
 			gen shares_px_open`ind' = weight`ind' / qe_price
 			gen shares_px_close`ind' = shares_px_open`ind'
 			gen shares_total_return`ind' = weight`ind' / qe_total_return
 		
-			gen shares_EPS`ind' = weight`ind' / qe_price * ADRratio
-			gen shares_EPSgrowth`ind' = weight`ind' / qe_price * ADRratio
-			gen shares_DivPerShare`ind' = weight`ind' / qe_price * ADRratio
-			gen shares_DPS2`ind' = weight`ind' / qe_price * ADRratio
+			if "`mark'" == "US" {
+				gen shares_EPS`ind' = weight`ind' / qe_price * ADRratio
+				gen shares_EPSgrowth`ind' = weight`ind' / qe_price * ADRratio
+				gen shares_DivPerShare`ind' = weight`ind' / qe_price * ADRratio
+				gen shares_DPS2`ind' = weight`ind' / qe_price * ADRratio
+			}
 		}
 	
-		foreach ind in Value Delev Acct {
-			foreach rtype  in px_close px_open total_return EPS EPSgrowth DivPerShare DPS2 {
+		local startypes
+		foreach ind in `types' {
+			local startypes `startypes' *`ind'
+			foreach rtype  in px_close px_open total_return `avars2' {
 				by date: egen `rtype'`ind' = sum(shares_`rtype'`ind'*`rtype')
 				by date: egen `rtype'`ind'_cnt = sum(weight`ind'*(`rtype'!=.))
 				replace `rtype'`ind' = . if `rtype'`ind'_cnt < 0.999
 				drop `rtype'`ind'_cnt
 			}
 		}
-		/*gen tot_ret = total_return / qe_total_return
-		gen px_ret = px_close / qe_price
+
+		collapse (firstnm) `startypes' quarter prev_quarter, by(date)
 		
-		gen divyield = tot_ret - px_ret
-		
-		return*/
-		//px_closemxar px_openmxar total_returnmxar 
-		collapse (firstnm) *Value *Delev *Acct quarter prev_quarter, by(date)
-		
-		reshape long px_close px_open total_return EPS EPSgrowth DivPerShare DPS2, i(date) j(Ticker) string
+		reshape long px_close px_open total_return `avars2', i(date) j(Ticker) string
 		
 		sort Ticker prev_quarter date
-		
-
 		
 		save "`temp'", replace
 		
@@ -446,11 +458,13 @@ foreach mark in US {
 		capture graph drop `indtype'_`mark'
 		tsline px_close_qe if Ticker == "Value", name(`indtype'_`mark')
 		
-		capture graph drop `indtype'_`mark'Acct
-		tsline px_close_qe if Ticker == "Acct", name(`indtype'_`mark'Acct)
+		if "`mark'" == "US" {
+			capture graph drop `indtype'_`mark'Acct
+			tsline px_close_qe if Ticker == "Acct", name(`indtype'_`mark'Acct)
 		
-		capture graph drop `indtype'_`mark'Delev
-		tsline px_close_qe if Ticker == "Delev", name(`indtype'_`mark'Delev)
+			capture graph drop `indtype'_`mark'Delev
+			tsline px_close_qe if Ticker == "Delev", name(`indtype'_`mark'Delev)
+		}
 		
 		rename quarter prev_quarter
 		keep px_close_qe prev_quarter total_return_qe Ticker
@@ -463,16 +477,17 @@ foreach mark in US {
 		replace px_open = px_open * px_close_qe
 		replace total_return = total_return * total_return_qe
 		
-		keep date quarter px_close px_open total_return EPS EPSgrowth DivPerShare Ticker DPS2
+		keep date quarter Ticker px_close px_open total_return `avars2'
 		
 		//reshape long px_close px_open total_return EPS DivPerShare, i(date) j(Ticker) string
 		gen market = "`mark'"
 		replace Ticker = "`indtype'IndexNew" if Ticker == "Value"
-		replace Ticker = "`indtype'AcctNew" if Ticker == "Acct"
-		replace Ticker = "`indtype'IndexDelev" if Ticker == "Delev"
 		gen industry_sector = "`indtype'IndexNew"
+		
 		replace industry_sector = "`indtype'IndexDelev" if regexm(Ticker,"Delev")
 		replace industry_sector = "`indtype'IndexAcct" if regexm(Ticker,"Acct")
+		replace Ticker = "`indtype'AcctNew" if Ticker == "Acct"
+		replace Ticker = "`indtype'IndexDelev" if Ticker == "Delev"
 		
 		sort quarter date
 		
