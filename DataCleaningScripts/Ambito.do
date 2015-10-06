@@ -9,3 +9,16 @@ rename px_last px_close
 gen total_return=px_close
 gen px_open=.
 save "$apath/Contado.dta", replace
+
+*Clean Contado con Liqui from Ambito
+import excel "$miscdata/Ambito/Contado.xlsx", sheet("Additional") firstrow clear
+gen date=date(Date,"DMY")
+format date %td
+order date 
+drop Date Value
+gen Ticker="Contado_Ambito"
+rename px_last px_close
+gen total_return=px_close
+gen px_open=.
+append using "$apath/Contado.dta"
+save "$apath/Contado.dta", replace
