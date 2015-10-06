@@ -55,7 +55,7 @@ local relative_perf 0
 local use_index_beta 0
 
 * if using the relative perf, don't add in the exchange rate
-local no_exchange 1
+local no_exchange 0
 
 * use holdout bonds
 * must be on to run MULTI_CDS_IV, off otherwise
@@ -207,9 +207,6 @@ if `use_holdout' == 1 {
 	drop if holdout_ret == .
 }
 
-
-* These ones are not built correctly.
-drop if regexm(firmname,"INDEX") & regexm(firmname,"Value") & regexm(firmname,"AR")
 
 local ext_style `ext'`ext_style'
 
@@ -370,7 +367,6 @@ sort firmname date
 tempfile backupfile // bsfile 
 
 local bsfile "$rpath/bsfile.dta"
-
 
 gen rtype = "ADRs"
 replace rtype = "FX" if regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"DSBlue") | regexm(industry_sector,"Official")
