@@ -4,13 +4,13 @@
 
 * One of these four must be run, to do anything useful
 * Run with local data
-local use_local 0
+local use_local 1
 
 * Run with ADR data
-local use_adrs 1
+local use_adrs 0
 
 * Run with exchange rates
-local use_exrates 1
+local use_exrates 0
 
 *Run with NDF rates
 local use_ndf 0
@@ -42,7 +42,7 @@ local use_singlenames 0
 local use_highlow_ports 0
 
 * Run with high minus low portfolios
-local use_hmls 0
+local use_hmls 1
 
 * Run with industries
 local use_industries 0
