@@ -122,4 +122,8 @@ replace finvar = 1 if regexm(industry_sector,"Financial") | regexm(industry_sect
 replace finvar = . if regexm(industry_sector,"Real Estate") | regexm(industry_sector,"RlEst")
 
 
+rename Ticker ticker
+mmerge ticker using "$apath/TCind.dta", unmatched(master)
+rename ticker Ticker
+
 save "$apath/FirmTable.dta", replace
