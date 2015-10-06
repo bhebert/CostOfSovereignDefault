@@ -460,6 +460,11 @@ replace firmname = "EqIndex" if eqind
 replace industry_sector = "EqIndex" if eqind
 drop eqind
 
+* Create an "index" for YPF
+expand 2 if regexm(firmname,"YPF"), gen(ypfind)
+replace isstock = 0 if ypfind
+drop ypfind
+
 
 replace firmname = firmname+"_"+market if market == "AR" | market == "US"
 drop ind_id
