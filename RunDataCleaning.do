@@ -1,3 +1,4 @@
+set more off
 
 * Runs code associated with preparing datasets for analysis
 * Assumes the data cleaning scripts have been run
@@ -28,3 +29,5 @@ do ${csd_dir}/DataCleaningScripts/Additional_ADRs.do
 do ${csd_dir}/DataCleaningScripts/Ambito.do
 
 do ${csd_dir}/DataCleaningScripts/Cleaning_Bond_Level.do
+
+do ${csd_dir}/DataCleaningScripts/TC_clean.do
