@@ -131,4 +131,4 @@ keep if  date==td(15sep2013) & dataset==1
 gen TCind=0
 replace TCind=1 if LCLT>FCLT | FCLT>TC
 keep TCind ticker 
-save "$apath/TCind.dta"
+save "$apath/TCind.dta", replace
