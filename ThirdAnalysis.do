@@ -27,7 +27,7 @@ local excontrol ADRBlue
 
 local file ThirdAnalysis
 
-global static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar market_cap2011
+global static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar market_cap2011 TCind
 
 local export_share_cut 25
 local Government_cut 0
@@ -37,7 +37,7 @@ local es_industry_cut 0.1
 local import_intensity_cut 0.03
 local finvar_cut 0
 local market_cap2011_cut 2000
-
+local TCind_cut 0
 
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
 drop if date == .
