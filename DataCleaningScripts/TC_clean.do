@@ -1,3 +1,5 @@
+set more off
+
 tempfile temp1
 import excel "$miscdata/RatingsDirect/Histories/RatingsHistory.xlsx", sheet("Sheet1") firstrow clear
 keep Date TC
@@ -123,7 +125,7 @@ replace ticker="BPT" if firmshort=="Banco Patagonia"
 replace ticker="GGA" if firmshort=="Banco de Galicia y Buenos Aires"
 replace ticker="CPX" if firmshort=="CAPEX"
 replace ticker="SAM" if firmshort=="IRCP"
-replace ticker="IRSA" if firmshort=="IRSA Inv Rep"
+replace ticker="IRS" if firmshort=="IRSA Inv Rep"
 replace ticker="MET" if firmshort=="Metrogas"
 replace ticker="PER" if firmshort=="Petrobras Argentina"
 replace ticker="TGS" if firmshort=="TGS"
