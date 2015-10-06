@@ -120,6 +120,14 @@ encode ticker, gen(tid)
 tsset tid bdate
 sort tid bdate
 
+
+/*CALCULATE HOLDOUTS
+drop if exchange_bond==1
+drop if market_issue=="DOMESTIC"
+collapse (firstnm) bb_ticker ticker bond name market_issue  currency collective_action_clause defaulted cpn_typ amt_outstanding amt_issued inflation_linked_indicator issue_date mat_date, by(id_isin)
+save "$miscdata/Holdout Bonds/Bond_Characteristics.dta"
+*/
+
 gen stale_ind=0
 replace stale_ind=1 if px_last==l.px_last
 bysort tid: egen stale_ratio=sum(stale_ind)
