@@ -120,7 +120,7 @@ foreach cntry in $latam {
 reshape long total_return, i(date) j(Ticker) string
 gen industry_sector = Ticker
 gen market = "Index"
-
+append using "$apath/GFD_Equity.dta"
 append using "`temp'"
 save "`temp'", replace
 
