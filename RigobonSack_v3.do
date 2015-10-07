@@ -4,10 +4,10 @@
 
 * One of these four must be run, to do anything useful
 * Run with local data
-local use_local 1
+local use_local 0
 
 * Run with ADR data
-local use_adrs 0
+local use_adrs 1
 
 * Run with exchange rates
 local use_exrates 0
@@ -34,6 +34,9 @@ local use_mexbrl 0
 * Run with other default probabilities
 local use_otherdefp 0
 
+* Run with other equity indices
+local use_equityind 1
+
 * Each of these will run with both local and ADR versions
 * Run with single name stocks
 local use_singlenames 0
@@ -42,7 +45,7 @@ local use_singlenames 0
 local use_highlow_ports 0
 
 * Run with high minus low portfolios
-local use_hmls 1
+local use_hmls 0
 
 * Run with industries
 local use_industries 0
@@ -164,6 +167,10 @@ if `use_mexbrl' == 0 {
 
 if `use_otherdefp' == 0 {
 	drop if regexm(industry_sector,"DTRI")
+}
+
+if `use_equityind' == 0 {
+	drop if regexm(industry_sector,"EquityInd")
 }
 
 if `use_bonds' == 0 {
