@@ -124,6 +124,8 @@ replace finvar = . if regexm(industry_sector,"Real Estate") | regexm(industry_se
 
 rename Ticker ticker
 mmerge ticker using "$apath/TCind.dta", unmatched(master)
+mmerge ticker using "$apath/Brentimports.dta", unmatched(master) umatch(Ticker)
+
 rename ticker Ticker
 
 save "$apath/FirmTable.dta", replace

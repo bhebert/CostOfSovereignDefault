@@ -4,10 +4,10 @@
 
 * One of these four must be run, to do anything useful
 * Run with local data
-local use_local 0
+local use_local 1
 
 * Run with ADR data
-local use_adrs 1
+local use_adrs 0
 
 * Run with exchange rates
 local use_exrates 0
@@ -45,13 +45,13 @@ local use_singlenames 0
 local use_highlow_ports 0
 
 * Run with high minus low portfolios
-local use_hmls 0
+local use_hmls 1
 
 * Run with industries
 local use_industries 0
 
 * add in market and exchange controls
-local relative_perf 0
+local relative_perf 1
 
 * If 0, uses equal-weighted index for relative performance.
 * if nonzero, uses MXAR or MERVAL (as appropriate).
