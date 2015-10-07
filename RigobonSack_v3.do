@@ -35,7 +35,7 @@ local use_mexbrl 0
 local use_otherdefp 0
 
 * Run with other equity indices
-local use_equityind 1
+local use_equityind 0
 
 * Each of these will run with both local and ADR versions
 * Run with single name stocks
@@ -96,6 +96,9 @@ local ivstderrs robust
 * These determine the earliest and latest days to use for non-events
 local mindate = mdy(1,1,2011)
 local maxdate = mdy(1,1,2015)
+
+* Determine what to use for the summary statistics
+local sumname ValueINDEXNew_US
 
 
 *** options end here. start of the actual code.
@@ -335,12 +338,30 @@ if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 	** code to make some summary stats *
 	log using "$rpath/summary_log$cds_app.txt", replace
 
-	summ return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US")
-	summ return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US")
+	summ return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'")
+	summ return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'")
 
-	corr return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US"), covariance
-	corr return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"INDEX_US"), covariance
-
+	corr return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'"), covariance
+	corr return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'"), covariance 
+	
+	tempfile temp bsfile
+	
+	save "`temp'", replace
+	drop if ~regexm(firmname,"`sumname'")
+	
+	robvar cds_, by(eventvar)
+	
+	local w0 = r(w0)
+	local w10 = r(w10)
+	local w50 = r(w50)
+	
+	bootstrap r0=(r(w0)/`w0') r1=(r(w10)/`w10') r2=(r(w50)/`w50'), `bstyle' saving("`bsfile'", replace): robvar cds_ if regexm(firmname,"`sumname'"), by(eventvar)
+	
+	use "`bsfile'", clear
+	su r*, detail
+	
+	use "`temp'", clear
+	
 	/*sort date industry_sector
 
 	by date: egen mexcds2 = mean(day_return2*regexm(industry_sector,"MexicoCDS"))
@@ -353,7 +374,6 @@ if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 
 	log close
 }
-
 
 local OLS ivreg2 return_ cds_ `factors2' 
 local OLS_LC ivreg2 return_local cds_ `factors2' 
