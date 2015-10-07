@@ -28,13 +28,13 @@ local y=`y'+1
 }*/
 replace cds=cds_*100
 
-local indplot ADRB_PBRTS ADRBlue BCS   dolarblue ValueINDEXNew 
+local indplot ADRB_PBRTS ADRBlue BCS   dolarblue 
 local y=1
 discard
 foreach x of local indplot {
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_`x'") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Change") name("Twoday_`x'") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/Scatter_`x'_twoday.eps", replace
-twoway    (scatter return_ cds if eventcloses==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if eventcloses==1, mlabel(n1)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="onedayN" & market~="AR", legend(order(1 "Non-Event" 2 "Event"))  xtitle("Change in Default Probability") ytitle("Change") name("oneday`x'") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if eventcloses==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if eventcloses==1, mlabel(n1)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="onedayN" & market~="AR", legend(order(1 "Non-Event" 2 "Event"))  xtitle("Change in Default Probability") ytitle("Log Change") name("oneday`x'") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/Scatter_`x'_onedayN.eps", replace
 local y=`y'+1
 } 
@@ -51,45 +51,45 @@ bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1 & r
 sort industry_sector market day_type  eventcloses date
 bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
 gen event_desc="Stay, 11/29/12" if date==td(29nov2012) & day_type=="twoday"
-replace event_desc="Supreme Court Denial, 6/16/14" if date==td(17jun2014) & day_type=="twoday"
+replace event_desc="Supreme Court Denial, 6/16/14" if date==td(16jun2014) & day_type=="twoday"
 discard
 
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew1") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Twoday_ValueINDEXNew1") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueINDEXNew_1.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=2, mlabel(n2)) (scatter return_ cds_ if n2==2, mlabel(event_desc) mcolor(blue)  mlabcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew2") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=2, mlabel(n2)) (scatter return_ cds_ if n2==2, mlabel(event_desc) mcolor(blue)  mlabcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Twoday_ValueINDEXNew2") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueINDEXNew_2.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=13, mlabel(n2)) (scatter return_ cds_ if n2==13, mlabel(event_desc)  mlabposition(9) mlabcolor(blue) mcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Twoday_ValueINDEXNew3") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1 & n2~=13, mlabel(n2)) (scatter return_ cds_ if n2==13, mlabel(event_desc)  mlabposition(9) mlabcolor(blue) mcolor(blue)) if industry_sec=="ValueINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Twoday_ValueINDEXNew3") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueINDEXNew_3.eps", replace
 *This way it won't crash if we exclude Mexico
 cap {
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="MexicoEquity" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Mexico") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="MexicoEquity" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Mexico") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/MexicoEquityScatter.eps", replace
 }
 
 cap {
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="defbond_eur" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("holdout") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="defbond_eur" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("holdout") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/HoldoutScatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_disc" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("restructured") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_disc" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("restructured") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/RestructuredScatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="bonarx_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("domestic_bonar") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="bonarx_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("domestic_bonar") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/DomesticBonarScatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="boden15_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("domestic_boden") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="boden15_usd" & eventexcluded==0 & day_type=="twoday" , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("domestic_boden") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/DomesticBodenScatter.eps", replace
 }
 
 *APPENDIX FIGURES
 discard
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ADRBlue" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("ADR Blue Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("ADRBlue") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ADRBlue" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("ADR Blue Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("ADRBlue") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ADRBlue_Scatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="BCS" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Blue-Chip Swap Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("BCS") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="BCS" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Blue-Chip Swap Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("BCS") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/BCS_Scatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="dolarblue" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Dolar Blue Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("dolarblue") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="dolarblue" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Dolar Blue Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("dolarblue") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/DolarBlue_Scatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="OfficialRate" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Official Exchange Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("Official") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="OfficialRate" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Official Exchange Rate") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Official") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/Official_Scatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueBankINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Value-Weighted Index: Banks") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("VIBanks") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueBankINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Value-Weighted Index: Banks") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("VIBanks") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueBank_Scatter.eps", replace
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueNonFinINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Value-Weighted Index: Non-Financial") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change") name("VINonFin") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="ValueNonFinINDEXNew" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Value-Weighted Index: Non-Financial") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("VINonFin") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/ValueNonfin_Scatter.eps", replace
 
 
@@ -168,6 +168,7 @@ graph export "$rpath/fx6.eps", replace
 
 *SUMMARY TABLE
 foreach var in ValueINDEXNew dolarblue{
+cap { 
 use "$apath/data_for_summary.dta", clear
 keep if  industry_sec=="`var'"
 replace cds_=cds_*100
@@ -225,6 +226,7 @@ rename nonevent nonevent
 replace event=round(event,.01) if var~="n"
 replace nonevent=round(nonevent,.01) if var~="n"
 export excel using "$rpath/Summary_`var'.xls", firstrow(variables) replace
+}
 }
 
 
