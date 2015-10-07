@@ -1,3 +1,5 @@
+set more off
+
 *EQUITIES
 tempfile temp
 import excel "$miscdata/GFD Stock Markets/USD.xlsx", sheet("Data Information") clear firstrow
