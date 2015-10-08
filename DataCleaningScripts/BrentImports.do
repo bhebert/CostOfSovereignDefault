@@ -6,7 +6,7 @@ keep name Ticker industry_sector firm
 mmerge firm using "`data'"
 keep if _merge==3
 drop _merge
-mmerge Ticker using "/Users/jesseschreger/Documents/CostOfSovereignDefault/Datasets/FirmTable.dta", ukeep(isin_code import_intensity)
+mmerge Ticker using "$apath/FirmTable.dta", ukeep(isin_code import_intensity)
 keep if _merge==3
 mmerge  isin_code year using "$miscdata/Brent Neiman Data/CompustatGlobal.dta", umatch(isin fyear)
 keep if _merge==3
