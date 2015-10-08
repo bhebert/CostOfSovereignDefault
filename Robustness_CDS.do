@@ -23,7 +23,8 @@ foreach x in PUF_1y PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC
 
 
 *ORGANIZE RESULTS
-global rpathben "$mainpath/Results/BenH_3Sep2015"
+global rpathben $rpath
+*global rpathben "$mainpath/Results/BenH_3Sep2015"
 import excel "$rpathben/RS_CDS_IV_reshapeADRs_PUF_1y.xls", firstrow sheet("Sheet1") clear
 gen cds_type="PUF_1Y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
