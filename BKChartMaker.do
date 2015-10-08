@@ -92,10 +92,11 @@ replace label="Gov. Ownership" if Ticker=="HML_Government"
 replace label="Exporter" if Ticker=="HML_es_industry"
 replace label="Exporter_old" if Ticker=="HML_export_share"
 replace label="Importer" if Ticker=="HML_import_rev"
-replace label="Foreign-Owned" if Ticker=="HML_foreign_own"
+replace label="Foreign" if Ticker=="HML_foreign_own"
 replace label="ADR" if Ticker=="HML_indicator_adr"
 replace label="Onshore-ADR FX" if Ticker=="DSMinusADR"
 replace label="Financial" if Ticker=="HML_finvar" 
+replace label="Size" if Ticker=="HML_market_cap2011" 
 
 gen compnum=.
 replace compnum=1 if Ticker=="HML_es_industry" 
@@ -127,7 +128,7 @@ discard
 	*twoway (rcap ci_high ci_low  capm_implied if regexm("`group2'",Ticker), lcolor(bluishgray) sort) (lfit capm_implied capm_implied if regexm("`group2'",Ticker), sort range(-30 40)) (scatter pointest capm_implied if regexm("`group2'",Ticker),  mcolor(bluishgray) mlabcolor(bluishgray)) (rcap ci_high ci_low  capm_implied if compnum==`x', lcolor(forest_green) sort ) (scatter pointest capm_implied if compnum==`x',  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("GraphHML_`x'")  xlabel(-30(10)40) ylabel(-60(20)40) 
 	*graph export "$rpath/BK_HML_`x'.eps", replace
 	*}
-	 local group2  HML_es_industry HML_finvar HML_foreign_own HML_import_rev HML_indicator_adr
+	 local group2  HML_es_industry HML_finvar HML_foreign_own HML_import_rev HML_indicator_adr HML_market_cap2011
 		*twoway (rcap ci_high ci_low  capm_implied if regexm("`group2'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group2'",Ticker), sort range(-30 40))   (scatter pointest capm_implied if regexm("`group2'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)), ytitle("Estimated Abnormal Return, {&alpha}", size(medlarge)) xtitle("Abnormal Return from Market Beta") legend(off) graphregion(fcolor(white) lcolor(white))  name("GraphHML_All")  xlabel(-30(10)40) ylabel(-60(20)40) 
-		twoway (rcap ci_high ci_low  capm_implied if regexm("`group2'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group2'",Ticker), sort range(-40 40))   (scatter pointest capm_implied if regexm("`group2'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("GraphHML_All")  
+		twoway (rcap ci_high ci_low  capm_implied if regexm("`group2'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group2'",Ticker), sort range(-40 40))   (scatter pointest capm_implied if regexm("`group2'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(medsmall)  mlabpos(9)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("GraphHML_All")  
 graph export "$rpath/BK_HML_All.eps", replace
