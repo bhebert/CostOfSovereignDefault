@@ -58,7 +58,7 @@ save "$apath/Gov_bonds_static.dta", replace
 import excel "$mainpath/Bloomberg/Data/Debt_Securities.xlsx", sheet("Gov_Prices_Value")  allstring clear
 foreach x of varlist _all {
 tostring `x', replace
-	if `x'[3]=="" | `x'[3]=="#N/A N/A" {
+	if `x'[3]=="" | `x'[3]=="#N/A N/A" | `x'[3]=="#N/A" {
 		drop `x'
 		}
 		}
@@ -128,11 +128,14 @@ collapse (firstnm) bb_ticker ticker bond name market_issue  currency collective_
 save "$miscdata/Holdout Bonds/Bond_Characteristics.dta"
 */
 
+gen nml_bond = regexm(id_isin,"FB19") | regexm(id_isin,"4GB0")
+
 gen stale_ind=0
 replace stale_ind=1 if px_last==l.px_last
 bysort tid: egen stale_ratio=sum(stale_ind)
 replace stale_ratio=stale_ratio/obscount
-keep if stale_ratio<.2
+
+keep if stale_ratio<.25 | nml_bond
 
 sort tid bdate
 gen px_change=100*log(px_last/l.px_last)
@@ -145,8 +148,10 @@ tostring stale_ratio_str, replace
 gen ticker_exch=ticker+"_"+exchange_bond+"_"+curr+"_"+stale_ratio_str
 sort ticker date
 
+
+
 *KEEP EURO AND DOLLAR BONDS with at least 500 days
-drop if obscount<500
+drop if obscount<500 & (nml_bond == 0)
 levelsof(ticker_exch), local(tickid)
 discard
 /*foreach x of local tickid {
@@ -156,17 +161,19 @@ discard
 */	
 	*usable restructured bond is EI233619
 	*most frequently traded defaulted is EC131761 
-	keep if ticker=="EI233619" | ticker=="EC131761" | id_isin=="US040114GK09"
+	keep if ticker=="EI233619" | ticker=="EC131761" | id_isin=="US040114GK09" | nml_bond == 1
 	replace ticker="rsbond_usd_disc" if ticker=="EI233619"
 	replace ticker="defbond_eur" if ticker=="EC131761"
+	replace ticker="NMLbond2030" if ticker=="EC273735"
+	replace ticker="NMLbond2020" if ticker=="EC221478"
 	replace ticker="rsbond_usd_par" if id_isin=="US040114GK09"
 		mmerge date using "`eur'"
 	replace px_last=px_last/eur if ticker=="defbond_eur"
 	drop eur
 
-	twoway (line ytm_mid date if ticker=="rsbond_usd_disc") (line ytm_mid date if ticker=="defbond_eur"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("YTM")
-	graph export "$rpath/bond_ytm_compare.png", replace
-	twoway (line px_last date if ticker=="rsbond_usd_disc") (line px_last date if ticker=="defbond_eur"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("Price")
+	//twoway (line ytm_mid date if ticker=="rsbond_usd_disc") (line ytm_mid date if ticker=="NMLbond2030"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("YTM")
+	//graph export "$rpath/bond_ytm_compare.png", replace
+	twoway (line px_last date if ticker=="rsbond_usd_disc") (line px_last date if ticker=="NMLbond2030"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("Price")
 	graph export "$rpath/bond_px_compare.png", replace
 	
 	
