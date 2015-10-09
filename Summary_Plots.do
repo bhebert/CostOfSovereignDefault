@@ -1,4 +1,6 @@
 
+local hname NMLbond2030
+
 *****************
 *SUMMARY FIGURES*
 *****************
@@ -67,7 +69,7 @@ graph export "$rpath/MexicoEquityScatter.eps", replace
 }
 
 cap {
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="defbond_eur" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("holdout") graphregion(fcolor(white) lcolor(white))
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="`hname'" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("holdout") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/HoldoutScatter.eps", replace
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="rsbond_usd_disc" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("restructured") graphregion(fcolor(white) lcolor(white))
 graph export "$rpath/RestructuredScatter.eps", replace
@@ -95,13 +97,14 @@ graph export "$rpath/ValueNonfin_Scatter.eps", replace
 
 ********************************
 *BOND LEVEL PLOT
+
 use "$apath/bondlevel.dta", clear
 discard
 drop if Ticker==""
 keep date px_close Ticker
 reshape wide px_close, i(date) j(Ticker) str
 renpfix px_close
-twoway  (line rsbond_usd_disc date) (line defbond_eur date), legend(order( 1 "Restructured Bond" 2 "Holdout Bond")) xtitle("") ytitle("Price") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) name("holdoutres") ylabel(0(20)100) 
+twoway  (line rsbond_usd_disc date) (line `hname' date), legend(order( 1 "Restructured Bond" 2 "Holdout Bond")) xtitle("") ytitle("Price") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) name("holdoutres") ylabel(0(20)100) 
 graph export "$rpath/BondTimeSeries.eps", replace
 mmerge date using "$mpath/Default_Prob_all.dta"
 label var rsbond_usd_disc "Price"
@@ -118,10 +121,10 @@ graph export "$rpath/Restructured_Defprob.eps", replace
 twoway (line rsbond_usd_disc date, yaxis(2)) (line conh_ust_def5y date),  legend(order(1 "Restructured Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev) name("defprobconh")  
 graph export "$rpath/Restructured_DefprobconH.eps", replace
 
-twoway (line defbond date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black))  name("defprob_defbond")  
+twoway (line `hname' date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black))  name("defprob_defbond")  
 graph export "$rpath/Defaulted_Defprob.eps", replace
 
-twoway (line defbond date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev)  name("defprob_defbond_inv")  
+twoway (line `hname' date, yaxis(2)) (line mC5_5y date),  legend(order(1 "Holdout Bond" 2 "Default Probability (Inverse)")) xtitle("")  graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) yscale(rev)  name("defprob_defbond_inv")  
 graph export "$rpath/Defaulted_Defprob_inv.eps", replace
 
 
