@@ -1,7 +1,7 @@
 set more off
 
 *Inflation
-import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series.xlsx", sheet("PriceStats_Argentina_monthly_se") firstrow clear
+import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series_Oct2015.xlsx", sheet("Pricestats_Argentina_monthly_se") firstrow clear
 tostring TRADE_DATE, replace
 gen date=date(TRADE_DATE,"YMD")
 format date %td
@@ -50,7 +50,7 @@ order inflation_log, after(inflation)
 save "$miscdata/Inflation/inflation_month.dta", replace
 
 use "$miscdata/Inflation/inflation_month.dta", clear
-drop if year==2015
+*drop if year==2015
 collapse (sum) inflation_log (lastnm) cpi, by(quarter)
 tsset quarter
 save "$miscdata/Inflation/inflation_quarter.dta", replace
