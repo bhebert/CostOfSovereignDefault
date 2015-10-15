@@ -316,6 +316,8 @@ replace name="IRSA Propiedades Commerciales" if name=="Irsa Propiedades Comit."
 replace name="Petrobras Argentina" if name=="Petrobras Energia"
 replace name="YPF" if name=="Ypf"
 replace name="SA San Miguel" if name=="Sa San Miguel"
+replace name="IRSA" if name=="Irsa"
+
 label var name "Company"
 label var  industry "Industry"
 label var  es "Exports"
