@@ -291,6 +291,42 @@ if _rc == 0 {
 }
 
 
+*FIRM TABLE FOR PAPER
+use "$apath/FirmTable.dta", clear
+order name Ticker industry_sec es_ import_rev market_cap indicator_adr ADRt foreign
+replace name=proper(name)
+replace name=subinstr(name," 'B'","",.)
+replace name=subinstr(name," 'A'","",.)
+replace name=subinstr(name," 'C'","",.)
+replace industry_sec="Chemicals" if industry_sec=="Chems"
+replace industry_sec="Energy" if industry_sec=="Enrgy"
+replace industry_sec="Manufacturing" if industry_sec=="Manuf"
+replace industry_sec="Non-Durables" if industry_sec=="NoDur"
+replace industry_sec="Real Estate" if industry_sec=="RlEst"
+replace industry_sec="Telecoms" if industry_sec=="Telcm"
+replace industry_sec="Utilities" if industry_sec=="Utils"
+gen ind_ADR="Y" if indicator_adr==1
+gen ind_ADRsample="Y" if ADRticker~=""
+gen foreign_ind="Y" if foreign_own==1
+keep name Ticker industry_sec es_ import_rev market_cap foreign_ind ind_ADR ind_ADRsample
+order name Ticker industry_sec es_ import_rev market_cap foreign_ind ind_ADR ind_ADRsample 
+ 
+replace name="Edenor" if name=="Edenor Emsa.Disb.Y Comlz.Norte"
+replace name="IRSA Propiedades Commerciales" if name=="Irsa Propiedades Comit."
+replace name="Petrobras Argentina" if name=="Petrobras Energia"
+replace name="YPF" if name=="Ypf"
+replace name="SA San Miguel" if name=="Sa San Miguel"
+label var name "Company"
+label var  industry "Industry"
+label var  es "Exports"
+label var  imp "Imports"
+label var  market "Market Cap (2011)"
+label var ind_ADR "ADR"
+label var ind_ADRsam "ADR Sample"
+label var foreign "Foreign"
+label var Ticker "Ticker"
+export excel using "$rpath/FirmTable_Paper.xls", firstrow(varlabels) replace 
+
 *JUST FOR THE VERSION WITH BONDS
 /*
 use "$apath/data_for_summary.dta", clear
