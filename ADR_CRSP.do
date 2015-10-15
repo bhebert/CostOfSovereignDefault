@@ -9,7 +9,7 @@ drop ADRticker2 ADRticker3
 drop Ticker
 rename ADRticker1 Ticker
 
-keep Ticker quarter MV EPS EPSNew ADRratio WC05101 leverage WC03255 WC03501 WC02999 WC05301 WC01705
+keep Ticker quarter MV EPS EPSNew ADRratio WC05101 leverage WC03255 WC03501 WC02999 WC05301 WC01705 DWEB
 rename WC05101 DivPerShare
 rename WC03255 TotalDebt
 rename WC03501 BookCommon
@@ -23,6 +23,13 @@ tempfile temp
 save "`temp'", replace
 
 use "$miscdata/CRSP Balance Sheet/All_ADRs.dta", clear
+
+
+* net interest expense + earnings available to common
+
+replace xintq = 0 if xintq == . & ibq != .
+gen ebi = ibq + xintq
+
 
 * This procedure follows Gorodnichenko & Weber
 * However, we use cshoq & prccq (Computstat quarter-end variables)
@@ -60,7 +67,7 @@ tsfill
 * Cohn and Sikes working paper say that gross repurchases are prstkcy - pstkq
 * but prstkcy is cumulative over the year
 
-keep quarter datacqtr datafqtr tid tic datadate marketeq bookeq shareeq atq curcdq curncdq currtrq adrrq prccq cshoq cshprq epsfxq epspiq dvpsxq cshfdq epsf12 pstkq prstkcy commonshares
+keep quarter datacqtr datafqtr tid tic datadate marketeq bookeq shareeq atq curcdq curncdq currtrq adrrq prccq cshoq cshprq epsfxq epspiq dvpsxq cshfdq epsf12 pstkq prstkcy commonshares ebi ibq xintq
 
 mmerge quarter using "$apath/ADRBlue_quarter.dta", ukeep(ADRBlue OfficialRate) unmatched(master)
 
@@ -86,10 +93,14 @@ replace epsf12 = epsf12 / currtrq / adrrq
 
 replace dvpsxq = dvpsxq / currtrq /adrrq
 
+replace ebi = ebi / currtrq
+
 replace cshoq = cshoq * adrrq
 replace cshprq = cshprq * adrrq
 replace cshfdq = cshfdq * adrrq
 replace commonshares = commonshares * adrrq
+
+gen ebis = ebi / commonshares / OfficialRate
 
 sort tid quarter
 
@@ -104,10 +115,9 @@ format quarter %tq
 
 gen crsp_lev = (atq - bookeq + marketeq) / marketeq
 
-order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
+order datadate datacqtr datafqtr quarter Ticker DWEB ebis ebi ibq xintq epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
 
-
-keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq
+keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq ebi ebis
 
 sort Ticker quarter
 
