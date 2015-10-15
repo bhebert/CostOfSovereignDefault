@@ -133,47 +133,55 @@ replace year=year+1 if qnum==3  | qnum==4
 *piq pretax incom
 *revtq 
 keep if events>=10
-  foreach v of var  gpq gpy oiadpq oibdpq piq  revtq  saleq inflation {
+  foreach v of var  gpq gpy oiadpq oibdpq piq  revtq  saleq dvtq inflation {
  	local l`v' : variable label `v'
         if `"`l`v''"' == "" {
  		local l`v' "`v'"
   	}
   }
   
-  foreach x in   gpq gpy oiadpq oibdpq   revtq  saleq {
+  foreach x in   gpq gpy oiadpq oibdpq  dvtq revtq  saleq {
 	bysort ticker_short year: egen count=count(`x')
 	replace `x'=. if `x'<4
 	drop count 
 	}
   
-collapse (sum)   gpq oiadpq oibdpq   revtq  saleq inflation, by(year est ticker_short loser)
+collapse (sum)   gpq oiadpq oibdpq   revtq dvtq saleq inflation, by(year est ticker_short loser)
 foreach x in  gpq oiadpq oibdpq   revtq  saleq inflation {
 	replace `x'=. if `x'==0
 	}
-foreach v of var  gpq  oiadpq oibdpq   revtq  saleq inflation {
+foreach v of var  gpq  oiadpq oibdpq  dvtq revtq  saleq inflation {
  	label var `v' "`l`v''"
   }
 bysort ticker_short year: gen n=_n
 bysort ticker_short year: egen maxn=max(n)
 encode ticker_short, gen(pid)
 tsset pid year
-foreach x in  gpq  oiadpq oibdpq  revtq saleq {
+foreach x in  gpq  oiadpq oibdpq dvtq revtq saleq {
 	gen d_`x'=100*(ln(`x')-ln(l.`x'))-inflation
 }
 
-foreach v of var  gpq oiadpq oibdpq   revtq  saleq  {
+foreach v of var  gpq oiadpq oibdpq  dvtq revtq  saleq  {
  	label var d_`v' "`l`v''"
 }
 
-    foreach v of var  d_gpq d_oiadpq d_oibdpq d_revtq d_saleq {
+    foreach v of var  d_gpq d_oiadpq d_oibdpq d_dvtq d_revtq d_saleq {
  	local l`v' : variable label `v'
         if `"`l`v''"' == "" {
  		local l`v' "`v'"
   	}
   }
       
- foreach x in d_gpq d_oiadpq d_oibdpq d_revtq d_saleq { 
+ foreach x in d_gpq d_oiadpq d_oibdpq d_dvtq d_revtq d_saleq { 
 	ttest `x' if year==2015, by(loser)
+	}
+	
+	discard
+	local i=1
+	foreach v in d_gpq d_oiadpq d_dvtq d_revtq d_saleq {
+		twoway (scatter `v' est if year==2015), ytitle("`l`v'' Growth") name("x`i'") title("`l`v''") xtitle("Point Estimate")
+		graph export "$mainpath/ResultsForSlides/Post_Default/scatter`i'.png", replace
+		local i=`i'+1
 	}
 
 collapse (mean) d_*, by(year loser)
@@ -185,7 +193,7 @@ foreach v of var d_gpq d_oiadpq d_revtq d_saleq  {
 
 discard
 local i=1
-foreach v of var d_gpq d_oiadpq d_revtq d_saleq {
+foreach v of var d_gpq d_oiadpq d_dvtq d_revtq d_saleq {
 twoway (line `v' year if loser==1, sort) (line `v' year if loser==0, sort) if year>=2008, ytitle("`l`v'' Growth") name("x`i'") title("`l`v''") legend(order(1 "Loser" 2 "Non-Loser"))
 graph export "$mainpath/ResultsForSlides/Post_Default/Figure`i'.png", replace
 local i=`i'+1
