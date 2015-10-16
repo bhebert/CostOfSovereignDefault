@@ -77,6 +77,7 @@ replace atq = atq / currtrq
 replace marketeq = marketeq * ADRBlue if adrrq != .
 replace marketeq = marketeq / currtrq if adrrq == .
 
+gen peratio = prccq / epsf12
 
 replace adrrq = 1 if adrrq == .
 
@@ -90,6 +91,9 @@ replace cshoq = cshoq * adrrq
 replace cshprq = cshprq * adrrq
 replace cshfdq = cshfdq * adrrq
 replace commonshares = commonshares * adrrq
+
+
+
 
 sort tid quarter
 
@@ -107,7 +111,8 @@ gen crsp_lev = (atq - bookeq + marketeq) / marketeq
 order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
 
 
-keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq
+
+keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq peratio
 
 sort Ticker quarter
 

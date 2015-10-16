@@ -211,7 +211,7 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-foreach mark in AR US {
+foreach mark in US AR {
 
 	local tweight = 0.1
 	local types Value Delev Acct
