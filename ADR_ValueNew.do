@@ -361,8 +361,8 @@ foreach mark in AR US {
 			bysort date: egen total_weight2=sum(weight2)
 		
 			replace weight2=. if total_weight2 == 0
-			replace weight2=0.9*weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
-			replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
+			replace weight2=weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
+			//replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
 
 		
 			gen tweight = weight2 * (leverage - 1) / leverage
