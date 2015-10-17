@@ -118,8 +118,8 @@ save "$apath/ADR_CRSP.dta", replace
 
 drop if Ticker == ""
 drop if Ticker == "YPF"
-drop if epsf12 == . | marketeq == . | commonshares == .
-gen earn = epsf12 * commonshares
+drop if epsfxq == . | marketeq == . | commonshares == .
+gen earn = epsfxq * commonshares
 
 collapse (sum) earn marketeq, by(quarter)
 
