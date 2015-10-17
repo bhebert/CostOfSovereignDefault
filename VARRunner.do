@@ -67,7 +67,7 @@ foreach outcome in gdp ip {
 	tsline log_div_real log_div_real_sa log_annual_div, name(`time'DivComparison)
 	
 	
-	if $alt_rho == 0 {
+	if "$alt_rho" == "0" | "$alt_rho" == "" {
 		local rho = ${rho_`time'}
 	}
 	else {
