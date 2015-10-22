@@ -327,6 +327,8 @@ label var ind_ADR "ADR"
 label var ind_ADRsam "ADR Sample"
 label var foreign "Foreign"
 label var Ticker "Ticker"
+replace es=es*100
+replace imp=imp*100
 export excel using "$rpath/FirmTable_Paper.xls", firstrow(varlabels) replace 
 
 *JUST FOR THE VERSION WITH BONDS
