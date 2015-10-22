@@ -10,6 +10,9 @@ local forecast 0
 *if 1, only consensus and var
 *if 2, consensus and weo/DON'T USE THIS, IT IS NOT DONE YET
 
+*1 to use crsp, 0 bloomberg
+local crsp_adr 1
+
 * This controls which Exchange Rates to use
 global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M US10YBE US5YBE BCS ADRB_PBRTS Contado_Ambito
 
@@ -47,8 +50,18 @@ drop if date == .
 drop if Ticker == ""
 drop if market != "US" & market != "AR" & Ticker != "MXAR" & Ticker != "Merval"
 
+if `crsp_adr'==1 {
+	drop if market=="US"
+	append  using "$apath/CRSP_ADRs.dta"
+	drop if date >= td(30jul2014)
+	drop if date < td(1jan$startyear)
+	replace bb_ticker=Ticker +" US Equity" if market=="US"
+	replace ticker_full=Ticker+"_US" if market=="US"
+}
+
 drop if date >= td(30jul2014)
 drop if date < td(1jan$startyear)
+
 
 
 gen ADRticker = bb_ticker if market == "US"
@@ -70,7 +83,8 @@ drop if industry_sector == ""
 drop ADRticker
 rename px_last px_close
 
-sort Ticker date market
+sort Ticker 
+
 
 tempfile temp
 
