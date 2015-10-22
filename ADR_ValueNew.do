@@ -53,7 +53,7 @@ replace DPS2 = DivPerShare if repurchases == .
 gen ADRratio = adrrq
 
 
-keep quarter Ticker MV MV2 leverage EPS DivPerShare DPS2 ADRratio
+keep quarter Ticker MV MV2 leverage EPS DivPerShare DPS2 ADRratio commonshares
 
 encode Ticker, gen(tid)
 sort tid quarter
@@ -61,8 +61,9 @@ tsset tid quarter
 replace EPS = F.EPS
 replace DivPerShare = F.DivPerShare
 replace DPS2 = F.DPS2
-gen EPSgrowth = log(F.EPS / EPS)
-drop tid
+gen EPSgrowth = L.EPS
+//gen EPSgrowth = (F.EPS * F.commonshares) / (EPS * commonshares)
+drop tid commonshares
 
 bysort quarter: egen total_market=sum(MV)
 bysort quarter: egen total_market2=sum(MV2)
@@ -211,7 +212,7 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-foreach mark in AR US {
+foreach mark in US AR {
 
 	local tweight = 0.1
 	local types Value Delev Acct
@@ -361,8 +362,8 @@ foreach mark in AR US {
 			bysort date: egen total_weight2=sum(weight2)
 		
 			replace weight2=. if total_weight2 == 0
-			replace weight2=0.9*weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
-			replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
+			replace weight2=weight2/total_weight2  if Ticker~="Tbill" & total_weight2 > 0
+			//replace weight2=0.1 if Ticker=="Tbill" & total_weight2 > 0
 
 		
 			gen tweight = weight2 * (leverage - 1) / leverage
@@ -376,7 +377,7 @@ foreach mark in AR US {
 			replace weight2=. if total_weight_test < 0.999
 			drop total_weight_test
 		
-			replace weight_acct = 0 if px_close == . | qe_price == . | EPSgrowth == .
+			replace weight_acct = 0 if px_close == . | qe_price == . | EPSgrowth == . | EPS == .
 			replace weight_acct = 0 if Ticker=="Tbill"
 			bysort date: egen total_weight_acct=sum(weight_acct)
 			replace weight_acct=. if total_weight_acct == 0

@@ -143,5 +143,5 @@ collapse (mean) N CAR DCDS J1 J2, by(firmname shocktype)
 sort shocktype firmname
 
 export excel using "$rpath/StandardEventStudy.xls", firstrow(variables) replace
-keep if firmname=="INDEX_US"
+keep if firmname=="ValueINDEXNew_US"
 export excel using "$rpath/StandardEventStudy_Index.xls", firstrow(variables) replace

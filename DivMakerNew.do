@@ -41,27 +41,39 @@ foreach outcome in gdp ip {
 	gen div_real = div * OfficialRate / cpi
 	
 	gen cum_div = sum(div_real)
+	gen cum_div_check = sum(div_real != .)
 	
 	gen cum_ovar = sum(`ovar')
+	gen cum_ovar_check = sum(`ovar' != .)
 	
 	gen log_annual_div = log(cum_div - L`yearlen'.cum_div)
 	gen log_annual_`outcome' = log(cum_ovar - L`yearlen'.cum_ovar)
 	
-	drop cum_div cum_ovar
-	replace log_annual_div = . if F.L`yearlen'.div_real == .
-	replace log_annual_`outcome' = . if F.L`yearlen'.`ovar' == .
+	
+	replace log_annual_div = . if cum_div_check - L`yearlen'.cum_div_check != `yearlen'
+	replace log_annual_`outcome' = . if cum_ovar_check - L`yearlen'.cum_ovar_check != `yearlen'
+
+	drop cum_div cum_ovar cum_div_check cum_ovar_check
 	
 	//gen log_pd = log(px_close / us_cpi) - log_annual_div
 	gen log_pd = log(px_close * OfficialRate / cpi) - log_annual_div
 	
 	if `yearlen' == 4 {
 	
-		gen epsgrowth_real = EPSgrowth * L.px_close / cpi * L.cpi
+		gen epsgrowth_real = log(EPS / EPSgrowth / cpi * L.cpi)
+		//gen epsgrowth_real = EPSgrowth * L.px_close / cpi * L.cpi
 		
 		gen gdp_growth = log(`ovar' / L.`ovar')
 		
 		gen cum_growth = sum(gdp_growth)
 		gen cum_earn = sum(epsgrowth_real)
+		
+		gen cum_earn_check = sum(epsgrowth_real != .)
+		gen cum_growth_check = sum(gdp_growth != .)
+		
+		replace cum_earn = . if  cum_earn_check - L`yearlen'.cum_earn_check != `yearlen'
+		replace cum_growth = . if  cum_growth_check - L`yearlen'.cum_growth_check != `yearlen'
+		drop cum_earn_check cum_growth_check
 		
 		capture graph drop growth_comp
 		twoway (tsline cum_growth) (tsline cum_earn, yaxis(2)) if quarter >= yq(2003,1), name(growth_comp) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
@@ -69,15 +81,16 @@ foreach outcome in gdp ip {
 	
 		gen e_real = EPS * L.px_close / cpi
 		gen cum_e = sum(e_real)
-		gen cum_e2 = sum(epsgrowth_real)
+		gen cum_e_check = sum(e_real != .)
+		replace cum_e = . if  cum_e_check - L`yearlen'.cum_e_check != `yearlen'
+	
 		gen log_annual_e = log(cum_e- L`yearlen'.cum_e)
-		gen log_annual_e2 = log(cum_e2- L`yearlen'.cum_e2)
-		drop cum_e cum_e2
-		
-		replace log_annual_e = . if F.L`yearlen'.e_real == .
-		replace log_annual_e2 = . if F.L`yearlen'.epsgrowth_real == .
+		drop cum_e cum_e_check
 		
 		gen log_pe = log(px_close * OfficialRate / cpi) - log_annual_e
+		gen peratio = exp(log_pe)
+		gen pdratio = exp(log_pd)
+		
 		gen payout_ratio = exp(log_annual_div - log_annual_e)
 		
 		gen div_real_acct = DivPerShare * L.px_close / cpi
@@ -109,7 +122,7 @@ foreach outcome in gdp ip {
 		capture graph drop `outcome'_vs_div2
 		twoway (tsline log_annual_`outcome') (tsline log_annual_div log_annual_div_acct log_annual_div2_acct, yaxis(2)), name(`outcome'_vs_div2) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
 	
-		
+		su pdratio peratio
 	}
 	
 	
@@ -117,6 +130,8 @@ foreach outcome in gdp ip {
 
 	local mean_pd = `r(mean)'
 
+	
+	
 	global rho_`time' = (exp(`mean_pd') / (exp(`mean_pd') + 1)) ^ (1/`yearlen')
 	disp "rho_est: ${rho_`time'}"
 
