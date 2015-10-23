@@ -7,6 +7,9 @@ local market_cut 200
 
 local freq_cut 0.5
 
+local event_cut 10
+
+
 tempfile adrtemp
 
 use "$bbpath/ADR_Static.dta", clear
@@ -104,15 +107,10 @@ rename market_cap market_cap2011
 
 drop if market_cap2011 == . | market_cap2011 < `market_cut'
 
-save "$apath/FirmTable.dta", replace
+mmerge bb_ticker using "$apath/stale.dta"
+drop if _merge==2
 
-use "$dpath/Datastream_local_long2.dta", clear
-
-collapse (mean) stale_freq, by(Ticker)
-
-mmerge Ticker using "$apath/FirmTable.dta", unmatched(using)
-
-drop if (stale_freq > `freq_cut' | stale_freq == .) & Ticker != "SAM"
+drop if (stale_freq > `freq_cut' | stale_freq == . | events<`event_cut') & Ticker != "SAM"
 
 ta _merge
 drop _merge
