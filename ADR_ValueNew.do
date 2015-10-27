@@ -226,7 +226,7 @@ foreach mark in US AR {
 		local avars2
 	}
 
-	foreach indtype in Value ValueNonFin ValueBank  {
+	foreach indtype in Value ValueNonFin ValueBank ValueRE  {
 
 		local filename= "`indtype'Index_`mark'_New"
 		
@@ -259,6 +259,10 @@ foreach mark in US AR {
 		}
 		if "`indtype'" == "ValueNonFin" {
 			drop if finvar != 0
+		}
+		if "`indtype'" == "ValueRE" {
+			drop if finvar != .
+			local minstocks 1
 		}
 		
 		keep date px_open px_last Ticker total_return market
