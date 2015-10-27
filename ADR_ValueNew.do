@@ -228,6 +228,10 @@ foreach mark in US AR {
 
 	foreach indtype in Value ValueNonFin ValueBank ValueRE  {
 
+		if "`indtype'" != "Value" {
+			local tweight = 0
+		}
+	
 		local filename= "`indtype'Index_`mark'_New"
 		
 		local weightfile="`mark'_weighting"
