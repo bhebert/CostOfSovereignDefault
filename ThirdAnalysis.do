@@ -269,6 +269,11 @@ foreach x of local tickers {
 	}
 }
 
+// Code to go from log-returns to arithmetic returns
+foreach rt in `rtypes' `fnames' {
+	replace `rt' = 100*(exp(`rt'/100)-1)
+}
+
 
 keep date bdate Ticker `rtypes' `fnames' industry_sector firm_id $static_vars market
 
