@@ -90,7 +90,7 @@ tempfile temp
 
 //took out AR value indices, since they aren't correct.
 foreach mark in US AR {
-	foreach indtype in ValueBank ValueNonFin Value {
+	foreach indtype in ValueBank ValueNonFin ValueRE Value {
 		local filename= "`indtype'Index_`mark'_New"
 		append using "$apath/`indtype'Index_`mark'_New.dta"
 		
