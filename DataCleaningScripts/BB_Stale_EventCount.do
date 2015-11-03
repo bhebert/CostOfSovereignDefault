@@ -6,6 +6,7 @@ keep date eventday
 save "`cds'", replace
 
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
+append using "$apath/TGNO4.dta"
 keep if market=="AR"
 keep if date>=td(01jan2011) & date<=td(30jul2014)
 encode Ticker, gen(firm_id)

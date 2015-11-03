@@ -46,6 +46,9 @@ drop FFCODE49
 rename isin_code ID_ISIN
 
 mmerge ID_ISIN using "$dpath/Market_Cap_Ticker_2011.dta", unmatched(both)
+*THIS USES THE OLD TICKER OF Transportadores de gas del norte
+replace bb_ticker="TGNO4 AR Equity" if bb_ticker=="TGNO2 AR Equity"
+
 
 drop _merge
 

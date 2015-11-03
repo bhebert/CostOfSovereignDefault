@@ -46,6 +46,8 @@ local import_capx_cut 0.0968
 
 
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
+*add missing equity
+append using "$apath/TGNO4.dta"
 drop if date == .
 drop if Ticker == ""
 drop if market != "US" & market != "AR" & Ticker != "MXAR" & Ticker != "Merval"
