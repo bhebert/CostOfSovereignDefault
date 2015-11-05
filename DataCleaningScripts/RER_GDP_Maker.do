@@ -1,5 +1,7 @@
 set more off
 
+global real_gdps Real_GDP_cpi Real_GDP_cpigfd Real_GDP_defl Real_GDP_official
+
 use "$apath/blue_rate.dta", clear
 browse
 gen quarter=qofd(date)
