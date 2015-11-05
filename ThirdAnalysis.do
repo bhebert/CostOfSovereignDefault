@@ -272,6 +272,7 @@ foreach x of local tickers {
 }
 
 // Code to go from log-returns to arithmetic returns
+// revent back to logs after making the portfolios
 foreach rt in `rtypes' `fnames' {
 	replace `rt' = 100*(exp(`rt'/100)-1)
 }
@@ -556,6 +557,12 @@ replace industry_sector = strtoname(industry_sector)
 
 * this is a totally useless byproduct of the code.
 drop if regexm(firmname,"HML_indicator_adr_US")
+
+
+// Code to go from arithmetic to log-returns
+foreach rt in return_ return_local eqreturn indreturn madrreturn {
+	replace `rt' = 100*log(`rt'/100+1)
+}
 
 save "$apath/`file'.dta", replace
 
