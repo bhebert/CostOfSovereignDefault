@@ -95,7 +95,7 @@ drop temp
 
 *aggregate loss
 *my lazy average, try a bunch fo results
-gen stock_market_cap=.10
+gen stock_market_cap=.138
 
 *YPF AND TEO, and internet say 7
 gen PE=7
