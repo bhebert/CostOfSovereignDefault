@@ -51,7 +51,7 @@ save "$miscdata/Inflation/inflation_month.dta", replace
 
 use "$miscdata/Inflation/inflation_month.dta", clear
 *drop if year==2015
-collapse (sum) inflation_log (lastnm) cpi, by(quarter)
+collapse (sum) inflation_log (lastnm) cpi cpi_official, by(quarter)
 tsset quarter
 save "$miscdata/Inflation/inflation_quarter.dta", replace
 
