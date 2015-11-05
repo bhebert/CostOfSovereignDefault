@@ -4,29 +4,29 @@
 
 * One of these four must be run, to do anything useful
 * Run with local data
-local use_local 1
+local use_local 0
 
 * Run with ADR data
-local use_adrs 0
+local use_adrs 1
 
 * Run with exchange rates
-local use_exrates 0
+local use_exrates 1
 
 *Run with NDF rates
 local use_ndf 0
 
 *Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 0
+local use_addeq 1
 
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
 
 * Run with the GDP models
 * Requires use_adrs and use_exrates
-local use_gdpmodels 0
+local use_gdpmodels 1
 
 * Run with individual bond returns
-local use_bonds 0
+local use_bonds 1
 
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
 local use_mexbrl 0
@@ -45,13 +45,13 @@ local use_singlenames 0
 local use_highlow_ports 0
 
 * Run with high minus low portfolios
-local use_hmls 1
+local use_hmls 0
 
 * Run with industries
 local use_industries 0
 
 * add in market and exchange controls
-local relative_perf 1
+local relative_perf 0
 
 * If 0, uses equal-weighted index for relative performance.
 * if nonzero, uses MXAR or MERVAL (as appropriate).
