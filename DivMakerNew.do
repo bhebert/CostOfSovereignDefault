@@ -1,6 +1,8 @@
 
 set more off
 
+local best_gdp Real_GDP_official
+
 foreach outcome in gdp ip {
 
 	use "$apath/ValueIndex_US_New.dta", clear
@@ -10,13 +12,12 @@ foreach outcome in gdp ip {
 	
 	if "`outcome'" == "gdp" {
 		local time quarter
-		local ovar Real_GDP_cpi
-		//local ovar Real_GDP_SA
+		local ovars $real_gdps
 		local yearlen 4
 	}
 	else {
 		local time month
-		local ovar IndustrialProduction
+		local ovars IndustrialProduction
 		local yearlen 12
 		
 		gen month = mofd(date)
@@ -26,7 +27,7 @@ foreach outcome in gdp ip {
 	sort `time'
 
 	*ADDING IN SOME ADDITIONAL VARIABLES
-	mmerge `time' using "$apath/rer_`outcome'_dataset.dta", unmatched(master) ukeep(`ovar' ADRBlue cpi us_cpi OfficialRate)
+	mmerge `time' using "$apath/rer_`outcome'_dataset.dta", unmatched(master) ukeep(`ovars' ADRBlue cpi us_cpi OfficialRate)
 	gen log_rer = log((ADRBlue / cpi) * us_cpi)
 	gen log_orer = log((OfficialRate / cpi) * us_cpi)
 	gen log_rel_cpi = log(cpi / us_cpi)
@@ -42,18 +43,18 @@ foreach outcome in gdp ip {
 	
 	gen cum_div = sum(div_real)
 	gen cum_div_check = sum(div_real != .)
-	
-	gen cum_ovar = sum(`ovar')
-	gen cum_ovar_check = sum(`ovar' != .)
-	
 	gen log_annual_div = log(cum_div - L`yearlen'.cum_div)
-	gen log_annual_`outcome' = log(cum_ovar - L`yearlen'.cum_ovar)
-	
-	
 	replace log_annual_div = . if cum_div_check - L`yearlen'.cum_div_check != `yearlen'
-	replace log_annual_`outcome' = . if cum_ovar_check - L`yearlen'.cum_ovar_check != `yearlen'
+	drop cum_div cum_div_check
+	
+	foreach ovar in `ovars' {
+		gen cum_ovar = sum(`ovar')
+		gen cum_ovar_check = sum(`ovar' != .)
+		gen log_annual_`ovar' = log(cum_ovar - L`yearlen'.cum_ovar)
+		replace log_annual_`ovar' = . if cum_ovar_check - L`yearlen'.cum_ovar_check != `yearlen'
 
-	drop cum_div cum_ovar cum_div_check cum_ovar_check
+		drop cum_ovar cum_ovar_check
+	}
 	
 	//gen log_pd = log(px_close / us_cpi) - log_annual_div
 	gen log_pd = log(px_close * OfficialRate / cpi) - log_annual_div
@@ -63,7 +64,7 @@ foreach outcome in gdp ip {
 		gen epsgrowth_real = log(EPS / EPSgrowth / cpi * L.cpi)
 		//gen epsgrowth_real = EPSgrowth * L.px_close / cpi * L.cpi
 		
-		gen gdp_growth = log(`ovar' / L.`ovar')
+		gen gdp_growth = log(`best_gdp' / L.`best_gdp')
 		
 		gen cum_growth = sum(gdp_growth)
 		gen cum_earn = sum(epsgrowth_real)
@@ -116,11 +117,11 @@ foreach outcome in gdp ip {
 		capture graph drop PEPD
 		tsline log_pd log_pe if quarter >= yq(2003,1), name(PEPD)
 		
-		capture graph drop `outcome'_vs_e
-		twoway (tsline log_annual_`outcome') (tsline log_annual_e, yaxis(2)), name(`outcome'_vs_e) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
+		capture graph drop `best_gdp'_vs_e
+		twoway (tsline log_annual_`best_gdp') (tsline log_annual_e, yaxis(2)), name(`best_gdp'_vs_e) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
 	
-		capture graph drop `outcome'_vs_div2
-		twoway (tsline log_annual_`outcome') (tsline log_annual_div log_annual_div_acct log_annual_div2_acct, yaxis(2)), name(`outcome'_vs_div2) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
+		capture graph drop `best_gdp'_vs_div2
+		twoway (tsline log_annual_`best_gdp') (tsline log_annual_div log_annual_div_acct log_annual_div2_acct, yaxis(2)), name(`best_gdp'_vs_div2) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
 	
 		su pdratio peratio
 	}
