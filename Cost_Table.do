@@ -7,7 +7,7 @@ local a_value_coeff=exp(`value_coeff'/100)-1
 local a_ypf_coeff=exp(`ypf_coeff'/100)-1
 *$B, from WDI, 2011
 local gdp_usd=560
-local rho=.98
+local rho=0.9956^4
 
 
 *MAKE FIRM TABLE WITH ALL EQUITIES
