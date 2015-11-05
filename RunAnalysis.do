@@ -6,7 +6,8 @@ global alt_rho 0
 * Setup paths-- in case it hasn't been done yet.
 do ${csd_dir}/SetupPaths.do
 
-global GDP_models gdp_var ip_var gdp_dols ip_dols gdp_con1y gdp_con6m ip_con1y ip_con6m gdp_tracking ip_tracking
+global GDP_models gdp_con1y gdp_con6m ip_con1y ip_con6m gdp_tracking ip_tracking
+//gdp_var ip_var gdp_dols ip_dols 
 
 global HFExName dolarblue
 
@@ -20,6 +21,8 @@ do "$csd_dir/Long_Term.do"
 
 *Make the Dividend VAR indices
 do "$csd_dir/VarRunner.do"
+
+global GDP_models $GDP_models $VARmodels
 
 *Make the forecast index weights
 do "$csd_dir/Forecast_RSNew.do"
