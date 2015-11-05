@@ -8,7 +8,8 @@ local a_ypf_coeff=exp(`ypf_coeff'/100)-1
 *$B, from WDI, 2011
 local gdp_usd=560
 local rho=0.9956^4
-
+local PEnum=7
+local smc=.1
 
 *MAKE FIRM TABLE WITH ALL EQUITIES
 *NEED TO CONVERT TO ARITHMETIC
@@ -95,10 +96,10 @@ drop temp
 
 *aggregate loss
 *my lazy average, try a bunch fo results
-gen stock_market_cap=.10
+gen stock_market_cap=`smc'
 
 *YPF AND TEO, and internet say 7
-gen PE=7
+gen PE=`PEnum'
 gen aggregate_loss=loss_all/(stock_market_cap/PE)
 drop stock_market PE
 gen aggregate_gdp=100*aggregate/`gdp_usd'
