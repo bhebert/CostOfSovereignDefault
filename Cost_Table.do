@@ -98,7 +98,7 @@ drop temp
 gen stock_market_cap=.138
 
 *YPF AND TEO, and internet say 7
-gen PE=7
+gen PE=14.87
 gen aggregate_loss=loss_all/(stock_market_cap/PE)
 drop stock_market PE
 gen aggregate_gdp=100*aggregate/`gdp_usd'

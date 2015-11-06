@@ -124,3 +124,7 @@ gen earn = epsfxq * commonshares
 collapse (sum) earn marketeq, by(quarter)
 
 gen peratio = marketeq / earn
+
+tsset quarter
+
+gen peratio2 = marketeq / (earn + L.earn + L2.earn + L3.earn)

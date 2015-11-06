@@ -124,6 +124,10 @@ foreach outcome in gdp ip {
 		twoway (tsline log_annual_`best_gdp') (tsline log_annual_div log_annual_div_acct log_annual_div2_acct, yaxis(2)), name(`best_gdp'_vs_div2) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) graphregion(fcolor(white) lcolor(white))
 	
 		su pdratio peratio
+		
+		su pdratio peratio if quarter == yq(2010,4)
+		
+		return
 	}
 	
 	
