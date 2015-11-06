@@ -1,7 +1,7 @@
 
 set more off
 
-local best_gdp Real_GDP_official
+local best_gdp Real_GDP_cpi
 
 foreach outcome in gdp ip {
 

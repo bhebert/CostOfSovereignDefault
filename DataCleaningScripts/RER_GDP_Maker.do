@@ -1,7 +1,7 @@
 set more off
 
 *global real_gdps Real_GDP_cpi Real_GDP_cpigfd Real_GDP_defl Real_GDP_official gdpr_cpipseiu gdpr_cpicalc gdpr_wage gdpr_ppi gdpr_gfd gdpr_nsa_eiu gdpr_sa_eiu gdpr_indec gdpr_ifs
-global real_gdps gdpr_cpicalc gdpr_indec gdpr_ifs
+global  real_gdps  Real_GDP_cpi gdpr_indec gdpr_ifs
 
 use "$apath/blue_rate.dta", clear
 browse
@@ -65,5 +65,8 @@ label var Real_GDP_defl "Argentina Real GDP (Constructed as Nominal GDP IFS/GDP 
 label var Real_GDP_official "Argentina Offical Real GDP GFD"
 *drop GDP_Deflator GDP_Deflator_change Nominal_GDP_change Nominal_GDP_GFD_change Real_GDP_change  _merge rer_r cpi_r ADRBlue_r us_cpi_r
 drop if quarter==. | quarter>tq(2014q4)
+
+rename Real_GDP_cpi Real_GDP_cpi_ifsold
+rename gdpr_cpicalc Real_GDP_cpi 
 save "$apath/rer_gdp_dataset.dta", replace
 
