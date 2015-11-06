@@ -30,7 +30,7 @@ replace ratio=5 if ADR_T=="TEO"
 replace ratio=25 if ADR_T=="PAM"
 replace ratio=1 if ADR_T=="YPF"
 
-save "$mainpath/CRSP/CRSP_ADR.dta", replace
+save "$apath/CRSP_ADR.dta", replace
 
 
 use "$mainpath/Local Data/Bolsar/Bolsar_merged.dta", clear
@@ -51,7 +51,7 @@ replace ADR_Ticker="YPF" if Under_Ticker=="YPFD"
 keep date Under ADR Last Open
 rename Open px_open0 
 rename Last px_close0
-mmerge date ADR_Ticker using "$mainpath/CRSP/CRSP_ADR.dta"
+mmerge date ADR_Ticker using "$apath/CRSP_ADR.dta"
 
 replace px_open1=px_open1/ratio
 replace px_close1=px_close1/ratio
@@ -61,9 +61,9 @@ gen blue_close=px_close0/px_close1
 
 *bysort date: egen blue_open_ds=mean(blue_open) if ADR~="YPF"
 *bysort date: egen blue_close_ds=mean(blue_close) if ADR~="YPF"
-save "$mainpath/CRSP/CRSP_Bolsar_merge.dta", replace
+save "$apath/CRSP_Bolsar_merge.dta", replace
 
-use "$mainpath/CRSP/CRSP_Bolsar_merge.dta", clear
+use "$apath/CRSP_Bolsar_merge.dta", clear
 keep if _merge==3
 drop if ADR=="YPF" 
 order date Under blue*
