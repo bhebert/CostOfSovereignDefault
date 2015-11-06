@@ -126,8 +126,7 @@ foreach outcome in gdp ip {
 		su pdratio peratio
 		
 		su pdratio peratio if quarter == yq(2010,4)
-		
-		return
+
 	}
 	
 	
