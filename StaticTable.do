@@ -10,7 +10,7 @@ local freq_cut 0.5
 local event_cut 10
 
 
-tempfile adrtemp
+tempfile adrtemp firmtabletemp
 
 use "$bbpath/ADR_Static.dta", clear
 
@@ -125,8 +125,34 @@ replace finvar = . if regexm(industry_sector,"Real Estate") | regexm(industry_se
 
 rename Ticker ticker
 mmerge ticker using "$apath/TCind.dta", unmatched(master)
-mmerge ticker using "$apath/Brentimports.dta", unmatched(master) umatch(Ticker)
-
 rename ticker Ticker
+save "`firmtabletemp'", replace
+
+**************************
+*MERGE IN Brent's Imports*
+**************************
+tempfile data brenttemp
+import excel "$miscdata/Brent Neiman Data/Match.xlsx", sheet("Raw") firstrow clear
+save "`data'", replace
+import excel "$miscdata/Brent Neiman Data/Match.xlsx", sheet("FirmTable") firstrow clear
+keep name Ticker industry_sector firm
+mmerge firm using "`data'"
+keep if _merge==3
+drop _merge
+mmerge Ticker using "`firmtabletemp'", ukeep(isin_code import_intensity)
+keep if _merge==3
+mmerge  isin_code year using "$miscdata/Brent Neiman Data/CompustatGlobal.dta", umatch(isin fyear)
+keep if _merge==3
+replace imports=imports/(10^6)
+keep name Ticker isin year import* capx revt
+gen import_rev=imports/revt
+gen import_capx=imports/capx
+collapse (mean) import_rev import_capx, by(Ticker)
+save "`brenttemp'", replace
+
+*MERGE
+use "`firmtabletemp'"
+mmerge Ticker using "`brenttemp'", unmatched(master) umatch(Ticker)
+
 
 save "$apath/FirmTable.dta", replace
