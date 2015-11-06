@@ -5,12 +5,6 @@
 
 do ${csd_dir}/SetupPaths.do
 
-do ${csd_dir}/CDSMaker.do
-
-do ${csd_dir}/StaticTable.do
-
-do ${csd_dir}/DataCleaningScripts/Brentimports.do
-
 do ${csd_dir}/GlobalFactors.do
 
 do ${csd_dir}/BlueRateMaker_v2.do
