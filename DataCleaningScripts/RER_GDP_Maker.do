@@ -39,7 +39,7 @@ gen rer_r=ADRBlue_r*us_cpi_r/cpi_r
 *two extras quarters anymore.
 replace Nominal_GDP=Nominal_GDP_GFD if quarter==tq(2014q3) | quarter==tq(2014q4)
 *drop Nominal_GDP_GFD
-gen Real_GDP_cpi=Nominal_GDP/cpi_r
+gen Real_GDP_cpiold=Nominal_GDP/cpi_r
 gen Real_GDP_cpigfd=Nominal_GDP_GFD/cpi_r
 gen Real_GDP_defl=Nominal_GDP/GDP_Deflator
 rename Real_GDP Real_GDP_official
@@ -60,13 +60,11 @@ label var cpi "Argentina CPI"
 label var inflation "Argentina Inflation"
 label var rer "Real Exchange Rate"
 label var Real_GDP_cpigfd "Argentina Real GDP (Constructed as Nominal GDP GFD/CPI)"
-label var Real_GDP_cpi "Argentina Real GDP (Constructed as Nominal GDP IFS/CPI)"
 label var Real_GDP_defl "Argentina Real GDP (Constructed as Nominal GDP IFS/GDP Deflator)"
 label var Real_GDP_official "Argentina Offical Real GDP GFD"
 *drop GDP_Deflator GDP_Deflator_change Nominal_GDP_change Nominal_GDP_GFD_change Real_GDP_change  _merge rer_r cpi_r ADRBlue_r us_cpi_r
 drop if quarter==. | quarter>tq(2014q4)
 
-rename Real_GDP_cpi Real_GDP_cpi_ifsold
 rename gdpr_cpicalc Real_GDP_cpi 
 save "$apath/rer_gdp_dataset.dta", replace
 
