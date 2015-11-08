@@ -145,6 +145,7 @@ mmerge  isin_code year using "$miscdata/Brent Neiman Data/CompustatGlobal.dta", 
 keep if _merge==3
 replace imports=imports/(10^6)
 keep name Ticker isin year import* capx revt
+replace imports=imports*(6/5) if year==2008
 gen import_rev=imports/revt
 gen import_capx=imports/capx
 collapse (mean) import_rev import_capx, by(Ticker)
