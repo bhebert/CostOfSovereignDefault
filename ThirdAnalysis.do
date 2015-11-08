@@ -41,7 +41,7 @@ local import_intensity_cut 0.03
 local finvar_cut 0
 local market_cap2011_cut 2000
 local TCind_cut 0
-local import_rev_cut .01
+local import_rev_cut .006
 local import_capx_cut 0.0968
 
 
