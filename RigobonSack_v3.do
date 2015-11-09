@@ -16,7 +16,7 @@ local use_exrates 1
 local use_ndf 0
 
 *Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 1
+local use_addeq 0
 
 *Run with US Breakeven Inflation Rates
 local use_usbeinf 0
@@ -26,7 +26,7 @@ local use_usbeinf 0
 local use_gdpmodels 1
 
 * Run with individual bond returns
-local use_bonds 1
+local use_bonds 0
 
 * Run with mexico and brazil CDS/equity [NOTE, can add other countries]
 local use_mexbrl 0
@@ -265,6 +265,19 @@ replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
 
 drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
+
+if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {	
+	expand 2 if firmname == "ValueINDEXNew_US", gen(v14)
+	replace firmname = "ValueINDEXNew14_US" if v14 == 1
+	drop v14
+	
+	sort date firmname
+	by date: egen excnt = sum(firmname == "$HFExName")
+	drop if firmname == "ValueINDEXNew14_US" & (excnt == . | excnt == 0)
+	drop excnt
+}
+
+
 
 *Save dataset at this point to construct summary states
 save "$apath/data_for_summary.dta", replace

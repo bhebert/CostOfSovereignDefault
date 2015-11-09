@@ -446,9 +446,9 @@ foreach outcome in gdp ip {
 		
 		matrix `ovar'_var_V = delb * varV * delb'
 		
-		matrix rownames `ovar'_var_b = ValueINDEXNew_US $HFExName
-		matrix rownames `ovar'_var_V = ValueINDEXNew_US $HFExName
-		matrix colnames `ovar'_var_V = ValueINDEXNew_US $HFExName
+		matrix rownames `ovar'_var_b = ValueINDEXNew14_US $HFExName
+		matrix rownames `ovar'_var_V = ValueINDEXNew14_US $HFExName
+		matrix colnames `ovar'_var_V = ValueINDEXNew14_US $HFExName
 		
 		matrix list `ovar'_var_b
 		matrix list `ovar'_var_V

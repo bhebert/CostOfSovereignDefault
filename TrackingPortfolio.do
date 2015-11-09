@@ -65,9 +65,9 @@ foreach outcome in gdp ip {
 	//matrix list `outcome'_tracking_V
 	//matrix list e(V)
 	
-		matrix rownames `outcome'_tracking_b = ValueINDEXNew_US $HFExName
-		matrix rownames `outcome'_tracking_V = ValueINDEXNew_US $HFExName
-		matrix colnames `outcome'_tracking_V = ValueINDEXNew_US $HFExName
+		matrix rownames `outcome'_tracking_b = ValueINDEXNew14_US $HFExName
+		matrix rownames `outcome'_tracking_V = ValueINDEXNew14_US $HFExName
+		matrix colnames `outcome'_tracking_V = ValueINDEXNew14_US $HFExName
 }
 
 
