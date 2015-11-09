@@ -378,6 +378,7 @@ if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 local OLS ivreg2 return_ cds_ `factors2' 
 local OLS_LC ivreg2 return_local cds_ `factors2' 
 local RS_CDS_IV ivreg2 return_  `factors2' (cds_ = ins_cds)
+local RS_CDS_IV_DM ivreg2 return_  `factors2' eventvar (cds_ = ins_cds)
 local RS_CDS_IV_LC ivreg2 return_local  `factors2' (cds_ = ins_cds)
 local RS_Return_IV ivreg2 return_  `factors2' (cds_ = ins_ret)
 local RS_Return_IV_LC ivreg2 return_local  `factors2' (cds_ = ins_ret)
