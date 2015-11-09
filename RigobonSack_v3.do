@@ -267,14 +267,17 @@ drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
 
 if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {	
-	expand 2 if firmname == "ValueINDEXNew_US", gen(v14)
-	replace firmname = "ValueINDEXNew14_US" if v14 == 1
-	drop v14
+	expand 2 if firmname == "ValueINDEXNew_US" | firmname == "$HFExName", gen(vGDP)
+	replace firmname = "ValueINDEXNewGDP_US" if vGDP == 1 & firmname == "ValueINDEXNew_US"
+	replace firmname = "GDPExRate" if vGDP == 1 & firmname == "${HFExName}"
+	
 	
 	sort date firmname
 	by date: egen excnt = sum(firmname == "$HFExName")
-	drop if firmname == "ValueINDEXNew14_US" & (excnt == . | excnt == 0)
-	drop excnt
+	by date: egen vicnt = sum(firmname == "ValueINDEXNew_US")
+	drop if (firmname == "ValueINDEXNewGDP_US" | firmname == "GDPExRate") & (excnt == . | excnt == 0)
+	drop if (firmname == "ValueINDEXNewGDP_US" | firmname == "GDPExRate") & (vicnt == . | vicnt == 0)
+	drop excnt vicnt vGDP
 }
 
 
