@@ -291,7 +291,6 @@ if _rc == 0 {
 }
 
 
-<<<<<<< HEAD
 *FIRM TABLE FOR PAPER
 use "$apath/FirmTable.dta", clear
 order name Ticker industry_sec es_ import_rev market_cap indicator_adr ADRt foreign
@@ -332,8 +331,7 @@ replace es=es*100
 replace imp=imp*100
 export excel using "$rpath/FirmTable_Paper.xls", firstrow(varlabels) replace 
 
-=======
->>>>>>> origin/master
+
 *JUST FOR THE VERSION WITH BONDS
 /*
 use "$apath/data_for_summary.dta", clear
