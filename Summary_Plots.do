@@ -329,6 +329,8 @@ label var foreign "Foreign"
 label var Ticker "Ticker"
 replace es=es*100
 replace imp=imp*100
+replace es=. if industry=="Banks" | industry=="Real Estate"
+replace imp=. if industry=="Banks" | industry=="Real Estate"
 export excel using "$rpath/FirmTable_Paper.xls", firstrow(varlabels) replace 
 
 
