@@ -1,7 +1,7 @@
 set more off
-
+tempfile monthtemp
 *Inflation
-import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series_Oct2015.xlsx", sheet("Pricestats_Argentina_monthly_se") firstrow clear
+/*import excel "$miscdata/Inflation/PriceStats_Argentina_monthly_series_Oct2015.xlsx", sheet("Pricestats_Argentina_monthly_se") firstrow clear
 tostring TRADE_DATE, replace
 gen date=date(TRADE_DATE,"YMD")
 format date %td
@@ -17,48 +17,65 @@ bysort month: egen max_date=max(date)
 keep if date==max_date
 drop date max_date
 save "$miscdata/Inflation/ps_month.dta", replace
+*/
 
 import excel "$miscdata/Inflation/GFD Inflation.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td
 gen month=mofd(date)
 format month %tm
-mmerge month using "$miscdata/Inflation/ps_month.dta"
-drop Date Ticker _merge date
+drop Date Ticker date
 order month
 tsset month
-gen cpi_inflation=((cpi-l.cpi)/l.cpi)*100
+save "`monthtemp'", replace
 
+use "$miscdata/PriceStatsAlberto/pricestats_index_ARGENTINA/pricestats_index_ARGENTINA.dta", clear
+replace date=date-1
+drop month day year
+gen month=mofd(date)
+format month %tm
+order month
+drop date
+rename index psa_index
+rename cpi psa_offcpi
+summ month, detail
+local ps_start=r(min)
+mmerge month using "`monthtemp'"
+sort month
+foreach x in psa_index psa_offcpi cpi {
+	gen `x'_start=`x' if month==`ps_start'
+	egen `x'_start2=max(`x'_start)
+	replace `x'=`x'/`x'_start2
+	drop `x'_start `x'_start2
+}	
+replace cpi=psa_index if month>=`ps_start'	
+drop psa* _merge
+gen inflation=((cpi-l.cpi)/l.cpi)*100
+gen inflation_log=(ln(cpi)-ln(l.cpi))*100
 
-gen inflation=ps_inflation
-replace inflation=cpi_inflation if ps_inflation==.
-gen source="Official" 
-replace source="PriceStats" if ps~=.
-keep cpi month inflation source
-rename cpi cpi_official
+keep cpi month inflation inflation_log
 gen day=dofm(month)
 gen quarter=qofd(day)
 format quarter %tq
 gen year=yofd(day)
 drop day
 keep if month>=tm(1995m1)
-gen cpi=cpi_official if month==tm(1995m1)
-replace cpi=l.cpi*(1+inflation/100) if month>=tm(1995m2)
-order month quarter year cpi inflation cpi_official source
-gen inflation_log=(ln(cpi)-ln(l.cpi))*100
-order inflation_log, after(inflation)
+sort month
 save "$miscdata/Inflation/inflation_month.dta", replace
 
 use "$miscdata/Inflation/inflation_month.dta", clear
 *drop if year==2015
-collapse (sum) inflation_log (lastnm) cpi cpi_official, by(quarter)
+collapse (lastnm) cpi , by(quarter)
 tsset quarter
+gen inflation=((cpi-l.cpi)/l.cpi)*100
 save "$miscdata/Inflation/inflation_quarter.dta", replace
 
 
 use "$miscdata/Inflation/inflation_month.dta", clear
-collapse (sum) inflation_log (lastnm) cpi, by(year)
+collapse (lastnm) cpi , by(year)
 drop if year==2015
+tsset year
+gen inflation=((cpi-l.cpi)/l.cpi)*100
 save "$miscdata/Inflation/inflation_year.dta", replace
 *gen inf_test=100*(cpi-l.cpi)/(l.cpi)
 *gen inf_log_test=100*(ln(cpi)-ln(l.cpi))
@@ -141,6 +158,6 @@ gen `x'_change=100*(log(`x')-log(l.`x'))
 mmerge quarter using "$miscdata/Inflation/us_inflation_quarter.dta"
 mmerge quarter using "$miscdata/Inflation/inflation_quarter.dta"
 drop _merge
-rename us_inflation_log us_inflation
-rename inflation_log inflation
+*rename us_inflation_log us_inflation
+*rename inflation_log inflation
 save "$apath/GDP_inflation.dta", replace
