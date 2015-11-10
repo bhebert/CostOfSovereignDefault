@@ -39,8 +39,8 @@ gen rer_r=ADRBlue_r*us_cpi_r/cpi_r
 *two extras quarters anymore.
 replace Nominal_GDP=Nominal_GDP_GFD if quarter==tq(2014q3) | quarter==tq(2014q4)
 *drop Nominal_GDP_GFD
-gen Real_GDP_cpiold=Nominal_GDP/cpi_r
-gen Real_GDP_cpigfd=Nominal_GDP_GFD/cpi_r
+gen Real_GDP_cpiold=Nominal_GDP/cpi
+gen Real_GDP_cpigfd=Nominal_GDP_GFD/cpi
 gen Real_GDP_defl=Nominal_GDP/GDP_Deflator
 rename Real_GDP Real_GDP_official
 
