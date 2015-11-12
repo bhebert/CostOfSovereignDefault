@@ -43,6 +43,8 @@ local market_cap2011_cut 2000
 local TCind_cut 0
 local import_rev_cut .006
 local import_capx_cut 0.0968
+local freq_cut 0.5
+local event_cut 10
 
 
 use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
@@ -68,10 +70,12 @@ drop if date < td(1jan$startyear)
 
 gen ADRticker = bb_ticker if market == "US"
 replace ADRticker = "none" if market == "AR" | market == "Index"
-mmerge bb_ticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector $static_vars) update
-
+mmerge bb_ticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector $static_vars stale event) update
 * The firm table uses the old IRSA ADR ticker
 replace ADRticker = "APSA US Equity" if ADRticker == "IRCP US Equity"
+*drop firms not meeting requirement
+*Just drops APSA, left flexible in case
+drop if event<`event_cut' | stale_freq>`freq_cut' & market=="AR" & event~=.
 
 mmerge ADRticker using "$apath/FirmTable.dta", unmatched(master) ukeep(industry_sector $static_vars) update
 
