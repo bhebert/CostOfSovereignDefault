@@ -23,6 +23,8 @@ local mvarlags 3
 
 local run_svar 0
 
+local action replace
+
 foreach outcome in gdp ip {
 
 	
@@ -128,7 +130,8 @@ foreach outcome in gdp ip {
 		
 		// DOLS to estimate phi //quarter
 		newey log_outcome `divvar' `ddiv_lags' `dnames' `qname', lag(`nw_len')
-		outreg2 using "$rpath/dols_`ovar'.xls", replace stats(coef se ci) level(95)
+		outreg2 using "$rpath/dols.xls", `action' stats(coef se ci) level(95) ctitle("`ovar'")
+		
 		
 		foreach lagvar in `ddiv_lags' {
 			replace `lagvar' = 0
@@ -151,11 +154,11 @@ foreach outcome in gdp ip {
 	
 		// Estimate
 		newey log_rel_cpi log_exrate L(-`dols_lags'/`dols_lags').D.log_exrate `dnames' `qname', lag(`nw_len')
-		outreg2 using "$rpath/rer_`time'.xls", replace stats(coef se ci) level(95)
+		//outreg2 using "$rpath/rer_`time'.xls", replace stats(coef se ci) level(95)
 		
 		gen log_official = log(OfficialRate)
 		newey log_rel_cpi log_official L(-`dols_lags'/`dols_lags').D.log_official `dnames' `qname', lag(`nw_len')
-		outreg2 using "$rpath/rer_`time'.xls", append stats(coef se ci) level(95)
+		//outreg2 using "$rpath/rer_`time'.xls", append stats(coef se ci) level(95)
 		
 		reg log_outcome `divvar' `dnames' `qname'
 		predict gdrdf, residual
@@ -467,6 +470,14 @@ foreach outcome in gdp ip {
 		matrix vd = vecdiag(`ovar'_dols_V)
 		matmap vd sd, map(sqrt(@))
 		matrix list sd
+		
+		
+		ereturn clear
+		matrix temp = `ovar'_var_b'
+		ereturn post temp `ovar'_var_V, depname(`ovar')
+		outreg2 using "$rpath/VARcoeffs.xls", `action' stats(coef se ci) level(95) ctitle("`ovar'")
+		
+		local action append
 		
 		
 		if `run_svar' != 0 & "`outcome'" == "gdp" {
