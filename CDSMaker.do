@@ -20,6 +20,10 @@ if "$cds_robust"=="1" {
 	local cds_i_marks 7
 	}
 
+if "$hetero_event" == "1" {
+	local cds_i_marks 6
+}
+
 
 * This code loads CDS returns
 * The procedure depends on the data source.
