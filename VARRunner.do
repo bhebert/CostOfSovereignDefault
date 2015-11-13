@@ -474,7 +474,8 @@ foreach outcome in gdp ip {
 		
 		ereturn clear
 		matrix temp = `ovar'_var_b'
-		ereturn post temp `ovar'_var_V, depname(`ovar')
+		matrix temp2 = `ovar'_var_V
+		ereturn post temp temp2, depname(`ovar')
 		outreg2 using "$rpath/VARcoeffs.xls", `action' stats(coef se ci) level(95) ctitle("`ovar'")
 		
 		local action append
