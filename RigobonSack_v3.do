@@ -424,7 +424,7 @@ sort firmname date
 
 tempfile backupfile // bsfile 
 
-local bsfile "$rpath/bsfile.dta"
+local bsfile "$apath/bsfile.dta"
 
 gen rtype = "ADRs"
 replace rtype = "FX" if regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"DSBlue") | regexm(industry_sector,"Official")
