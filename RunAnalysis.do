@@ -1,7 +1,9 @@
 
 
 * Set this to an annual discount rate to run with something different
-global alt_rho 0
+if "$RSControl" == "" {
+	global alt_rho 0
+}
 
 * Setup paths-- in case it hasn't been done yet.
 do ${csd_dir}/SetupPaths.do
@@ -37,5 +39,5 @@ do "$csd_dir/TrackingPortfolio.do"
 do "$csd_dir/RigobonSack_v3.do"
 
 *Create Figures
-do "$csd_dir/Summary_Plots.do"
+//do "$csd_dir/Summary_Plots.do"
 
