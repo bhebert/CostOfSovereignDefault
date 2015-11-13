@@ -1,8 +1,17 @@
 
+
+
 do ${csd_dir}/SetupPaths.do
+
+capture log close
+global logname ${rpath}/everything.smcl
+log using "$logname", replace
+
 
 !rm "${apath}/*.dta"
 !del "${apath}/*.dta"
+
+matrix drop _all
 
 do ${csd_dir}/RunDataCleaning.do
 
@@ -75,6 +84,7 @@ global RSuse_equityind 0
 global RSregs RS_CDS_IV
 
 foreach arho in 0.8 0.95 {
+	matrix drop _all
 	global alt_rho = `arho'
 	do ${csd_dir}/RunAnalysis.do
 }
