@@ -2,103 +2,112 @@
 
 * Choose which data to use
 
-* One of these four must be run, to do anything useful
-* Run with local data
-local use_local 0
-
-* Run with ADR data
-local use_adrs 1
-
-* Run with exchange rates
-local use_exrates 1
-
-*Run with NDF rates
-local use_ndf 0
-
-*Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
-local use_addeq 0
-
-*Run with US Breakeven Inflation Rates
-local use_usbeinf 0
-
-* Run with the GDP models
-* Requires use_adrs and use_exrates
-local use_gdpmodels 1
-
-* Run with individual bond returns
-local use_bonds 0
-
-* Run with mexico and brazil CDS/equity [NOTE, can add other countries]
-local use_mexbrl 0
-
-* Run with other default probabilities
-local use_otherdefp 0
-
-* Run with other equity indices
-local use_equityind 0
-
-* Each of these will run with both local and ADR versions
-* Run with single name stocks
-local use_singlenames 0
-
-* Run with "high" and "low" portfolios
-local use_highlow_ports 0
-
-* Run with high minus low portfolios
-local use_hmls 0
-
-* Run with industries
-local use_industries 0
-
-* add in market and exchange controls
-local relative_perf 0
-
-* If 0, uses equal-weighted index for relative performance.
-* if nonzero, uses MXAR or MERVAL (as appropriate).
-local use_index_beta 0
-
-* if using the relative perf, don't add in the exchange rate
-local no_exchange 0
-
-* use holdout bonds
-* must be on to run MULTI_CDS_IV, off otherwise
-local use_holdout 0
-
-
-*local factors
-//local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
-local factors $all_factors
-
-* Different kinds of regressions that can be run
-* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
-* RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
-
-local regs RS_CDS_IV
-//local regs MULTI_CDS_IV MULTI_OLS
-
-* This excludes days on which legal events occurred, but
-* there are other events or holidays that render the date unusable
-local exclusions 1
-
-* Determines which kind of day to use
-* Options are opens, closes, and twoday
-* Opens doesn't fully work right now
-local daytype twoday
-
-* This controls the standard error commands in the IV regressions
-* This controls the bootstrap part
-local bstyle rep(100) strata(eventvar) seed(4251984) cluster(date) //noisily
-
-* This is the asymptotic estimator used in each bootstrap replication
-local ivstderrs robust
-//local ivstderrs
-
 * These determine the earliest and latest days to use for non-events
 local mindate = mdy(1,1,2011)
 local maxdate = mdy(1,1,2015)
 
 * Determine what to use for the summary statistics
 local sumname ValueINDEXNew_US
+
+*local factors
+//local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
+local factors $all_factors
+
+if "$RSControl" == "" {
+	
+	* One of these four must be run, to do anything useful
+	* Run with local data
+	local use_local 0
+	
+	* Run with ADR data
+	local use_adrs 1
+	
+	* Run with exchange rates
+	local use_exrates 1
+	
+	*Run with NDF rates
+	local use_ndf 0
+	
+	*Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
+	local use_addeq 0
+	
+	*Run with US Breakeven Inflation Rates
+	local use_usbeinf 0
+	
+	* Run with the GDP models
+	* Requires use_adrs and use_exrates
+	local use_gdpmodels 1
+	
+	* Run with individual bond returns
+	local use_bonds 0
+	
+	* Run with mexico and brazil CDS/equity [NOTE, can add other countries]
+	local use_mexbrl 0
+	
+	* Run with other default probabilities
+	local use_otherdefp 0
+	
+	* Run with other equity indices
+	local use_equityind 0
+	
+	* Each of these will run with both local and ADR versions
+	* Run with single name stocks
+	local use_singlenames 0
+	
+	* Run with "high" and "low" portfolios
+	local use_highlow_ports 0
+	
+	* Run with high minus low portfolios
+	local use_hmls 0
+	
+	* Run with industries
+	local use_industries 0
+	
+	* add in market and exchange controls
+	local relative_perf 0
+	
+	* If 0, uses equal-weighted index for relative performance.
+	* if nonzero, uses MXAR or MERVAL (as appropriate).
+	local use_index_beta 0
+	
+	* if using the relative perf, don't add in the exchange rate
+	local no_exchange 0
+	
+	* use holdout bonds
+	* must be on to run MULTI_CDS_IV, off otherwise
+	local use_holdout 0
+	
+	* Different kinds of regressions that can be run
+	* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
+	* RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
+	
+	local regs RS_CDS_IV
+	//local regs MULTI_CDS_IV MULTI_OLS
+	
+	* This excludes days on which legal events occurred, but
+	* there are other events or holidays that render the date unusable
+	local exclusions 1
+	
+	* Determines which kind of day to use
+	* Options are opens, closes, and twoday
+	* Opens doesn't fully work right now
+	local daytype twoday
+	
+	* This controls the standard error commands in the IV regressions
+	* This controls the bootstrap part
+	local bstyle rep(100) strata(eventvar) seed(4251984) cluster(date) //noisily
+	
+	* This is the asymptotic estimator used in each bootstrap replication
+	local ivstderrs robust
+	//local ivstderrs
+
+}
+else {
+	foreach lname in use_local use_adrs use_exrates use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
+		local `lname' $RS{`lname'}
+	}
+}
+
 
 
 *** options end here. start of the actual code.
