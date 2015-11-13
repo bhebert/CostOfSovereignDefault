@@ -351,7 +351,7 @@ foreach outcome in gdp ip {
 		capture graph drop VARvsConsensus_`ovar'
 		label var annual_gnews "VAR"
 		label var N_`outcome'_ft "Survey"
-		tsline annual_gnews N_`outcome'_ft_trunc phitr if annual_gnews != ., name(VARvsConsensus_`ovar') legend(order(1 "VAR" 2 "Survey" 3 "{&phi}*Return")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`ovar' growth news (%)") graphregion(fcolor(white) lcolor(white))
+		tsline annual_gnews N_`outcome'_ft_trunc phitr if annual_gnews != ., name(VARvsConsensus_`ovar') legend(order(1 "VAR" 2 "Survey" 3 "{&phi}*Return")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("Real GDP growth news (%)") graphregion(fcolor(white) lcolor(white))
 		//twoway (line annual_gnews `time' ) (line N_`outcome'_ft_trunc `time') if annual_gnews != ., name(VARvsConsensus_`outcome') legend(order(1 "VAR" 2 "Survey")) xlabel(, labsize(medium)) xtitle("") ylabel(,nogrid) ytitle("`outcome' growth news (%)") graphregion(fcolor(white) lcolor(white))
 		graph export "$rpath/VARvsConsensus_`ovar'.png", replace
 		
