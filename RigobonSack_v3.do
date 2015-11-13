@@ -1,5 +1,7 @@
 
 
+set more off
+
 * Choose which data to use
 
 * These determine the earliest and latest days to use for non-events
@@ -103,8 +105,9 @@ if "$RSControl" == "" {
 
 }
 else {
-	foreach lname in use_local use_adrs use_exrates use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
-		local `lname' $RS{`lname'}
+	foreach lname in use_local use_adrs use_exrates use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
+		local `lname' ${RS`lname'}
+		disp "`lname': ``lname''"
 	}
 }
 
@@ -112,8 +115,6 @@ else {
 
 *** options end here. start of the actual code.
 
-
-set more off
 
 local ext_style
 
