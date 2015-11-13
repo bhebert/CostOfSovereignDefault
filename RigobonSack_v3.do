@@ -362,7 +362,8 @@ tsset, clear
 if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 
 	** code to make some summary stats *
-	log using "$rpath/summary_log$cds_app.txt", replace
+	capture log close
+	log using "$rpath/summary_log$cds_app.smcl", replace
 
 	summ return_ cds_ if nonevent==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'")
 	summ return_ cds_ if eventvar==1 & cds_~=. & return_~=. & regexm(firmname,"`sumname'")
@@ -399,6 +400,9 @@ if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 	corr day_return2 mexcds2 if event_day==1 & cds2~=. & day_return2~=. & regexm(industry_sector,"MexicoEquity"), covariance*/
 
 	log close
+	if "$logname" != "" {
+		log using "$logname", append
+	}
 }
 
 local OLS ivreg2 return_ cds_ `factors2' 
