@@ -43,7 +43,7 @@ global RSuse_holdout 0
 global RSregs OLS 2SLS_IV RS_CDS_IV
 global RSexclusions 1
 global RSdaytype twoday
-global RSbstyle rep(100) strata(eventvar) seed(4251984) cluster(date)
+global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 global RSivstderrs robust
 
 // This does most of the main tables
@@ -61,6 +61,10 @@ global RSuse_hmls 1
 global RSuse_industries 1
 global RSrelative_perf 1
 global RSregs RS_CDS_IV
+do ${csd_dir}/RigobonSack_v3.do
+
+// run the version without exchange rate controls
+global RSno_exchange 1
 do ${csd_dir}/RigobonSack_v3.do
 
 // Standard Event Study
