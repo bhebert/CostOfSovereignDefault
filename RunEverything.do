@@ -77,17 +77,18 @@ global RSregs OLS RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
 
 // CDS measure robustness
-global RSuse_gdpmodels 0
+global RSuse_adrs 1
+global RSuse_exrates 1
+global RSuse_otherdefp 0
+global RSuse_equityind 0
 global RSuse_coreonly 1
+global RSregs RS_CDS_IV
 do ${csd_dir}/Robustness_CDS.do
 
 // Run alternative rho
-global RSuse_adrs 1
-global RSuse_exrates 1
+
+
 global RSuse_gdpmodels 1
-global RSuse_otherdefp 0
-global RSuse_equityind 0
-global RSregs RS_CDS_IV
 
 foreach arho in 0.8 0.95 {
 	matrix drop _all
