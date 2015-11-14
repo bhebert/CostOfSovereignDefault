@@ -27,6 +27,8 @@ if "$RSControl" == "" {
 	* Run with exchange rates
 	local use_exrates 1
 	
+	local use_coreonly 1
+	
 	*Run with NDF rates
 	local use_ndf 0
 	
@@ -38,7 +40,7 @@ if "$RSControl" == "" {
 	
 	* Run with the GDP models
 	* Requires use_adrs and use_exrates
-	local use_gdpmodels 1
+	local use_gdpmodels 0
 	
 	* Run with individual bond returns
 	local use_bonds 0
@@ -105,7 +107,7 @@ if "$RSControl" == "" {
 
 }
 else {
-	foreach lname in use_local use_adrs use_exrates use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -166,6 +168,11 @@ if `use_exrates' == 0 {
 	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"ADRB_PBRTS") | regexm(industry_sector,"Contado_Ambito")
 }
 
+if `use_coreonly' == 1 {
+	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew"))
+	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS"))
+}
+
 if `use_ndf'==0 {
 	drop if regexm(industry_sector,"NDF")  | regexm(industry_sector,"FWDP") 
 }
@@ -187,7 +194,7 @@ if `use_equityind' == 0 {
 }
 
 if `use_bonds' == 0 {
-	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") 
+	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"nmlbond") 
 }
 	
 
@@ -578,10 +585,14 @@ foreach rg in `regs' {
 	}
 }
 
-
-local inames INDEX EqIndex
-
-if `use_adrs' != 0  {
+if `use_coreonly' != 0 {
+	local inames
+	local exnames ADRBlue DSBlue BCS
+}
+else {
+	local inames INDEX EqIndex
+}
+if `use_adrs' != 0 & `use_coreonly' == 0 {
 	local inames `inames' ValueIndex
 }
 
@@ -602,8 +613,8 @@ if `use_adrs' != 0  {
 }
 
 local exnames
-if `use_exrates' != 0 {
-	local exnames ADRBlue DSBlue OfficialRate ADRMinusDS
+if `use_exrates' != 0 & `use_coreonly' == 0 {
+	local exnames ADRBlue DSBlue BCS OfficialRate ADRMinusDS
 }
 
 local gdpnames
