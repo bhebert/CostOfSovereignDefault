@@ -66,8 +66,8 @@ foreach x in PUF_3y PUF_5y PUF_7y Spread1y Spread3y Spread5y Spread7y  mC5_1y mC
 	replace varnum=3 if vari=="Robust_SE"
 
 	sort cds_type varnum
-		drop adrminusds contado_ambito dsblue eqindex_us valueindex_us varnum
-	order cds_type variables officialrate dolarblue adrblue bcs  index_us valueindexnew_us valuebankindexnew_us   valuenonfinindexnew_us valueindexdelev_us  valuebankindexdelev_us   valuenonfinindexdelev_us
+		//drop adrminusds contado_ambito dsblue eqindex_us valueindex_us varnum
+	order cds_type variables dolarblue adrblue bcs  valueindexnew_us valuebankindexnew_us   valuenonfinindexnew_us
 	
 	save "$rpath/Robustness_Table.dta", replace
 export excel using "$rpath/Robustness_Table.xls", firstrow(variables) replace
