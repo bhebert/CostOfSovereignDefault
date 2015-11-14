@@ -109,6 +109,9 @@ do ${csd_dir}/HeteroEventStudy.do
 
 // Make the plots
 do ${csd_dir}/Summary_Plots.do
-do ${csd_dir}/BKChartMaker.do
+
+* This has to be run manually after opening and saving the required
+* file as a .xlsx
+*do ${csd_dir}/BKChartMaker.do
 
 
