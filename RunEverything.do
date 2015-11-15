@@ -17,6 +17,8 @@ do ${csd_dir}/RunDataCleaning.do
 
 do ${csd_dir}/RunDataCode.do
 
+do ${csd_dir}/Cost_Table.do
+
 * Configure Rigobon-Sack File
 global RSControl 1
 global hetero_event 0
@@ -48,7 +50,7 @@ global RSivstderrs robust
 
 // This does most of the main tables
 global alt_rho = 0
-do ${csd_dir}/RunAnalysis.do
+*do ${csd_dir}/RunAnalysis.do
 
 // This does the local HML files
 global RSuse_local 1
@@ -65,6 +67,11 @@ do ${csd_dir}/RigobonSack_v3.do
 
 // run the version without exchange rate controls
 global RSno_exchange 1
+do ${csd_dir}/RigobonSack_v3.do
+
+// run the industry version without ex rate controls
+global RSuse_industries 1
+global RSuse_hmls 0
 do ${csd_dir}/RigobonSack_v3.do
 
 // Standard Event Study
@@ -111,7 +118,7 @@ do ${csd_dir}/HeteroEventStudy.do
 do ${csd_dir}/Summary_Plots.do
 
 * This has to be run manually after opening and saving the required
-* file as a .xlsx
+* files as a .xlsx
 *do ${csd_dir}/BKChartMaker.do
 
 
