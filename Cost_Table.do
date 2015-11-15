@@ -1,8 +1,8 @@
 *Back of envelope costs
 *COEFFICIENT
 set more off
-local value_coeff=-54.50
-local ypf_coeff=-95.22
+local value_coeff=-54.70
+local ypf_coeff=-95.78
 *Value index is 1/10 treasuries. 
 local a_value_coeff=exp((10/9)*`value_coeff'/100)-1
 local a_ypf_coeff=exp(`ypf_coeff'/100)-1
