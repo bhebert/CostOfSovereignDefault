@@ -32,7 +32,7 @@ global RSuse_addeq 1
 global RSuse_usbeinf 0
 global RSuse_gdpmodels 1
 global RSuse_bonds 1
-global RSuse_mexbrl 0
+global RSuse_mexbrl 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
 global RSuse_singlenames 0
@@ -51,7 +51,11 @@ global RSivstderrs robust
 
 // This does most of the main tables
 global alt_rho = 0
-*do ${csd_dir}/RunAnalysis.do
+do ${csd_dir}/RunAnalysis.do
+
+// Make the plots
+do ${csd_dir}/Summary_Plots.do
+
 
 // This does the local HML files
 global RSuse_local 1
@@ -59,12 +63,15 @@ global RSuse_adrs 0
 global RSuse_exrates 0
 global RSuse_addeq 0
 global RSuse_gdpmodels 0
+global RSuse_mexbrl 0
 global RSuse_bonds 0
 global RSuse_hmls 1
 global RSuse_industries 0
 global RSrelative_perf 1
 global RSregs RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
+
+
 
 // run the version without exchange rate controls
 global RSno_exchange 1
@@ -99,7 +106,6 @@ do ${csd_dir}/Robustness_CDS.do
 
 // Run alternative rho
 
-
 global RSuse_gdpmodels 1
 
 foreach arho in 0.8 0.95 {
@@ -115,8 +121,7 @@ do ${csd_dir}/RunDataCleaning.do
 do ${csd_dir}/RunDataCode.do
 do ${csd_dir}/HeteroEventStudy.do
 
-// Make the plots
-do ${csd_dir}/Summary_Plots.do
+
 
 * This has to be run manually after opening and saving the required
 * files as a .xlsx
