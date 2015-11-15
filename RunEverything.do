@@ -19,6 +19,7 @@ do ${csd_dir}/RunDataCode.do
 
 do ${csd_dir}/Cost_Table.do
 
+
 * Configure Rigobon-Sack File
 global RSControl 1
 global hetero_event 0
@@ -60,7 +61,7 @@ global RSuse_addeq 0
 global RSuse_gdpmodels 0
 global RSuse_bonds 0
 global RSuse_hmls 1
-global RSuse_industries 1
+global RSuse_industries 0
 global RSrelative_perf 1
 global RSregs RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
