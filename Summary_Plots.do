@@ -176,10 +176,10 @@ twoway (line px_close date if Ticker=="OfficialRate", sort lwidth(med)) (line px
 graph export "$rpath/fx_nondf.eps", replace
 
 *SUMMARY TABLE
-foreach var in ValueINDEXNew dolarblue{
+foreach var in ValueINDEXNew_US dolarblue{
 cap { 
 use "$apath/data_for_summary.dta", clear
-keep if  industry_sec=="`var'"
+keep if  firmname=="`var'"
 replace cds_=cds_*100
 summ cds_ if event_day==1
 local event_mean_deltad=r(mean)
