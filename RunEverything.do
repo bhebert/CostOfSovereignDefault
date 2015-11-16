@@ -95,17 +95,13 @@ global RSrelative_perf 0
 global RSregs OLS RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
 
-// CDS measure robustness
+// Run alternative rho
 global RSuse_adrs 1
 global RSuse_exrates 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
 global RSuse_coreonly 1
 global RSregs RS_CDS_IV
-do ${csd_dir}/Robustness_CDS.do
-
-// Run alternative rho
-
 global RSuse_gdpmodels 1
 
 foreach arho in 0.8 0.95 {
@@ -115,10 +111,17 @@ foreach arho in 0.8 0.95 {
 }
 global alt_rho = 0
 
+
+
+
+
+// CDS measure robustness
+global RSuse_gdpmodels 0
+do ${csd_dir}/Robustness_CDS.do
+
 // Hetero event study
 global hetero_event 1
-do ${csd_dir}/RunDataCleaning.do
-do ${csd_dir}/RunDataCode.do
+
 do ${csd_dir}/HeteroEventStudy.do
 
 
