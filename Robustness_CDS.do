@@ -76,7 +76,7 @@ use "$rpath/Robustness_Table.dta", clear
 keep if variables=="cds2"
 export excel using "$rpath/Robustness_Table_Compact.xls", firstrow(variables) replace
 
-
+global cds_robust 0
 
 /*
 forvalues cdsii=1/14 {
