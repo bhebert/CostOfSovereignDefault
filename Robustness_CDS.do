@@ -77,6 +77,8 @@ keep if variables=="cds2"
 export excel using "$rpath/Robustness_Table_Compact.xls", firstrow(variables) replace
 
 global cds_robust 0
+global cds_app ""
+global cds_n ""
 
 /*
 forvalues cdsii=1/14 {
