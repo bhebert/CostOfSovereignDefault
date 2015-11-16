@@ -286,7 +286,9 @@ drop if return_ == . | cds_ == .
 if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {	
 	expand 2 if firmname == "ValueINDEXNew_US" | firmname == "$HFExName", gen(vGDP)
 	replace firmname = "ValueINDEXNewGDP_US" if vGDP == 1 & firmname == "ValueINDEXNew_US"
+	replace industry_sector = "ValueINDEXNewGDP" if firmname == "ValueINDEXNewGDP_US"
 	replace firmname = "GDPExRate" if vGDP == 1 & firmname == "${HFExName}"
+	replace industry_sector = "GDPExRate" if firmname == "GDPExRate"
 	
 	
 	sort date firmname
