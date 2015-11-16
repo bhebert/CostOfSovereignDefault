@@ -64,7 +64,7 @@ destring `x', force replace
 replace problem=1 if `x'<=0 | `x'==.
 }
 
-save "$mpath/`name'.dta", replace
+save "$apath/`name'.dta", replace
 }
 }
 
@@ -114,25 +114,25 @@ gen haz_1to3=(haz2y+haz3y)/2
 gen haz_3to5=(haz4y+haz5y)/2
 gen haz_5more=(2*haz7y+3*haz10y+5*haz15y)/10
 order date time_est haz_upto1 haz_1to3 haz_3to5 haz_5more
-save "$mpath/cumdef_hazard_June16.dta", replace
+save "$apath/cumdef_hazard_June16.dta", replace
 
 
 *********
 *MERGE***
 *********
 *THIS IS THE VERSION  CURRENTLY USED
-use "$mpath/cumdef_hazard.dta", 
+use "$apath/cumdef_hazard.dta", 
 keep date def5y
 rename def5y composite_def5y
 *label var europe "Cumulative Default Probability, Europe"
 label var composite "Cumulative Default Probability, Composite"
-save "$mpath/Default_Prob.dta", replace
+save "$apath/Default_Prob.dta", replace
 
 
 ***********************************************
 *VERSION WILL ALL OF THE DEFAULT PROBABILITIES*
 ***********************************************
-use "$mpath/cumdef_hazard_ConH.dta", clear
+use "$apath/cumdef_hazard_ConH.dta", clear
 keep date def6m def1y def2y def3y def4y def5y def7y def10y 
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' conh_`x'
@@ -153,31 +153,31 @@ drop _merge
 
 mmerge date using "$mpath/PUF_NY.dta", ukeep(Upfront*)
 drop if _merge==2
-save "$mpath/Default_Prob_All.dta", replace
+save "$apath/Default_Prob_All.dta", replace
 
-use "$mpath/Default_Prob_All.dta", clear
+use "$apath/Default_Prob_All.dta", clear
 foreach y in "_europe" "_newyork"{
 
-mmerge date using "$mpath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
+mmerge date using "$apath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' conh_`x'`y'
 }	
 
-mmerge date using "$mpath/cumdef_hazard_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using "$apath/cumdef_hazard_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' ust_`x'`y'
 }	
 
-mmerge date using "$mpath/cumdef_hazard_ConH_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using "$apath/cumdef_hazard_ConH_UST`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' conh_ust_`x'`y'
 }	
-mmerge date using  "$mpath/cumdef_hazard`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using  "$apath/cumdef_hazard`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' `x'`y'
 }
 
-mmerge date using  "$mpath/cumdef_hazard_triangle`y'.dta", ukeep(tri*)
+mmerge date using  "$apath/cumdef_hazard_triangle`y'.dta", ukeep(tri*)
 drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
 foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
@@ -185,10 +185,10 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	rename tri_conH_def`x' tri_conH_def`x'`y' 
 }	
 }
-save  "$mpath/Default_Prob_All.dta", replace
+save  "$apath/Default_Prob_All.dta", replace
 
-mmerge date using "$mpath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
-mmerge date using "$mpath/cumdef_hazard_triangle.dta", ukeep(tri*)
+mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
 drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
 foreach y in "" "_europe" "_newyork" {
@@ -232,5 +232,5 @@ foreach y in "" "_europe" "_newyork" {
 		label var Upfront`x' "Points Upfront, 5% coupon, `x'"
 		}
 	
-save  "$mpath/Default_Prob_All.dta", replace
+save  "$apath/Default_Prob_All.dta", replace
 

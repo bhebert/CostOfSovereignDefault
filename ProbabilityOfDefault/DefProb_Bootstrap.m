@@ -6,15 +6,15 @@ test=0
 
 assignin('base','dir_user','/Users/jesseschreger/Dropbox/')
 assignin('base','dir_csd','/Users/jesseschreger/Documents/CostofSovereignDefault')
-assignin('base','mpath',[dir_user 'Cost of Sovereign Default/Markit/Datasets'])
+assignin('base','apath',[dir_csd '/Datasets/'])
 assignin('base','pod',[dir_user 'Cost of Sovereign Default/Markit/Prob of Default/'])
-assignin('base','csvfile',[mpath 'Matlab_spreads_zero.csv'])
-assignin('base','csvfile_ust',[mpath 'Matlab_spreads_zero_UST.csv'])
-assignin('base','csvfile_june16',[mpath 'Matlab_June16.csv'])
-assignin('base','csvfile_europe',[mpath 'Matlab_Europe_zero.csv'])
-assignin('base','csvfile_newyork',[mpath 'Matlab_NewYork_zero.csv'])
-assignin('base','csvfile_ust_europe',[mpath 'Matlab_Europe_spreads_zero_UST.csv'])
-assignin('base','csvfile_ust_newyork',[mpath 'Matlab_NewYork_spreads_zero_UST.csv'])
+assignin('base','csvfile',[apath 'Matlab_spreads_zero.csv'])
+assignin('base','csvfile_ust',[apath 'Matlab_spreads_zero_UST.csv'])
+assignin('base','csvfile_june16',[apath 'Matlab_June16.csv'])
+assignin('base','csvfile_europe',[apath 'Matlab_Europe_zero.csv'])
+assignin('base','csvfile_newyork',[apath 'Matlab_NewYork_zero.csv'])
+assignin('base','csvfile_ust_europe',[apath 'Matlab_Europe_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_newyork',[apath 'Matlab_NewYork_spreads_zero_UST.csv'])
 
 
 %COMPOSITE
@@ -77,7 +77,7 @@ date_stata=date-715876;
 keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
-cd(mpath)
+cd(apath)
 if i==1
 csvwrite('Bootstrap_results.csv',keymat)
 csvwrite('Bootstrap_resultsConH.csv',keymatConH)
@@ -153,7 +153,7 @@ date_stata=date-715876;
 keymat=[date_stata,ProbDef_mat,Haz_mat];
 keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
-cd(mpath)
+cd(apath)
 if i==1
 csvwrite('Bootstrap_results_UST.csv',keymat)
 csvwrite('Bootstrap_resultsConH_UST.csv',keymatConH)
@@ -201,7 +201,7 @@ for i=1:length(date)
 end
 
 keymat=[date,ProbDef_mat,Haz_mat,time_est];
-cd(mpath)
+cd(apath)
 csvwrite('Bootstrap_June16.csv',keymat)
 
 
