@@ -109,8 +109,9 @@ foreach arho in 0.8 0.95 {
 	global alt_rho = `arho'
 	do ${csd_dir}/RunAnalysis.do
 }
-global alt_rho = 0
 
+global alt_rho = 0
+do ${csd_dir}/SetupPaths.do
 
 
 
