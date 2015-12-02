@@ -52,4 +52,5 @@ bcal load basic
 
 * a list of factor variables
 * useful in multiple places.
-global all_factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
+global all_factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_
+*soybean_
