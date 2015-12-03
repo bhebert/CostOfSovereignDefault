@@ -138,12 +138,12 @@ foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' conh_`x'
 }	
 
-mmerge date using "$mpath/cumdef_hazard_UST.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using "$apath/cumdef_hazard_UST.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' ust_`x'
 }	
 
-mmerge date using "$mpath/cumdef_hazard_ConH_UST.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
+mmerge date using "$apath/cumdef_hazard_ConH_UST.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y)
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 	rename `x' conh_ust_`x'
 }	
