@@ -123,6 +123,9 @@ do ${csd_dir}/Robustness_CDS.do
 // Hetero event study
 global hetero_event 1
 
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/ThirdAnalysis.do
+
 do ${csd_dir}/HeteroEventStudy.do
 
 
