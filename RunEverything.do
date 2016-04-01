@@ -56,21 +56,34 @@ do ${csd_dir}/RunAnalysis.do
 // Make the plots
 do ${csd_dir}/Summary_Plots.do
 
+// Run alternative CDS dates
+global RSuse_addeq 0
+global RSuse_gdpmodels 0
+global RSuse_bonds 0
+global RSuse_mexbrl 0
+global RSuse_coreonly 1
+global RSregs RS_CDS_IV
+global RSalt_dates 1
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RunAnalysis.do
+
+// Run one-day windows
+global RSdaytype closes
+global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(eventclosedate)
+global RSalt_dates 0
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RunAnalysis.do
 
 // This does the local HML files
 global RSuse_local 1
 global RSuse_adrs 0
 global RSuse_exrates 0
-global RSuse_addeq 0
-global RSuse_gdpmodels 0
-global RSuse_mexbrl 0
-global RSuse_bonds 0
 global RSuse_hmls 1
-global RSuse_industries 0
 global RSrelative_perf 1
-global RSregs RS_CDS_IV
+global RSuse_coreonly 0
+global RSdaytype twoday
+global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 do ${csd_dir}/RigobonSack_v3.do
-
 
 
 // run the version without exchange rate controls
