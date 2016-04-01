@@ -16,6 +16,10 @@ local cds_i_marks 8
 
 local alt_dates 1
 
+if "$RSalt_dates" == "1" {
+	local alt_dates 0
+}
+
 if "$cds_robust"=="1" {
 	local cds_i_marks 7
 	}
