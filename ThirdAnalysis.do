@@ -433,8 +433,24 @@ tsset ind_id bdate
 //gen eventday = event_nightbefore == 1 | event_1_5 == 1 | L.event_onedayN == 1 | event_onedayL == 1 | event_twoday == 1 | L.event_intra == 1
 //gen eventday_test = event_nightbefore == 1 | event_1_5 == 1 | event_onedayN == 1 | event_onedayL == 1 | event_twoday == 1 | event_intra == 1
 
-gen eventopens = event_nightbefore == 1 | event_1_5 == 1 | F.event_1_5 == 1 | event_onedayN == 1 | L.event_onedayN == 1 | event_onedayL == 1 | L.event_twoday == 1 | event_twoday == 1 | F.event_twoday == 1 | L.event_intra == 1
-gen eventcloses = event_nightbefore == 1 | event_1_5 == 1 | F.event_1_5 == 1 | event_onedayN == 1 | F.event_onedayL == 1 | event_onedayL == 1 | event_twoday == 1 | F.event_twoday == 1 | event_intra == 1
+gen eventopennext = F.event_1_5 == 1 | F.event_twoday == 1
+gen eventopenprev = L.event_onedayN == 1 | L.event_twoday == 1 | L.event_intra == 1
+gen eventopens = event_nightbefore == 1 | event_1_5 == 1 | event_onedayN == 1 |  event_onedayL == 1 |  event_twoday == 1  
+
+// This contains the date that this event came from (today, tomorrow, or yesterday).
+gen eventopendate = date
+replace eventopendate = F.date if eventopennext == 1 & eventopens == 0
+// If there are events on both sides, this will associate it with the earlier one
+replace eventopendate = L.date if eventopenprev == 1 & eventopens == 0
+replace eventopens = 1 if eventopennext == 1 | eventopenprev == 1
+drop eventopennext eventopenprev
+
+gen eventclosenext = F.event_1_5 == 1  | F.event_onedayL == 1 |  F.event_twoday == 1
+gen eventcloses = event_nightbefore == 1 | event_1_5 == 1 | event_onedayN == 1 |  event_onedayL == 1 | event_twoday == 1 | event_intra == 1
+gen eventclosedate = date
+replace eventclosedate = F.date if eventcloses == 0 & eventclosenext == 1
+replace eventcloses = 1 if eventclosenext == 1
+drop eventclosenext
 
 * Reshape the data to have one data point for each (day X window-size)
 * day_type is the window_size variable
