@@ -95,11 +95,14 @@ if "$RSControl" == "" {
 	* Determines which kind of day to use
 	* Options are opens, closes, and twoday
 	* Opens doesn't fully work right now
-	local daytype twoday
+	local daytype closes
+	
+	* use date for twoday, eventclosedate for closes, and eventopendate for opens
+	local cvar eventclosedate
 	
 	* This controls the standard error commands in the IV regressions
 	* This controls the bootstrap part
-	local bstyle rep(100) strata(eventvar) seed(4251984) cluster(date) //noisily
+	local bstyle rep(100) strata(eventvar) seed(4251984) cluster(`cvar') //noisily
 	
 	* This is the asymptotic estimator used in each bootstrap replication
 	local ivstderrs robust
@@ -141,6 +144,10 @@ if `relative_perf' == 1 {
 
 if `exclusions' == 0 {
 	local ext_style `ext_style'_noexcl
+}
+
+if "$RSalt_dates" == "1" {
+	local ext_style `ext_style'_altdates
 }
 
 local ext 
