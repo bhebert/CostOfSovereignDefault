@@ -176,8 +176,8 @@ if `use_exrates' == 0 {
 }
 
 if `use_coreonly' == 1 {
-	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew"))
-	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS"))
+	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"Index_US") | regexm(industry_sector,"YPF"))
+	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official"))
 }
 
 if `use_ndf'==0 {
