@@ -595,8 +595,8 @@ foreach rg in `regs' {
 }
 
 if `use_coreonly' != 0 {
-	local inames
-	local exnames ADRBlue DSBlue BCS
+	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
+	local exnames OfficialRate DSBlue ADRBlue  BCS
 }
 else {
 	local inames INDEX EqIndex
@@ -698,11 +698,11 @@ foreach x in  `regs' {
 		rename excess_cds Coef_`x'
 	}
 
-	gen core=0
+	/*gen core=0
 	replace core=1 if firm=="OfficialRate" | firm=="DSBlue" |  firm=="ADRBlue"
 	replace core=2 if firm=="BrazilCDS" | firm=="BrazilEquity" | firm=="MexicoEquity" | firm=="MexicoCDS" 
 	sort core firm 
-	drop core 
+	drop core */
 	sxpose ,   clear
 
 	foreach y of varlist _all {
