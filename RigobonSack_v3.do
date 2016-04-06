@@ -176,7 +176,7 @@ if `use_exrates' == 0 {
 }
 
 if `use_coreonly' == 1 {
-	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"Index_US") | regexm(industry_sector,"YPF"))
+	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"INDEX_US") | regexm(firmname,"YPF_US"))
 	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official"))
 }
 
@@ -209,8 +209,10 @@ if `use_addeq' == 0 {
 	drop if regexm(industry_sector,"ARCO") | regexm(industry_sector,"PBR")  | regexm(industry_sector,"TS") | regexm(industry_sector,"TX")
 }
 
-if `use_singlenames' == 0 {
-	drop if isstock == 1 & ports == 0
+if `use_singlenames' == 0  {
+	if `use_coreonly' != 1 {
+		drop if isstock == 1 & ports == 0
+	}
 }
 else {
 	local ext `ext'Full
@@ -240,7 +242,6 @@ if `use_holdout' == 1 {
 	
 	drop if holdout_ret == .
 }
-
 
 local ext_style `ext'`ext_style'
 
@@ -594,6 +595,7 @@ foreach rg in `regs' {
 	}
 }
 
+local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 	local exnames OfficialRate DSBlue ADRBlue  BCS
@@ -621,9 +623,9 @@ if `use_adrs' != 0  {
 	}
 }
 
-local exnames
+
 if `use_exrates' != 0 & `use_coreonly' == 0 {
-	local exnames ADRBlue DSBlue BCS OfficialRate ADRMinusDS
+	local exnames OfficialRate DSBlue ADRBlue  BCS ADRMinusDS
 }
 
 local gdpnames
