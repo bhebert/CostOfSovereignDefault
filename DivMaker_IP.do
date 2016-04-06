@@ -11,8 +11,8 @@ renpfix px_close
 keep month ADRBlue
 tempfile temp
 
-mmerge month using "$miscdata/Inflation/us_inflation_month.dta", ukeep(us_cpi)
-mmerge month using "$miscdata/Inflation/inflation_month.dta", ukeep(cpi)
+mmerge month using "$apath/us_inflation_month.dta", ukeep(us_cpi)
+mmerge month using "$apath/inflation_month.dta", ukeep(cpi)
 mmerge month using "$apath/IP_data.dta", ukeep(ip_index)
 save "$apath/rer_ip_dataset.dta", replace
 

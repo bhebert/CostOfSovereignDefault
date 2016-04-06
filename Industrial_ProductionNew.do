@@ -45,8 +45,8 @@ replace OfficialRate = ADRBlue if month >= ym(2001,12) & month <= ym(2007,10)
 mmerge month using "`temp'"
 drop _merge
 
-mmerge month using "$miscdata/Inflation/us_inflation_month.dta", unmatched(master) ukeep(us_cpi)
-mmerge month using "$miscdata/Inflation/inflation_month.dta", unmatched(master) ukeep(cpi)
+mmerge month using "$apath/us_inflation_month.dta", unmatched(master) ukeep(us_cpi)
+mmerge month using "$apath/inflation_month.dta", unmatched(master) ukeep(cpi)
 
 drop _merge
 format month %tm

@@ -61,22 +61,22 @@ gen year=yofd(day)
 drop day
 keep if month>=tm(1995m1)
 sort month
-save "$miscdata/Inflation/inflation_month.dta", replace
+save "$apath/inflation_month.dta", replace
 
-use "$miscdata/Inflation/inflation_month.dta", clear
+use "$apath/inflation_month.dta", clear
 *drop if year==2015
 collapse (lastnm) cpi , by(quarter)
 tsset quarter
 gen inflation=((cpi-l.cpi)/l.cpi)*100
-save "$miscdata/Inflation/inflation_quarter.dta", replace
+save "$apath/inflation_quarter.dta", replace
 
 
-use "$miscdata/Inflation/inflation_month.dta", clear
+use "$apath/inflation_month.dta", clear
 collapse (lastnm) cpi , by(year)
 drop if year==2015
 tsset year
 gen inflation=((cpi-l.cpi)/l.cpi)*100
-save "$miscdata/Inflation/inflation_year.dta", replace
+save "$apath/inflation_year.dta", replace
 *gen inf_test=100*(cpi-l.cpi)/(l.cpi)
 *gen inf_log_test=100*(ln(cpi)-ln(l.cpi))
 
@@ -96,13 +96,13 @@ tsset month
 keep if month>=tm(1995m1)
 
 gen us_inflation_log=(ln(us_cpi)-ln(l.us_cpi))*100
-save "$miscdata/Inflation/us_inflation_month.dta", replace
+save "$apath/us_inflation_month.dta", replace
 
-use "$miscdata/Inflation/us_inflation_month.dta", clear
+use "$apath/us_inflation_month.dta", clear
 drop if year==2015
 collapse (sum) us_inflation_log (lastnm) us_cpi, by(quarter)
 tsset quarter
-save "$miscdata/Inflation/us_inflation_quarter.dta", replace
+save "$apath/us_inflation_quarter.dta", replace
 
 
 *GDP Cleaning, IFS
@@ -123,7 +123,7 @@ drop Unit* Time*
 rename Val value
 order quarter var val unit
 replace value=value/1000 if var=="Nominal_GDP"
-save "$miscdata/IFS/IFS_GDP.dta", replace
+save "$apath/IFS_GDP.dta", replace
 
 *GDP, GFD
 import excel "$miscdata/GFD_Argentina_GDP.xlsx", sheet("Price Data") firstrow clear
@@ -137,10 +137,10 @@ gen var="Nominal_GDP_GFD"
 rename Close value
 drop Ticker
 gen unit="ARS"
-save "$miscdata/GDP_GFD.dta", replace
+save "$apath/GDP_GFD.dta", replace
 
-use "$miscdata/IFS/IFS_GDP.dta", clear
-append using "$miscdata/GDP_GFD.dta"
+use "$apath/IFS_GDP.dta", clear
+append using "$apath/GDP_GFD.dta"
 replace value=value/1000000 if var=="Nominal_GDP" | var=="Nominal_GDP_GFD"
 drop unit
 reshape wide value, i(quarter) j(var) string
@@ -155,8 +155,8 @@ foreach x in GDP_Deflator Nominal_GDP Nominal_GDP_GFD Real_GDP {
 gen `x'_change=100*(log(`x')-log(l.`x'))
 }
 
-mmerge quarter using "$miscdata/Inflation/us_inflation_quarter.dta"
-mmerge quarter using "$miscdata/Inflation/inflation_quarter.dta"
+mmerge quarter using "$apath/us_inflation_quarter.dta"
+mmerge quarter using "$apath/inflation_quarter.dta"
 drop _merge
 *rename us_inflation_log us_inflation
 *rename inflation_log inflation
