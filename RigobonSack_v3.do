@@ -598,7 +598,7 @@ foreach rg in `regs' {
 local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
-	local exnames OfficialRate DSBlue ADRBlue  BCS
+	local exnames OfficialRate dolarblue ADRBlue  BCS
 }
 else {
 	local inames INDEX EqIndex
@@ -625,7 +625,7 @@ if `use_adrs' != 0  {
 
 
 if `use_exrates' != 0 & `use_coreonly' == 0 {
-	local exnames OfficialRate DSBlue ADRBlue  BCS ADRMinusDS
+	local exnames OfficialRate dolarblue ADRBlue  BCS DSBlue ADRMinusDS
 }
 
 local gdpnames
