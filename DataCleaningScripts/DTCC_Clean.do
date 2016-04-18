@@ -26,9 +26,6 @@ order date
 split date, p("_")
 rename  daterange1 start
 rename  daterange2 end
-save  "$apath/dtcc.dta", replace
-
-
 replace start=subinstr(start,"2020","20/20",.)
 replace start=subinstr(start,"2120","21/20",.)
 replace start=subinstr(start,"20/","/20/",.)
@@ -40,18 +37,16 @@ format datestart %td
 replace reference=subinstr(reference,"<= /td>","",.)
 order datestart reference avgtradesday
 destring avgtradesday, replace force
-
 replace region=lower(region)
-browse if regexm(reference,"ARGENTINE")==1 
 gsort datestart -avgtradesday
 bysort datestart: gen rank=_n
-
-
 gsort datestart region -avgtradesday
 bysort datestart region: gen sovrank=_n
 replace sovrank=. if region~="sovereign"
+save  "$apath/dtcc.dta", replace
 
-
+use  "$apath/dtcc.dta", clear
+browse if regexm(reference,"ARGENTINE")==1 
 *Bolivarian Republic of Venezuela REPUBLIC OF SOUTH AFRICA JPMORGAN CHASE & CO. FORD MOTOR COMPANY
 
 keep if reference=="BOLIVARIAN REPUBLIC OF VENEZUELA" | reference=="REPUBLIC OF SOUTH AFRICA" | reference=="JPMORGAN CHASE & CO." | reference=="FORD MOTOR COMPANY" | regexm(reference,"ARGENTINE")==1
@@ -91,3 +86,32 @@ keep if datestart<td(20jun2014)
 drop vid n
 order dates datee var Argentina South Ven For JP
 export excel using "$rpath/DTCC_Comparison.xls", firstrow(variables) replace
+
+
+
+*V2
+use  "$apath/dtcc.dta", clear
+destring avgdail, force replace
+keep if datest<td(20jun2014) & yofd(datestart>=2012)
+collapse (mean) avgtradesday avgdailynotion (firstnm) region, by(reference)
+browse if regexm(reference,"ARGENTIN")==1
+replace avgd=avgd/10^6
+
+*equal to ARG 
+*Finance: THE GOLDMAN SACHS GROUP, INC.
+*Sovereign: REPUBLIC OF INDONESIA
+*NFC: RADIOSHACK CORPORATION, SPRINT NEXTEL CORPORATION
+
+*MOre than ARG
+*Finance: BANK OF AMERICA CORPORATION
+*Sovereign: REPUBLIC OF KOREA
+*NFC: EASTMAN KODAK COMPANY
+
+*less than ARG
+*Finance: CITIGROUP INC.
+*Sovereign: REPUBLIC OF THE PHILIPPINES
+*NFC: FIAT S.P.A.
+
+keep if regexm(reference,"ARGENTIN")==1 | regexm(reference,"GOLDMAN")==1 | regexm(reference,"INDONESIA")==1 | regexm(reference,"RADIOSHACK")==1 | regexm(reference,"BANK OF AMERICA")==1 | regexm(reference,"REPUBLIC OF KOREA")==1 | regexm(reference,"EASTMAN K")==1 | regexm(reference,"CITIGROUP IN")==1 | regexm(reference,"PHILIPP")==1 | regexm(reference,"FIAT S")==1 
+replace reference=proper(refe)
+export excel using "$rpath/DTCC_Comparison_summ.xls", firstrow(variables) replace
