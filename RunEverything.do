@@ -66,7 +66,8 @@ global RSregs RS_CDS_IV
 global RSalt_dates 1
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/RunDataCode.do
-do ${csd_dir}/RunAnalysis.do
+do ${csd_dir}/RigobonSack_v3.do
+
 
 // Run one-day windows
 global RSdaytype closes
@@ -74,7 +75,7 @@ global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(eventclosedate)
 global RSalt_dates 0
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/RunDataCode.do
-do ${csd_dir}/RunAnalysis.do
+do ${csd_dir}/RigobonSack_v3.do
 
 // This does the local HML files
 global RSuse_local 1
