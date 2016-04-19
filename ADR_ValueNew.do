@@ -1,6 +1,11 @@
 **********************
 *GENERATE ADR Weights*
 **********************
+
+* This controls how much weight the tbill gets in 
+* the value indices.
+local tbill_weight 0
+
 set more off
 
 /*use "$apath/Datastream_Quarterly.dta", clear
@@ -205,7 +210,7 @@ gen px_open=1
 gen px_close = 1
 
 gen Ticker="Tbill"
-gen weight=.1
+gen weight=`tbill_weight'
 save "$apath/Tbill_daily.dta", replace
 
 
@@ -214,7 +219,7 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 foreach mark in US AR {
 
-	local tweight = 0.1
+	local tweight = `tbill_weight'
 	local types Value Delev Acct
 	local avars EPS EPSgrowth DivPerShare DPS2 ADRratio leverage
 	local avars2 EPS EPSgrowth DivPerShare DPS2
