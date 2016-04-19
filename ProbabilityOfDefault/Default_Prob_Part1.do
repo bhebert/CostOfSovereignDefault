@@ -1,3 +1,28 @@
+*Bloomberg and DS credit triangles. 
+tempfile bbds
+set more off
+local recov=.395
+local tenor=5
+use "$mainpath/CDS Comparison/CDS_Merged.dta", clear
+keep if type=="close"
+keep date BB_CBGN DS 
+rename BB bb
+rename DS ds
+gen dsfix=ds
+replace dsfix=. if date>=td(15oct2013) & date<=td(01dec2013)
+foreach x in bb ds dsfix  {
+	gen haz_tri_`x'=(`x'/10000)/(1-`recov') 
+	replace haz_tri_`x'=. if haz_tri_`x'<0
+	gen tri_`x'=1-exp(-haz_tri_`x'*`tenor')
+}	
+	keep if year(date)>=2011 
+	keep if date<=td(30jul2014)
+keep date tri* haz*
+foreach x in haz_tri_bb tri_bb haz_tri_ds tri_ds haz_tri_dsfix tri_dsfix {
+	rename `x' `x'_5y
+}	
+keep date tri*
+save "$apath/triangle_bbds.dta", replace
 
 *SIMPLE CREDIT TRIANGLE, Composite
 set more off
@@ -20,6 +45,9 @@ foreach x in 1 2 3 4 5 7 10 15 20 30 {
 	keep if year(date)>=2011 
 	keep if date<=td(30jul2014)
 	save "$apath/cumdef_hazard_triangle.dta", replace
+	
+	
+
 	
 *SAMEDAY	
 foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
@@ -186,6 +214,43 @@ carryforward SVENY`x', replace
 *export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero_UST.xls", replace 
 export delimited using "$apath/Matlab_`y'_spreads_zero_UST.csv", replace novarnames
 }
+
+
+********************************
+*BLOOMBERG and Datastream DATA*
+********************************
+foreach xx in "Bloomberg" "Datastream" {
+use  "$apath/`xx'_CDS", clear
+foreach x of varlist cds* {
+	replace `x'=`x'/100
+	}
+mmerge date using "$mpath/UST_Zero.dta"
+gen Recovery=39.5
+order date Recovery
+drop _merge
+gen datenum=date
+order datenum date 
+drop date
+keep if year(date)>=2011 
+keep if date<=td(30jul2014)
+tsset date
+
+tsset date
+forvalues x=1/9 {
+carryforward SVENY0`x', replace
+}
+forvalues x=10/30 {
+carryforward SVENY`x', replace
+}
+
+if "`xx'"=="Bloomberg" {
+export delimited using "$apath/Matlab_BBspreads_zero_UST.csv", replace novarnames
+}
+if "`xx'"=="Datastream" {
+export delimited using "$apath/Matlab_DSspreads_zero_UST.csv", replace novarnames
+}
+}
+
 
 
 **************
