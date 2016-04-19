@@ -30,7 +30,11 @@ global RSuse_coreonly 0
 global RSuse_ndf 0
 global RSuse_addeq 1
 global RSuse_usbeinf 0
-global RSuse_gdpmodels 1
+
+// turning off for AER revision
+global RSuse_gdpmodels 0
+
+
 global RSuse_bonds 1
 global RSuse_mexbrl 1
 global RSuse_otherdefp 0
@@ -112,7 +116,8 @@ global RSregs OLS RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
 
 // Run alternative rho
-global RSuse_adrs 1
+// Turned off for AER revision
+/*global RSuse_adrs 1
 global RSuse_exrates 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
@@ -127,7 +132,7 @@ foreach arho in 0.8 0.95 {
 }
 
 global alt_rho = 0
-do ${csd_dir}/SetupPaths.do
+do ${csd_dir}/SetupPaths.do*/
 
 
 
