@@ -42,6 +42,8 @@ do ${csd_dir}/CDSMaker.do
 
 do ${csd_dir}/DataCleaningScripts/BB_Stale_EventCount.do
 
+do ${csd_dir}/DataCleaningScripts/CDS_BB_DS.do
+
 do ${csd_dir}/StaticTable.do
 
 
