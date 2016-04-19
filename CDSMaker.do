@@ -115,7 +115,7 @@ else if `cds_i_marks' == 6 {
 }
 
 else if `cds_i_marks' == 7 {
-	use "$mpath/Default_Prob_All.dta", clear
+	use "$apath/Default_Prob_All.dta", clear
 	keep date  $cds_n
 	rename $cds_n Spread5yN
 }
