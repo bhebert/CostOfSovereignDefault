@@ -7,9 +7,11 @@ capture log close
 global logname ${rpath}/everything.smcl
 log using "$logname", replace
 
+local files "${apath}/*.dta"
 
-!rm "${apath}/*.dta"
-!del "${apath}/*.dta"
+!rm `files'
+
+!del `files'
 
 matrix drop _all
 
