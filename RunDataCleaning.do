@@ -38,11 +38,11 @@ do ${csd_dir}/DataCleaningScripts/CRSP_ADR_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Clean_TGNO4.do
 
+do ${csd_dir}/DataCleaningScripts/CDS_BB_DS.do
+
 do ${csd_dir}/CDSMaker.do
 
 do ${csd_dir}/DataCleaningScripts/BB_Stale_EventCount.do
-
-do ${csd_dir}/DataCleaningScripts/CDS_BB_DS.do
 
 do ${csd_dir}/StaticTable.do
 

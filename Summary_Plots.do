@@ -100,6 +100,29 @@ browse  date return_ cds_  n2
 export excel n2 date cds_ return_ using "$rpath/Figure1_Table.xls", firstrow(variables) replace datestring("%tdMonth_dd,_CCYY")
 
 ********************************
+*ALTERNATE CDS FIGURES
+use "$apath/ThirdAnalysis.dta", clear
+
+replace cds=cds*100
+discard
+browse if  industry_sec=="mC5_5y_DTRI" & eventexcluded==0 & day_type=="twoday" & event_day==1
+order date industry_sec cds return_
+
+foreach x in mC5_5y_DTRI bb_tri_def5y_DTRI ds_tri_def5y_DTRI tri_def5y_DTRI tri_conH_def5y_DTRI {
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("`x'") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Change in Default Probability") name("`x'") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/`x'.eps", replace
+}
+graph export "$rpath/sanity_check.eps", replace
+
+
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="mC5_5y_DTRI" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Test") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Test") graphregion(fcolor(white) lcolor(white))
+
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="mC5_5y_DTRI" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Test") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Test") graphregion(fcolor(white) lcolor(white))
+
+
+
+
+********************************
 *BOND LEVEL PLOT
 
 use "$apath/bondlevel.dta", clear
