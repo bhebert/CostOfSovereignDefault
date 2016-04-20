@@ -68,7 +68,24 @@ save "$apath/`name'.dta", replace
 }
 }
 
-
+**************************
+*Bloomberg and Datastream
+foreach x in "DS" "BB" {
+import delimited "$apath/Bootstrap_results_`x'UST.csv", encoding(ISO-8859-1)clear
+rename v1 date
+format date %td
+rename v2 def1y 
+rename v3 def2y 
+rename v4 def3y 
+rename v5 def4y 
+rename v6 def5y 
+rename v7 haz1y
+rename v8 haz2y 
+rename v9 haz3y 
+rename v10 haz4y 
+rename v11 haz5y 
+save "$apath/cumdef_`x'.dta", replace
+}
 
 
 ***************
@@ -231,6 +248,10 @@ foreach y in "" "_europe" "_newyork" {
 	foreach x in 6M 1Y 2Y 3Y 4Y 5Y 7Y 10Y {
 		label var Upfront`x' "Points Upfront, 5% coupon, `x'"
 		}
-	
+mmerge date using "$apath/triangle_bbds.dta"
+mmerge date using "$apath/cumdef_BB.dta", uname(bb_)
+mmerge date using "$apath/cumdef_ds.dta", uname(ds_)
+mmerge date using "$apath/cumdef_hazard_triangle_bb.dta", uname(bb_) ukeep(tri*)
+mmerge date using "$apath/cumdef_hazard_triangle_ds.dta", uname(ds_) ukeep(tri*)
 save  "$apath/Default_Prob_All.dta", replace
 
