@@ -1,5 +1,19 @@
 set more off
 
+*OTHER MEASURES OF ARGENTINA'S SPread
+use "/Users/jesseschreger/Documents/CostOfSovereignDefault/Datasets/Default_Prob_All.dta", clear
+keep date mC5_5y tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y
+foreach x in tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y mC5_5y{
+	rename `x' logval`x'
+}	
+reshape long logval, i(date) j(Ticker) string
+gen  total_return=exp(logval)
+replace Ticker=Ticker+"_DTRI"
+gen industry_sector=Ticker
+keep date Ticker total_return
+sort date Ticker
+save "$apath/AltArg_CDS.dta", replace
+
 *OTHER COUNTRIES
 use "$mpath/Master_all_EOD.dta", clear
 keep if DocC=="CR"
@@ -41,6 +55,7 @@ gen market="Index"
 replace Ticker=Ticker+"_DTRI"
 gen industry_sector=Ticker
 keep date Ticker total_return
+append using "$apath/AltArg_CDS.dta"
 save "$apath/Other_CDS.dta", replace
 
 	*gen tri5y_oneday = tri_def5y - L.tri_def5y
