@@ -24,6 +24,41 @@ foreach x in haz_tri_bb tri_bb haz_tri_ds tri_ds haz_tri_dsfix tri_dsfix {
 keep date tri*
 save "$apath/triangle_bbds.dta", replace
 
+
+*SIMPLE CREDIT TRIANGLE, Datastream, Bloomberg
+set more off
+use "$apath/Datastream_CDS",  clear
+local Recov=.395
+foreach x in "1y" "2y" "3y" "4y" "5y" {
+	gen haz_tri_`x'=(cdsds_`x'/10000)/(1-`Recov')
+	replace haz_tri_`x'=. if haz_tri_`x'<0
+	}
+foreach x in 1 2 3 4 5  {
+	gen tri_def`x'y =1-exp(-haz_tri_`x'y*`x')
+	}
+	drop cds*
+	keep if year(date)>=2011 
+	keep if date<=td(30jul2014)
+	save "$apath/cumdef_hazard_triangle_ds.dta", replace
+	
+	
+*Bloomberg
+set more off
+use "$apath/Bloomberg_CDS",  clear
+local Recov=.395
+foreach x in "1y" "2y" "3y" "4y" "5y" {
+	gen haz_tri_`x'=(cdsbb_`x'/10000)/(1-`Recov')
+	replace haz_tri_`x'=. if haz_tri_`x'<0
+	}
+foreach x in 1 2 3 4 5  {
+	gen tri_def`x'y =1-exp(-haz_tri_`x'y*`x')
+	}
+	drop cds*
+	keep if year(date)>=2011 
+	keep if date<=td(30jul2014)
+	save "$apath/cumdef_hazard_triangle_bb.dta", replace	
+
+
 *SIMPLE CREDIT TRIANGLE, Composite
 set more off
 use "$mpath/Composite_USD.dta",  clear
@@ -250,6 +285,7 @@ if "`xx'"=="Datastream" {
 export delimited using "$apath/Matlab_DSspreads_zero_UST.csv", replace novarnames
 }
 }
+
 
 
 
