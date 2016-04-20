@@ -1,5 +1,6 @@
 
-
+macro drop _all
+matrix drop _all
 
 do ${csd_dir}/SetupPaths.do
 
@@ -12,8 +13,6 @@ local files "${apath}/*.dta"
 !rm `files'
 
 !del `files'
-
-matrix drop _all
 
 do ${csd_dir}/RunDataCleaning.do
 
