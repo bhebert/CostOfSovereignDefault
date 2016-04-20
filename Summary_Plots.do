@@ -99,6 +99,8 @@ sort n2
 browse  date return_ cds_  n2 
 export excel n2 date cds_ return_ using "$rpath/Figure1_Table.xls", firstrow(variables) replace datestring("%tdMonth_dd,_CCYY")
 
+/*
+*IN PROGRESS
 ********************************
 *ALTERNATE CDS FIGURES
 use "$apath/ThirdAnalysis.dta", clear
@@ -116,9 +118,8 @@ graph export "$rpath/sanity_check.eps", replace
 
 
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="mC5_5y_DTRI" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Test") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Test") graphregion(fcolor(white) lcolor(white))
-
 twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="mC5_5y_DTRI" & eventexcluded==0 & day_type=="twoday" & market~="AR",title("Test") legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Return") name("Test") graphregion(fcolor(white) lcolor(white))
-
+*/
 
 
 
