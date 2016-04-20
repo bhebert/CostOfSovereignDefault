@@ -1,5 +1,4 @@
 
-macro drop _all
 matrix drop _all
 
 do ${csd_dir}/SetupPaths.do
