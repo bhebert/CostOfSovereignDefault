@@ -31,7 +31,7 @@ foreach x in baml_ig_uscorp baml_usaaa baml_em baml_hy_us baml_hy_usccc baml_ema
 	rename DATE date 
 	keep if yofd(date)>=1995
 	keep date baml_ig_uscorp baml_hy_us
-save "'fred_temp'.dta", replace
+save "`fred_temp'.dta", replace
 
 
 *Load SPI
@@ -66,7 +66,7 @@ drop if Ticker=="igbonds" | Ticker=="hybonds"
 reshape wide Close, i(date month) j(Ticker) str
 renpfix Close
 mmerge date using "`SPI_temp'.dta"
-mmerge date using "'fred_temp'.dta"
+mmerge date using "`fred_temp'.dta"
 rename baml_hy_us hybonds
 rename baml_ig_uscorp igbonds
 
