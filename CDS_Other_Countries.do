@@ -1,7 +1,7 @@
 set more off
 
 *OTHER MEASURES OF ARGENTINA'S SPread
-use "/Users/jesseschreger/Documents/CostOfSovereignDefault/Datasets/Default_Prob_All.dta", clear
+use "$apath/Default_Prob_All.dta", clear
 keep date mC5_5y tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y
 foreach x in tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y mC5_5y{
 	rename `x' logval`x'
