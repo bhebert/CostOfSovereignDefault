@@ -82,5 +82,12 @@ foreach x in  cdsds_6m cdsds_1y cdsds_2y cdsds_3y cdsds_4y cdsds_5y  {
 destring `x', force replace
 }
 drop cdsds_6m
+gen n=_n
+tsset n
+gen repeat=1 if (cdsds_1y==l.cdsds_1y) & (cdsds_2y==l.cdsds_2y) & (cdsds_3y==l.cdsds_3y) & (cdsds_4y==l.cdsds_4y) & (cdsds_5y==l.cdsds_5y)
+foreach x in cdsds_1y cdsds_2y cdsds_3y cdsds_4y cdsds_5y {
+	replace `x'=. if repeat==1
+}	
+drop n repeat
 save "$apath/Datastream_CDS", replace
 
