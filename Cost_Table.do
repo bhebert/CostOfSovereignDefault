@@ -1,10 +1,10 @@
 *Back of envelope costs
 *COEFFICIENT
 set more off
-local value_coeff=-54.89
+local value_coeff=-60.43
 local ypf_coeff=-93.69
 *Value index is 1/10 treasuries. 
-local a_value_coeff=exp((10/9)*`value_coeff'/100)-1
+local a_value_coeff=exp(`value_coeff'/100)-1
 local a_ypf_coeff=exp(`ypf_coeff'/100)-1
 *$B, from WDI, 2011
 local gdp_usd=560
