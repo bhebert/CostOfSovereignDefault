@@ -48,4 +48,8 @@ if _rc == 0 {
 	twoway (line def6m date, lcolor(white)) (line def1y date, lcolor(white)) (line def2y date, lcolor(white)) (line def3y date, lcolor(white)) (line def4y date, lcolor(white)) (line def5y date) if date>=td(01jan2011) & date<=td(30jul2014), legend(order(1 "6 Months" 2  "1 Year" 3 "2 Year"  4 "3 Year" 5 "4 Year" 6 "5 Year")) ytitle("Cumulative Default Probability") ///
 	xtitle("") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xtitle("") ylabel(,nogrid) name("Default2")
 	graph export "$rpath/Default_Plot2.eps", replace
+	
+	twoway  (line def5y date) if date>=td(01jan2011) & date<=td(30jul2014),  ytitle("Cumulative Default Probability") ///
+	xtitle("") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xtitle("") ylabel(,nogrid) name("Default5yonly")
+	graph export "$rpath/Default_Plot_5yonly.eps", replace
 }
