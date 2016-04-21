@@ -115,6 +115,19 @@ graph export "$rpath/`x'.eps", replace
 }
 
 
+keep if industry_sec=="mC5_5y_DTRI" | industry_sec=="bb_tri_def5y_DTRI" | industry_sec=="ds_tri_def5y_DTRI" | industry_sec=="tri_def5y_DTRI" | industry_sec=="tri_conH_def5y_DTRI" | industry_sec=="ValueINDEXNew"
+keep if day_type=="twoday" & market~="AR"
+keep date industry_sec cds_ return_ event_day eventexcluded
+gen valuet=return_ if industry_sec=="ValueINDEXNew"
+bysort date: egen value=max(valuet)
+drop valuet
+discard
+foreach x in mC5_5y_DTRI bb_tri_def5y_DTRI ds_tri_def5y_DTRI tri_def5y_DTRI tri_conH_def5y_DTRI {
+twoway    (scatter value return_  if event_day==0, mcolor(gs9) msize(tiny)) (scatter value return_ if event_day==1, mlabel(date)) if industry_sec=="`x'" & eventexcluded==0 , legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Value Index Log Return") name("`x'") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/`x'_value.eps", replace
+}
+
+
 ********************************
 *BOND LEVEL PLOT
 
