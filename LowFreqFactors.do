@@ -40,7 +40,7 @@ keep date SPI*
 rename SPIFCICompositetotalreturn spifc_total_return
 rename SPIFCI spifc_price
 keep date spifc_total_return
-save "`SPI_temp'.dta", replace
+save "`SPI_Temp'.dta", replace
 
 * Load controls data
 import excel "$miscdata/IP/Controls_GFD.xlsx", firstrow sheet("Price Data") clear
@@ -65,7 +65,7 @@ drop if Ticker=="igbonds" | Ticker=="hybonds"
 
 reshape wide Close, i(date month) j(Ticker) str
 renpfix Close
-mmerge date using "`SPI_temp'.dta"
+mmerge date using "`SPI_Temp'.dta"
 mmerge date using "`fred_temp'.dta"
 rename baml_hy_us hybonds
 rename baml_ig_uscorp igbonds
