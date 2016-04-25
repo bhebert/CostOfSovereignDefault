@@ -7,11 +7,11 @@ capture log close
 global logname ${rpath}/everything.smcl
 log using "$logname", replace
 
-local files "${apath}/*.dta"
+//local files "${apath}/*.dta"
 
-!rm `files'
+//!rm `files'
 
-!del `files'
+rmfiles, folder(${apath}) match(*.dta) 
 
 do ${csd_dir}/RunDataCleaning.do
 
