@@ -12,3 +12,5 @@ matmap
 ranktest
 outreg2
 mmerge
+rmfiles
+
