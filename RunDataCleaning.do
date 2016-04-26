@@ -46,6 +46,4 @@ do ${csd_dir}/DataCleaningScripts/BB_Stale_EventCount.do
 
 do ${csd_dir}/StaticTable.do
 
-do ${csd_dir}/DataCleaningScripts/ADRVolume.do
-
 
