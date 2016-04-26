@@ -16,6 +16,8 @@ global forpath "$droppath/Cost of Sovereign Default/Forecasts"
 global fweo_path "$droppath/Cost of Sovereign Default/Forecasts/WEO"
 global crsp_path "$droppath/Cost of Sovereign Default/CRSP"
 
+global holdpath "$droppath/Cost of Sovereign Default/HoldingsData"
+
 global mainpath "$droppath/Cost of Sovereign Default"
 
 * Setup path for results
