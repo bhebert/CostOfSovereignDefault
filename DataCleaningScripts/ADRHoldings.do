@@ -24,3 +24,31 @@ gen asf_2014q1=ds_float_2014q1*bb_adr_share_2014q1/100
 gen asf_2014q2=ds_float_2014q2*bb_adr_share_2014q2/100
 gen ratio_q1=adrshares_2014q1/asf_2014q1
 gen ratio_q2=adrshares_2014q1/asf_2014q1
+
+
+***************************
+*Cleaning the Factset data*
+***************************
+*foreach x in "BMA-US" "CRESY-US" "EDN-US" "BFR-US" "PAM-US" "GGAL-US" "IRS-US" "PZE-US" "TEO-US" "IRCP-US" "TGS-US" "YPF-US"
+import excel "$miscdata/ADR_ownership/FactsetOwnership.xlsx", sheet("BMA-US") clear
+drop if _n<=4
+
+local i=1
+foreach x of varlist _all {
+	rename `x' v`i'
+	local i=`i'+1
+}	
+save "$miscdata/ADR_ownership/temp/BMA.dta", replace
+
+use 
+
+
+
+
+
+
+
+
+
+
+
