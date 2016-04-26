@@ -115,15 +115,17 @@ global RSrelative_perf 0
 global RSregs OLS RS_CDS_IV
 do ${csd_dir}/RigobonSack_v3.do
 
-// Run alternative rho
-// Turned off for AER revision
-/*global RSuse_adrs 1
+
+global RSuse_adrs 1
 global RSuse_exrates 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
 global RSuse_coreonly 1
 global RSregs RS_CDS_IV
-global RSuse_gdpmodels 1
+
+// Run alternative rho
+// Turned off for AER revision
+/*global RSuse_gdpmodels 1
 
 foreach arho in 0.8 0.95 {
 	matrix drop _all
