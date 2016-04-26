@@ -87,6 +87,7 @@ global RSrelative_perf 0
 global RSuse_index_beta 0
 global RSno_exchange 0
 global RSuse_holdout 0
+global RSexclude_SC_day 0
 global RSregs OLS 2SLS_IV RS_CDS_IV
 
 
