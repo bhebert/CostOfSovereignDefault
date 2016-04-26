@@ -81,6 +81,9 @@ if "$RSControl" == "" {
 	* must be on to run MULTI_CDS_IV, off otherwise
 	local use_holdout 0
 	
+	* exclude SC day
+	local exclude_SC_day 1
+	
 	* Different kinds of regressions that can be run
 	* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
 	* RS_N_CDS_IV predicts the next return, rather than the contemporaneous return
@@ -95,10 +98,10 @@ if "$RSControl" == "" {
 	* Determines which kind of day to use
 	* Options are opens, closes, and twoday
 	* Opens doesn't fully work right now
-	local daytype closes
+	local daytype twoday
 	
 	* use date for twoday, eventclosedate for closes, and eventopendate for opens
-	local cvar eventclosedate
+	local cvar date
 	
 	* This controls the standard error commands in the IV regressions
 	* This controls the bootstrap part
@@ -110,7 +113,7 @@ if "$RSControl" == "" {
 
 }
 else {
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout regs exclusions daytype bstyle ivstderrs {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout exclude_SC_day regs exclusions daytype bstyle ivstderrs {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -287,6 +290,11 @@ if `exclusions' == 1 {
 }
 
 replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
+
+if `exclude_SC_day' == 1 {
+	drop if date == mdy(6,16,2014)
+	local ext_style `ext_style'_NoSC
+}
 
 drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
