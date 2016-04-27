@@ -46,4 +46,6 @@ label var ticker "Ticker"
 label var adr_turnover "Turnover - ADR, USD M."
 label var bolsar_usd "Turnover - Local, USD M."
 label var ratio "ADR/Local Turnover"
+replace ticker="IRCP" if ticker=="APSA"
+sort ticker
 export excel using "$rpath/Turnover_ADRBolsar.xls", firstrow(varlabels) replace

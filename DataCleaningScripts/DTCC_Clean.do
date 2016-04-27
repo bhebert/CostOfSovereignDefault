@@ -115,3 +115,5 @@ replace avgd=avgd/10^6
 keep if regexm(reference,"ARGENTIN")==1 | regexm(reference,"GOLDMAN")==1 | regexm(reference,"INDONESIA")==1 | regexm(reference,"RADIOSHACK")==1 | regexm(reference,"BANK OF AMERICA")==1 | regexm(reference,"REPUBLIC OF KOREA")==1 | regexm(reference,"EASTMAN K")==1 | regexm(reference,"CITIGROUP IN")==1 | regexm(reference,"PHILIPP")==1 | regexm(reference,"FIAT S")==1 
 replace reference=proper(refe)
 export excel using "$rpath/DTCC_Comparison_summ.xls", firstrow(variables) replace
+
+
