@@ -253,5 +253,6 @@ mmerge date using "$apath/cumdef_BB.dta", uname(bb_)
 mmerge date using "$apath/cumdef_ds.dta", uname(ds_)
 mmerge date using "$apath/cumdef_hazard_triangle_bb.dta", uname(bb_) ukeep(tri*)
 mmerge date using "$apath/cumdef_hazard_triangle_ds.dta", uname(ds_) ukeep(tri*)
+mmerge date using "$apath/bond_dprob_merge.dta"
 save  "$apath/Default_Prob_All.dta", replace
 
