@@ -14,7 +14,7 @@
 
 global cds_robust 1
 *foreach x in tri_def5y tri_conH_def5y   {
-foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y  {
+foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y rsbondy rsbond logrsbond  {
 	global cds_app "_`x'"
 	global cds_n "`x'"
 	do ${csd_dir}/CDSMaker.do
