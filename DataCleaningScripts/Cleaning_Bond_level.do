@@ -1,7 +1,7 @@
 *Bond level data]
 
 *Cleaning exchange rate data
-tempfile eur
+tempfile eur bondtemp
 import excel "$miscdata/EURUSD_GFD/EURUSD_20150914_excel2007.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td
@@ -176,7 +176,7 @@ discard
 	twoway (line px_last date if ticker=="rsbond_usd_disc") (line px_last date if ticker=="NMLbond2030"), legend(order(1 "Restructured" 2 "Holdout")) ytitle("Price")
 	graph export "$rpath/bond_px_compare.png", replace
 	
-	
+	save "`bondtemp'"
 	keep date px_last ticker
 	rename px_last px_close
 	gen px_open=.
@@ -186,6 +186,17 @@ discard
 	rename ticker Ticker
 	save "$apath/bondlevel.dta", replace
 	
+use "`bondtemp'", clear	
+keep date px_last ticker ytm_mid
+keep if ticker=="rsbond_usd_disc"
+
+
+use "$apath/bondlevel.dta", clear
+keep if Ticker=="rsbond_usd_disc"
+keep date px_close 
+rename px_close rsbond
+gen logrsbond=log(rsbond)
+save "$apath/bond_dprob_merge.dta", replace
 	
 /*
 *LOCAL GOVT AND CORP
