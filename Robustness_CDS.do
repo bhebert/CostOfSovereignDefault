@@ -31,7 +31,7 @@ gen cds_type="PUF_1y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
-foreach x in PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y   tri_def5y {
+foreach x in PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y   tri_def5y  rsbondy rsbond logrsbond {
 	cap{
 	import excel "$rpath/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
 	keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
