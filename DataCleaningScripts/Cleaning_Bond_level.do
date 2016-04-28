@@ -189,13 +189,10 @@ discard
 use "`bondtemp'", clear	
 keep date px_last ticker ytm_mid
 keep if ticker=="rsbond_usd_disc"
-
-
-use "$apath/bondlevel.dta", clear
-keep if Ticker=="rsbond_usd_disc"
-keep date px_close 
-rename px_close rsbond
+rename px_last rsbond
+rename ytm rsbondy
 gen logrsbond=log(rsbond)
+drop ticker
 save "$apath/bond_dprob_merge.dta", replace
 	
 /*
