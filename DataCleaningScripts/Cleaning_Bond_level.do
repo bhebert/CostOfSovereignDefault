@@ -135,7 +135,7 @@ replace stale_ind=1 if px_last==l.px_last
 bysort tid: egen stale_ratio=sum(stale_ind)
 replace stale_ratio=stale_ratio/obscount
 
-keep if stale_ratio<.25 | nml_bond
+keep if stale_ratio<.25 | nml_bond==1 | id_isin=="XS0501195480"
 
 sort tid bdate
 gen px_change=100*log(px_last/l.px_last)
@@ -161,12 +161,14 @@ discard
 */	
 	*usable restructured bond is EI233619
 	*most frequently traded defaulted is EC131761 
-	keep if ticker=="EI233619" | ticker=="EC131761" | id_isin=="US040114GK09" | nml_bond == 1
+	keep if ticker=="EI233619" | ticker=="EC131761" | id_isin=="US040114GK09" | nml_bond == 1 | id_isin=="XS0501195480"
 	replace ticker="rsbond_usd_disc" if ticker=="EI233619"
 	replace ticker="defbond_eur" if ticker=="EC131761"
 	replace ticker="NMLbond2030" if ticker=="EC273735"
 	replace ticker="NMLbond2020" if ticker=="EC221478"
 	replace ticker="rsbond_usd_par" if id_isin=="US040114GK09"
+	replace ticker="global17" if id_isin=="XS0501195480"
+
 		mmerge date using "`eur'"
 	replace px_last=px_last/eur if ticker=="defbond_eur"
 	drop eur
@@ -177,6 +179,7 @@ discard
 	graph export "$rpath/bond_px_compare.png", replace
 	
 	save "`bondtemp'"
+	drop if ticker=="global17" 
 	keep date px_last ticker
 	rename px_last px_close
 	gen px_open=.
@@ -188,13 +191,35 @@ discard
 	
 use "`bondtemp'", clear	
 keep date px_last ticker ytm_mid
-keep if ticker=="rsbond_usd_disc"
-rename px_last rsbond
-rename ytm rsbondy
+keep if ticker=="rsbond_usd_disc" | ticker=="global17" 
+reshape wide ytm px, i(date) j(ticker) string 
+rename px_lastrs rsbond
+rename ytm_midrs rsbondy
+rename px_lastg g17
+gen g17_fixed=g17
+replace g17_fixed=. if date>=td(08nov2011) | date<=td(04may2012)
+rename ytm_midg g17y
 gen logrsbond=log(rsbond)
-drop ticker
+gen logg17=log(g17)
+mmerge date using "$miscdata/GSW/GSW_Data.dta", ukeep(svenpy05 svenpy18 svenpy19 svenpy20)
+drop if _merge==2
+gen rsbondys=rsbondy-svenpy20
+gen g17ys=g17y-svenpy05
+drop sven* _merge
 save "$apath/bond_dprob_merge.dta", replace
-	
+
+/*
+gen nn=_n
+tsset nn
+gen n=1
+gen y1=beta0+beta1*(1-exp(-n/tau1))/(n/tau1)+beta2*(((1-exp(-n/tau1))/(n/tau1))-exp(-n/tau1))+beta3*(((1-exp(-n/tau2))/(n/tau2))-exp(-n/tau2))
+replace y1=l.y1	if y1<0
+
+replace n=5
+gen y5=beta0+beta1*(1-exp(-n/tau1))/(n/tau1)+beta2*(((1-exp(-n/tau1))/(n/tau1))-exp(-n/tau1))+beta3*(((1-exp(-n/tau2))/(n/tau2))-exp(-n/tau2))
+
+
+
 /*
 *LOCAL GOVT AND CORP
 import excel "$dir_home/Data/Debt_Securities.xlsx", sheet("Gov") firstrow clear
