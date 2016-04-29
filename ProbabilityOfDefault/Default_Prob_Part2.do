@@ -227,7 +227,7 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	rename PUF_markitC5_def`x' PUF_`x'
 	}	
 	
-	mmerge date using "$mpath/Composite_USD.dta", ukeep (Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y)
+	mmerge date using "$mpath/Composite_USD.dta", ukeep (Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread20y Spread30y)
 	save "`temp1'", replace
 
 use "$mpath/Sameday_USD.dta", clear
