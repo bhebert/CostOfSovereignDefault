@@ -36,12 +36,16 @@ gen dollars = prc * shares
 
 gen dollarsout = shrout2 * 1000 * prc
 
-collapse (sum) dollars (firstnm) mgrname country, by(mgrno)
+collapse (sum) dollars (firstnm) mgrname country, by(quarter mgrno)
+replace dollars = 0 if dollars == .
+collapse (mean) dollars (firstnm) mgrname country, by(mgrno)
+
+replace dollars = dollars / 1000000
 
 gsort - dollars
 
 gen rank = _n
 
-order rank mgrname country mgrno dollars
+order rank mgrname country dollars mgrno
 
 export excel using "${rpath}/TopInstitutionalOwners.xls", replace
