@@ -1,4 +1,6 @@
 
+local run_test 0
+
 matrix drop _all
 
 do ${csd_dir}/SetupPaths.do
@@ -19,13 +21,51 @@ do ${csd_dir}/RunDataCode.do
 
 do ${csd_dir}/Cost_Table.do
 
+do ${csd_dir}/HoldingsTable.do
 
 * Configure Rigobon-Sack File
 global RSControl 1
+
+global RSexclusions 1
+global RSdaytype twoday
+global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
+global RSivstderrs robust
+global alt_rho = 0
+
+
 global hetero_event 0
 global RSuse_local 0
 global RSuse_adrs 1
 global RSuse_exrates 1
+
+// Code for testing only
+ if `run_test' == 1 {
+	global RSuse_ndf 0
+	global RSuse_addeq 0
+	global RSuse_usbeinf 0
+	global RSuse_otherdefp 0
+	global RSuse_equityind 0
+	global RSuse_coreonly 1
+	global RSuse_gdpmodels 0
+	global RSuse_bonds 0
+	global RSuse_mexbrl 0
+	global RSuse_otherdefp 0
+	global RSuse_equityind 0
+	global RSuse_singlenames 0
+	global RSuse_highlow_ports 0
+	global RSuse_hmls 0
+	global RSuse_industries 0
+	global RSrelative_perf 0
+	global RSuse_index_beta 0
+	global RSno_exchange 0
+	global RSuse_holdout 0
+	global RSregs RS_CDS_IV
+	
+	do ${csd_dir}/RunAnalysis.do
+	exit
+}
+
+
 global RSuse_coreonly 0
 global RSuse_ndf 0
 global RSuse_addeq 1
@@ -48,10 +88,7 @@ global RSuse_index_beta 0
 global RSno_exchange 0
 global RSuse_holdout 0
 global RSregs OLS 2SLS_IV RS_CDS_IV
-global RSexclusions 1
-global RSdaytype twoday
-global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
-global RSivstderrs robust
+
 
 // This does most of the main tables
 global alt_rho = 0
