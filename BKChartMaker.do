@@ -7,12 +7,13 @@ local droppath /Users/jesseschreger/Dropbox
 
 
 *import excel "`dir_resultsb'/RS_CDS_IVHMLLocal_relative_noex_fixed.xlsx", sheet("Sheet1") clear
-import excel "$rpath/RS_CDS_IVLocalHML_relative_noex.xlsx", sheet("Sheet1") clear
+import delimited "$rpath/RS_CDS_IVLocalHML_relative_noex.txt", encoding(ISO-8859-1)clear
+*import excel "$rpath/RS_CDS_IVLocalHML_relative_noex.xlsx", sheet("Sheet1") clear
 * 90, 95, or 99
 local CI_lvl 90
 local HML 1
 
-replace A="cds_se" if _n==5
+replace v1="cds_se" if _n==5
 drop if _n==1 | _n==3 | _n==6
 sxpose, clear
 foreach x of varlist _all { 
@@ -102,15 +103,15 @@ graph export "$rpath/BK_HML_Theories.eps", replace
 
 ***********
 *INDUSTRY FIGURE
-
-
 *import excel "`dir_resultsb'/RS_CDS_IVHMLLocal_relative_noex_fixed.xlsx", sheet("Sheet1") clear
-import excel "$rpath/RS_CDS_IVLocal_relative_noex.xlsx", sheet("Sheet1") clear
+*import excel "$rpath/RS_CDS_IVLocal_relative_noex.xlsx", sheet("Sheet1") clear
+import delimited "$rpath/RS_CDS_IVLocal_relative_noex.txt", encoding(ISO-8859-1)clear
+
 * 90, 95, or 99
 local CI_lvl 90
 local HML 0
 
-replace A="cds_se" if _n==5
+replace v1="cds_se" if _n==5
 drop if _n==1 | _n==3 | _n==6
 sxpose, clear
 foreach x of varlist _all { 
