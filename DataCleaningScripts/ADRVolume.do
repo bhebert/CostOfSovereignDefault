@@ -1,3 +1,4 @@
+set more off
 
 *ADR Volume
 tempfile ticks
