@@ -128,8 +128,6 @@ global RSuse_coreonly 0
 global RSdaytype twoday
 global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 do ${csd_dir}/RigobonSack_v3.do
-do ${csd_dir}/BKChartMaker.do
-
 
 // run the version without exchange rate controls
 global RSno_exchange 1
@@ -139,6 +137,10 @@ do ${csd_dir}/RigobonSack_v3.do
 global RSuse_industries 1
 global RSuse_hmls 0
 do ${csd_dir}/RigobonSack_v3.do
+
+// Make the industry and HML Charts
+do ${csd_dir}/BKChartMaker.do
+
 
 // Standard Event Study
 do ${csd_dir}/StandardEventStudy.do
