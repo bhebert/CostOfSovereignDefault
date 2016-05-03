@@ -96,6 +96,7 @@ do ${csd_dir}/RunAnalysis.do
 
 // Make the plots
 do ${csd_dir}/Summary_Plots.do
+do ${csd_dir}/BKChartMaker.do
 
 // Run alternative CDS dates
 global RSuse_addeq 0
@@ -188,10 +189,5 @@ do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
 
-
-
-* This has to be run manually after opening and saving the required
-* files as a .xlsx
-*do ${csd_dir}/BKChartMaker.do
 
 
