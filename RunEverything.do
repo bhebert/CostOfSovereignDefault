@@ -96,7 +96,6 @@ do ${csd_dir}/RunAnalysis.do
 
 // Make the plots
 do ${csd_dir}/Summary_Plots.do
-do ${csd_dir}/BKChartMaker.do
 
 // Run alternative CDS dates
 global RSuse_addeq 0
@@ -129,6 +128,7 @@ global RSuse_coreonly 0
 global RSdaytype twoday
 global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 do ${csd_dir}/RigobonSack_v3.do
+do ${csd_dir}/BKChartMaker.do
 
 
 // run the version without exchange rate controls
