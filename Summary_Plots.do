@@ -290,8 +290,8 @@ replace industry_sec="Utilities" if industry_sec=="Utils"
 gen ind_ADR="Y" if indicator_adr==1 & ADRticker~=""
 replace ind_ADR="Y*" if indicator_adr & ADRticker==""
 gen foreign_ind="Y" if foreign_own==1
-keep name Ticker industry_sec es_ import_rev market_cap foreign_ind ind_ADR 
-order name Ticker industry_sec es_ import_rev market_cap foreign_ind ind_ADR  
+keep name ticker_short industry_sec es_ import_rev market_cap foreign_ind ind_ADR 
+order name ticker_short industry_sec es_ import_rev market_cap foreign_ind ind_ADR  
  
 replace name="Edenor" if name=="Edenor Emsa.Disb.Y Comlz.Norte"
 replace name="IRSA Propiedades Commerciales" if name=="Irsa Propiedades Comit."
@@ -307,11 +307,12 @@ label var  imp "Imports"
 label var  market "Market Cap (2011)"
 label var ind_ADR "ADR"
 label var foreign "Foreign"
-label var Ticker "Ticker"
+label var ticker_short "Ticker"
 replace es=es*100
 replace imp=imp*100
 replace es=. if industry=="Banks" | industry=="Real Estate"
 replace imp=. if industry=="Banks" | industry=="Real Estate"
+sort ticker_short
 export excel using "$rpath/FirmTable_Paper.xls", firstrow(varlabels) replace 
 
 ********************
