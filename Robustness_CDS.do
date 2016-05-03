@@ -13,8 +13,7 @@
 *do ${csd_dir}/GlobalFactors.do
 
 global cds_robust 1
-*foreach x in tri_def5y tri_conH_def5y   {
-foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y rsbondy rsbond logrsbond  {
+foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
 	global cds_app "_`x'"
 	global cds_n "`x'"
 	do ${csd_dir}/CDSMaker.do
@@ -26,12 +25,12 @@ foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y 
 
 
 *ORGANIZE RESULTS
-import excel "$rpath/RS_CDS_IV_reshapeADRs_mC5_5y.xls", firstrow sheet("Sheet1") clear
+import excel "$rpath/RS_CDS_IV_reshapeADRs_PUF_1y.xls", firstrow sheet("Sheet1") clear
 gen cds_type="PUF_1y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
-foreach x in PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y  bb_tri_def5y  ds_tri_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y   tri_def5y  rsbondy rsbond logrsbond {
+foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
 	cap{
 	import excel "$rpath/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
 	keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
