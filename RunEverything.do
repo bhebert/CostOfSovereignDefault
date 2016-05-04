@@ -192,5 +192,9 @@ do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
 
+//DTCC Table
+do ${csd_dir}/DataCleaningScripts/DTCC_Clean.do
+
+
 
 
