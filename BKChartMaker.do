@@ -100,6 +100,13 @@ graph export "$rpath/BK_HML_All.eps", replace
 graph export "$rpath/BK_HML_Theories.eps", replace
 
 
+discard
+local group2  HML_es_industry HML_finvar HML_foreign_own HML_import_rev HML_indicator_adr HML_market_cap2011
+local group2a  HML_es_industry HML_finvar HML_foreign_own  HML_indicator_adr HML_import_rev
+local group2b  HML_market_cap2011 
+twoway (rcap ci_high ci_low  capm_implied if regexm("`group2'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group2'",Ticker), sort range(-40 40))   (scatter pointest capm_implied if regexm("`group2a'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(medsmall)  mlabpos(9)) (scatter pointest capm_implied if regexm("`group2b'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(medsmall)  mlabpos(3)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("GraphHML_All")  
+graph export "$rpath/BK_HML_All2.eps", replace
+
 
 ***********
 *INDUSTRY FIGURE
@@ -172,4 +179,7 @@ local group1 Banks Chems Diverse Enrgy Manuf RlEst Telcm Utils
 	*twoway (rcap ci_high ci_low  capm_implied if regexm("`group1'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group1'",Ticker), sort range(-110 -30)) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mcolor(navy) mlabcolor(navy) ) (scatter pointest capm_implied if regexm("`group1a'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)) (scatter pointest capm_implied if regexm("`group1b'",Ticker),  mcolor(forest_green)), ytitle("Estimated Industry Response, {&alpha}", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("Graph`x'") xlabel(-110(20)-30) ylabel(-100(20)0) 
 	twoway (rcap ci_high ci_low  capm_implied if regexm("`group1'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group1'",Ticker), sort) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mcolor(navy) mlabcolor(navy) ) (scatter pointest capm_implied if regexm("`group1a'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)) (scatter pointest capm_implied if regexm("`group1b'",Ticker),  mcolor(forest_green)), ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("Graph`x'") xlabel(-80(20)-27) ylabel(-100(20)20) 
 	graph export "$rpath/BK_Ind.eps", replace
+	
+	twoway (rcap ci_high ci_low  capm_implied if regexm("`group1'",Ticker), lcolor(navy) sort ) (lfit capm_implied capm_implied if regexm("`group1'",Ticker), sort) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mcolor(navy) mlabcolor(navy) ) (scatter pointest capm_implied if regexm("`group1'",Ticker),  mlabel(label) mcolor(forest_green) mlabcolor(forest_green) mlabsize(med)) , ytitle("Estimated Abnormal Return", size(med)) xtitle("Abnormal Return from Market Beta", size(med)) legend(off) graphregion(fcolor(white) lcolor(white))  name("Graph`x'2") xlabel(-80(20)-27) ylabel(-100(20)20) 
+	graph export "$rpath/BK_Ind_all.eps", replace
 	
