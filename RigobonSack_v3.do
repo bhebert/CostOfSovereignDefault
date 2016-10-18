@@ -153,6 +153,9 @@ if "$RSalt_dates" != "" {
 	local ext_style `ext_style'_altdates$RSalt_dates
 }
 
+if "$RS_soycontrols" != "" {
+	local factors $RS_soycontrols
+	local ext_style `ext_style'_soy
 }
 
 local ext 
