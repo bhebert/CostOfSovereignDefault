@@ -110,6 +110,20 @@ do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/RunDataCode.do
 do ${csd_dir}/RigobonSack_v3.do
 
+global RSalt_dates 2
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RigobonSack_v3.do
+
+global RSalt_dates 3
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RigobonSack_v3.do
+
+global RSalt_dates 0
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/RunDataCode.do
+
 
 // Run one-day windows
 global RSdaytype closes

@@ -14,10 +14,17 @@ set more off
 
 local cds_i_marks 8
 
+* 0: second day 1: first day 2: exclude 2 3: exclude 3 from ref report
 local alt_dates 1
 
 if "$RSalt_dates" == "1" {
 	local alt_dates 0
+}
+if "$RSalt_dates" == "2" {
+	local alt_dates 2
+}
+if "$RSalt_dates" == "3" {
+	local alt_dates 3
 }
 
 if "$cds_robust"=="1" {
@@ -371,8 +378,10 @@ replace eventexcluded = 1 if date==td(28feb2013)
 
 *replace event_intra = 1 if date==td(01mar2013)
 *replace event_nightbefore = 1 if date==td(04mar2013)
-replace event_onedayL = 1 if date == td(04mar2013)
-replace eventday = 1 if date == td(04mar2013)
+if `alt_dates' < 3 {
+	replace event_onedayL = 1 if date == td(04mar2013)
+	replace eventday = 1 if date == td(04mar2013)
+}
 
 * March 26 date in WSJ, missing in initial list
 * 2:38pm EST/3:38pm ART AP/UPI story
@@ -446,11 +455,13 @@ replace eventexcluded = 1 if date==td(26sep2013)
 replace event_onedayL = 1 if date==td(04oct2013)
 replace eventday = 1 if date == td(04oct2013)
 
-* This was the denial of supreme court appeal
-replace event_intra = 1 if date==td(07oct2013)
-* must be the 8th, not 7th, to avoid overlap with the 4th
-replace eventday = 1 if date == td(08oct2013)
-* AP story at 9:35am EDT/10:35am ART.
+if `alt_dates' < 2 {
+	* This was the denial of supreme court appeal
+	replace event_intra = 1 if date==td(07oct2013)
+	* must be the 8th, not 7th, to avoid overlap with the 4th
+	replace eventday = 1 if date == td(08oct2013)
+	* AP story at 9:35am EDT/10:35am ART.
+}
 
 * Some appeals were denied here.
 *http://www.bloomberg.com/news/2013-11-18/argentina-loses-bid-for-full-court-rehearing-of-bonds-appeal.html
@@ -460,13 +471,16 @@ replace event_onedayL = 1 if date==td(19nov2013)
 replace eventday = 1 if date == td(19nov2013)
 
 * Supreme court grants cert.
-replace event_intra = 1 if date==td(10jan2014)
-if `alt_dates' == 1 {
-	replace eventday = 1 if date == td(13jan2014)
+if `alt_dates' < 2 {
+	replace event_intra = 1 if date==td(10jan2014)
+	if `alt_dates' == 1 {
+		replace eventday = 1 if date == td(13jan2014)
+	}
+	else {
+		replace eventday = 1 if date == td(10jan2014)
+	}
 }
-else {
-	replace eventday = 1 if date == td(10jan2014)
-}
+
 * Supreme court appeal rejection.
 * http://www.bloomberg.com/news/2014-06-16/argentine-bonds-plunge-after-u-s-supreme-court-rejects-appeal.html
 * This one is intraday. BBerg story 2:13pm EDT.
