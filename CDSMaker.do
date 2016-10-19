@@ -382,6 +382,9 @@ if `alt_dates' < 3 {
 	replace event_onedayL = 1 if date == td(04mar2013)
 	replace eventday = 1 if date == td(04mar2013)
 }
+else {
+	replace eventexcluded = 1 if date == td(04mar2013)
+}
 
 * March 26 date in WSJ, missing in initial list
 * 2:38pm EST/3:38pm ART AP/UPI story
@@ -462,6 +465,9 @@ if `alt_dates' < 2 {
 	replace eventday = 1 if date == td(08oct2013)
 	* AP story at 9:35am EDT/10:35am ART.
 }
+else {
+	replace eventexcluded = 1 if date == td(08oct2013)
+}
 
 * Some appeals were denied here.
 *http://www.bloomberg.com/news/2013-11-18/argentina-loses-bid-for-full-court-rehearing-of-bonds-appeal.html
@@ -479,6 +485,9 @@ if `alt_dates' < 2 {
 	else {
 		replace eventday = 1 if date == td(10jan2014)
 	}
+}
+else {
+	replace eventexcluded = 1 if date == td(10jan2014)
 }
 
 * Supreme court appeal rejection.
