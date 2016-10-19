@@ -13,4 +13,5 @@ ranktest
 outreg2
 mmerge
 rmfiles
+sxpose
 
