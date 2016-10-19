@@ -149,7 +149,7 @@ if `exclusions' == 0 {
 	local ext_style `ext_style'_noexcl
 }
 
-if "$RSalt_dates" != "" {
+if "$RSalt_dates" != "" & "$RSalt_dates" != "0" {
 	local ext_style `ext_style'_altdates$RSalt_dates
 }
 
