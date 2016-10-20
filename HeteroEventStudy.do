@@ -64,6 +64,7 @@ gen resids = .
 gen resid_zs = .
 gen sdevs = .
 gen cds_resids = .
+gen cds_sdevs = .
 gen exclude = (eventexcluded == 1)*`exclusions'
 
 * Generate missing dummies for factors so we don't drop event dates.
@@ -101,7 +102,7 @@ foreach dt in `dtypes' {
 	predict temp if day_type == "`dt'", residuals
 	replace cds_resids = temp if day_type == "`dt'"
 	drop temp
-	
+	replace cds_sdevs = `cds_sd' if day_type == "`dt'"
 	
 	disp "cds_sd: `cds_sd'"
 
@@ -170,7 +171,7 @@ save "`temp'", replace
 keep if firmname=="`example_sec'"
 keep if day_type=="intra"
 keep if event_ == 1
-keep firmname day_type date cds_resids resids
+keep firmname day_type date cds_resids resids sdevs cds_sdevs
 export excel using "$rpath/HeteroEventStudy_IntraData.xls", firstrow(variables) replace
 
 use "`temp'", clear
