@@ -162,15 +162,25 @@ by ind_id shocktype: egen J2intra = mean(resid_zs) if day_type=="intra"
 
 * Compute the J1 and J2 from CLM textbook.
 replace J2intra = J2intra * sqrt(Nintra)
-gen J1 = CARintra / sqrt(Vestintra) / Nintra
+gen J1intra = CARintra / sqrt(Vestintra) / Nintra
 
+
+tempfile temp
+save "`temp'", replace
+keep if firmname=="`example_sec'"
+keep if day_type=="intra"
+keep if event_ == 1
+keep firmname day_type date cds_resids resids
+export excel using "$rpath/HeteroEventStudy_IntraData.xls", firstrow(variables) replace
+
+use "`temp'", clear
 
 * Save the results.
 drop if shocktype == .
 collapse (mean) N* CAR* DCDS* J1* J2*, by(firmname shocktype)
 sort shocktype firmname
 
-order var N CAR DCDS J1 J2
+order firmname shocktype N CAR DCDS J1 J2
 
 export excel using "$rpath/HeteroEventStudy.xls", firstrow(variables) replace
 keep if firmname=="`example_sec'"
