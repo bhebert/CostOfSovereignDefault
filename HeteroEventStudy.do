@@ -172,6 +172,7 @@ keep if firmname=="`example_sec'"
 keep if day_type=="intra"
 keep if event_ == 1
 keep firmname day_type date cds_resids resids sdevs cds_sdevs
+sort date
 export excel using "$rpath/HeteroEventStudy_IntraData.xls", firstrow(variables) replace
 
 use "`temp'", clear
