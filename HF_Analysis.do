@@ -1,4 +1,40 @@
 global hf "$mainpath/HF_Data"
+spclean=0
+
+
+if `spclean'==1 {
+*CLEAN UP S&P
+foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014"  "16Jun2014" "26Jun2014" {
+use "$hf/spy_`datenum'.dta",clear
+drop if bid==0 | ofr==0
+split time, p(":")
+destring time1, replace
+destring time2, replace
+destring time3, replace
+gen bidask=ofr-bid
+drop if bidask<0
+levelsof (symbol), local(sum)
+foreach x of local sym {
+	summ bidask if sym=="`x'", detail
+	drop if bidask>r(p99) & sym=="`x'"
+	}
+
+collapse (median)  bid ofr, by(symbol time1 time2)
+gen time=time1+time2/60
+gen mid=(bid+ofr)/2
+
+egen starttime=min(time)
+replace starttime=9.5 if starttime<9.5
+egen starttemp=median(mid) if time==starttime
+egen start=max(starttemp) 
+gen return=100*(log(mid)-log(start))
+drop if return==.
+drop start*
+save "$hf/spy_`datenum'_collapse.dta"
+}
+}
+
+
 
 *TIMES
 local start_4Dec2012=13.25 
@@ -11,6 +47,7 @@ local start_16Jun2014=9.55
 local end_16Jun2014=9.55
 local start_26Jun2014=11.6666666666666667
 local end_26Jun2014=14.083333333333333333
+
 *QUOTES
 foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
 use "$hf/`datenum'_Quote_TAQ.dta", clear
@@ -65,7 +102,7 @@ save "$apath/`datenum'_winsor.dta", replace
 discard
 foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
 use "$apath/`datenum'_winsor.dta", clear
-gen time2round=time2/5
+gen time2round=round(time2/5)
 collapse (median) return (firstnm) msci, by(symbol time1 time2round)
 replace time2=time2*5
 gen time=time1+time2/60
@@ -123,7 +160,7 @@ keep if time>=9.5 & time<16
 	twoway (line return time ) (line return_median time ) (line return_msci time )  if time>`stime'-3 & time<`etime'+3 & return2>=`returnum' & time>=9.5 & time<=16, xline(`stime') xline(`etime') name("date_`datenum'") legend(order (1 "Mean" 2 "Median" 3 "MSCI")) title("Index `datenum'")
 	graph export "$rpath/hf_`datenum'_all.png", replace
 	gen date=td(`datenum')
-	save "hf_`datenum'_index", replace
+	save "$hf/hf_`datenum'_index", replace
 	}
 
 	
@@ -163,16 +200,56 @@ save "$apath/triangle_merged_hf.dta", replace
 
 use "$apath/triangle_merged_hf.dta", clear
 replace dprob=dprob*100
-replace date=date-1 if close=="Japan"
-replace time=23 if close=="Japan"
+*replace date=date-1 if close=="Japan"
+*replace time=17 if close=="Japan"
 keep if date==td(4dec2012) | date==td(7Oct2013) | date==td(10Jan2014) | date==td(16Jun2014) | date==td(26Jun2014)
 gen sym="DPROB"
 save "$apath/hf_merge.dta", replace
 	
 
-use  "hf_4Dec2012_index", clear
+
+use  "$hf/spy_4Dec2012_collapse.dta", clear
+gen time2round=round(time2/5)
+collapse (median) return , by(symbol time1 time2round)
+replace time2=time2*5
+gen time=time1+time2/60
+rename return spy
+drop symbol time1 time2r
+gen date=td(4Dec2012)
+save "$hf/spy_merge", replace
+
 foreach datenum in "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
-	append using "hf_`datenum'_index"
+	use "$hf/spy_`datenum'_collapse.dta", clear
+	gen time2round=round(time2/5)
+	collapse (median) return , by(symbol time1 time2round)
+	replace time2=time2*5
+	gen time=time1+time2/60
+	rename return spy
+	drop symbol time1 time2r
+	gen date=td(`datenum')	
+	append using "$hf/spy_merge"
+	save "$hf/spy_merge", replace
+	
+}		
+
+*TRY AGAIN WITH SPY
+use  "$hf/spy_4Dec2012_collapse.dta", clear
+gen date=td(4Dec2012)
+save "$hf/spy_merge2", replace
+foreach datenum in "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
+	use "$hf/spy_`datenum'_collapse.dta", clear
+	gen date=td(`datenum')	
+	append using "$hf/spy_merge2.dta"
+	save "$hf/spy_merge2", replace	
+	}
+keep return date time
+rename return spx 	
+format date %td
+save "$hf/spy_merge2.dta", replace
+	
+use  "$hf/hf_4Dec2012_index", clear
+foreach datenum in "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
+	append using "$hf/hf_`datenum'_index"
 }	
 
 append using "$apath/hf_merge.dta"
@@ -181,12 +258,17 @@ replace close="London" if close=="london"
 format date %td
 replace time=16.5 if time>16.5 & dprob~=.
 replace time=9 if time==7
+mmerge time date using "$hf/spy_merge"
+
+bysort date: gen startdprobtemp=dprob if close=="Europe"
+bysort date: egen startdprob=max(startdprobtemp) 
+gen dprob2=dprob-startdprob
 
 discard
 foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
 	local stime=`start_`datenum''
 	local etime=`end_`datenum''	
-	twoway (line return_msci time) (scatter dprob time, yaxis(2) mlabel(close)) if date==td(`datenum') & time>=9 & time<=17, title("`datenum'") name(n`datenum')  xline(`stime') xline(`etime') legend(order(1  "MSCI-Only Index" 2 "Default Probability (Right Axis)")) 
+	twoway (line return_msci time, sort) (line spy time, sort) (scatter dprob2 time, sort yaxis(2) mlabel(close)) if date==td(`datenum') & time>=9.5 & time<=16, title("`datenum'") name(n`datenum') ylabel(-10(5)5) ylabel(-10(5)5,axis(2)) ytitle("Return") ytitle("Default Probability Change",axis(2)) xline(`stime') xline(`etime') legend(order(1  "MSCI-Only Index" 2 "S&P" 3 "Default Probability (Right Axis)")) 
 	graph export "$rpath/hf_tri_`datenum'.png", replace
 }
 
