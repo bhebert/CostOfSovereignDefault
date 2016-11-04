@@ -120,6 +120,16 @@ do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/RunDataCode.do
 do ${csd_dir}/RigobonSack_v3.do
 
+global RSalt_dates 4
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RigobonSack_v3.do
+
+global RSalt_dates 5
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/RunDataCode.do
+do ${csd_dir}/RigobonSack_v3.do
+
 global RSalt_dates 0
 global RS_soycontrols SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
 do ${csd_dir}/CDSMaker.do
