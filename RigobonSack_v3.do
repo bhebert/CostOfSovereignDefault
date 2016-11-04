@@ -82,7 +82,7 @@ if "$RSControl" == "" {
 	local use_holdout 0
 	
 	* exclude SC day
-	local exclude_SC_day 1
+	local exclude_SC_day 0
 	
 	* Different kinds of regressions that can be run
 	* Options are: OLS OLS_LC RS_CDS_IV RS_CDS_IV RS_Return_IV RS_Return_IV_LC 2SLS_IV 2SLS_IV_LC RS_N_CDS_IV MULTI_CDS_IV
@@ -110,10 +110,13 @@ if "$RSControl" == "" {
 	* This is the asymptotic estimator used in each bootstrap replication
 	local ivstderrs robust
 	//local ivstderrs
+	
+	* turn off if not running with soy
+	local soycontrols SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
 
 }
 else {
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout exclude_SC_day regs exclusions daytype bstyle ivstderrs {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -153,9 +156,10 @@ if "$RSalt_dates" != "" & "$RSalt_dates" != "0" {
 	local ext_style `ext_style'_altdates$RSalt_dates
 }
 
-if "$RS_soycontrols" != "" {
-	local factors $RS_soycontrols
+if "`soycontrols'" != "" {
+	local factors $RSsoycontrols
 	local ext_style `ext_style'_soy
+	local nodropsoy | regexm(firmname,"SoybeanFutures_US")
 }
 
 local ext 
@@ -184,7 +188,7 @@ if `use_exrates' == 0 {
 }
 
 if `use_coreonly' == 1 {
-	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"INDEX_US") | regexm(firmname,"YPF_US"))
+	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"INDEX_US") | regexm(firmname,"YPF_US") `nodropsoy')
 	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official"))
 }
 
