@@ -14,7 +14,8 @@ set more off
 
 local cds_i_marks 8
 
-* 0: second day 1: first day 2: exclude 2 3: exclude 3 from ref report
+* 0: second day 1: first day 2: exclude 2 3: exclude 3 (incl 27Nov12) from ref report
+* 4: exclude 3 (incl 4Mar13) from ref report, 5: exclude all 4 from ref report
 local alt_dates 1
 
 if "$RSalt_dates" == "1" {
@@ -25,6 +26,12 @@ if "$RSalt_dates" == "2" {
 }
 if "$RSalt_dates" == "3" {
 	local alt_dates 3
+}
+if "$RSalt_dates" == "4" {
+	local alt_dates 4
+}
+if "$RSalt_dates" == "5" {
+	local alt_dates 5
 }
 
 if "$cds_robust"=="1" {
@@ -310,8 +317,13 @@ replace eventexcluded = 1 if date == td(22nov2012)
 *replace event_twoday = 1 if date == td(23nov2012)
 
 
-replace event_onedayL = 1 if date == td(27nov2012)
-replace eventday = 1 if date == td(27nov2012)
+if `alt_dates' == 3 | `alt_dates' == 5 {
+	replace eventexcluded = 1 if date == td(27nov2012)
+}
+else {
+	replace event_onedayL = 1 if date == td(27nov2012)
+	replace eventday = 1 if date == td(27nov2012)
+}
 
 *replace WSJ_date=1 if date==td(28nov2012)
 * The appeals court granted an emergency stay.
@@ -378,7 +390,7 @@ replace eventexcluded = 1 if date==td(28feb2013)
 
 *replace event_intra = 1 if date==td(01mar2013)
 *replace event_nightbefore = 1 if date==td(04mar2013)
-if `alt_dates' < 3 {
+if `alt_dates' < 4 {
 	replace event_onedayL = 1 if date == td(04mar2013)
 	replace eventday = 1 if date == td(04mar2013)
 }
