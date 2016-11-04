@@ -505,6 +505,13 @@ replace firmname = "EqIndex" if eqind
 replace industry_sector = "EqIndex" if eqind
 drop eqind
 
+expand 2 if firmname=="INDEX" & market=="US", gen(soyind)
+replace return_ = soybean_ if soyind
+replace return_local = soybean_ + madrreturn if soyind
+replace firmname = "SoybeanFutures" if soyind
+replace industry_sector = "SoybeanFutures" if soyind
+drop soyind
+
 * Create an "index" for YPF
 /*expand 2 if regexm(firmname,"YPF"), gen(ypfind)
 replace isstock = 0 if ypfind
