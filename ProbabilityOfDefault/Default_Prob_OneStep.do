@@ -466,7 +466,7 @@ save "$apath/Default_Prob.dta", replace
 
 
 ***********************************************
-*VERSION WILL ALL OF THE DEFAULT PROBABILITIES*
+*VERSION WITH ALL OF THE DEFAULT PROBABILITIES*
 ***********************************************
 use "$apath/cumdef_hazard_ConH.dta", clear
 keep date def6m def1y def2y def3y def4y def5y def7y def10y 
@@ -492,7 +492,7 @@ drop if _merge==2
 save "$apath/Default_Prob_All.dta", replace
 
 use "$apath/Default_Prob_All.dta", clear
-foreach y in "_europe" "_newyork"{
+foreach y in "_europe" "_newyork" "_london" {
 
 mmerge date using "$apath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
@@ -527,7 +527,7 @@ mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4
 mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
 drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
-foreach y in "" "_europe" "_newyork" {
+foreach y in "" "_europe" "_newyork" "_london" {
 foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var def`x'`y' "`x' Cumulative Default Probability, Composite, IRS Zero, `y'"
 	label var conh_def`x'`y' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, IRS Zero, `y'"

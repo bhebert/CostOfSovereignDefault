@@ -4,8 +4,8 @@ clear all
 test=0
 
 
-assignin('base','dir_user','/Users/jesseschreger/Dropbox/')
-assignin('base','dir_csd','/Users/jesseschreger/Documents/CostofSovereignDefault')
+assignin('base','dir_user','/Users/jschreger/Dropbox/')
+assignin('base','dir_csd','/Users/jschreger/Documents/CostofSovereignDefault')
 assignin('base','apath',[dir_csd '/Datasets/'])
 assignin('base','pod',[dir_user 'Cost of Sovereign Default/Markit/Prob of Default/'])
 assignin('base','csvfile',[apath 'Matlab_spreads_zero.csv'])
@@ -13,22 +13,26 @@ assignin('base','csvfile_ust',[apath 'Matlab_spreads_zero_UST.csv'])
 assignin('base','csvfile_june16',[apath 'Matlab_June16.csv'])
 assignin('base','csvfile_europe',[apath 'Matlab_Europe_zero.csv'])
 assignin('base','csvfile_newyork',[apath 'Matlab_NewYork_zero.csv'])
+assignin('base','csvfile_london',[apath 'Matlab_London_zero.csv'])
 assignin('base','csvfile_ust_europe',[apath 'Matlab_Europe_spreads_zero_UST.csv'])
 assignin('base','csvfile_ust_newyork',[apath 'Matlab_NewYork_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_london',[apath 'Matlab_London_spreads_zero_UST.csv'])
 assignin('base','csvfile_bb',[apath 'Matlab_BBspreads_zero_UST.csv'])
 assignin('base','csvfile_ds',[apath 'Matlab_DSspreads_zero_UST.csv'])
 
 
 %COMPOSITE
-matlabpool close force local
-matlabpool
-for i=1:3
+ delete(gcp)
+ parpool
+for i=4:4
     if i==1
        dataset=csvread(csvfile);
     elseif i==2
         dataset=csvread(csvfile_europe);
     elseif i==3
         dataset=csvread(csvfile_newyork);    
+    elseif i==4
+        dataset=csvread(csvfile_london);    
     end
     
 if test==1 
@@ -47,26 +51,26 @@ recoveryConH=ones(size(recovery))*.395;
 
 %Run code in parallel to spped up
 
-parfor i=1:length(date)
-    Settle=date(i);
+parfor xx=1:length(date)
+    Settle=date(xx);
     Spread_Time=spread_length;
-    Spread=100*parspreads(i,:);
-    Market_Dates=daysadd(date(i),round(365.*spread_length)); %maturity dates of all CDS
+    Spread=100*parspreads(xx,:);
+    Market_Dates=daysadd(date(xx),round(365.*spread_length)); %maturity dates of all CDS
     MarketData=[Market_Dates, Spread'];
     Zero_Time=[spread_length]';
-    Zero_Rate=irs(i,:)'/100;
-    Zero_Dates=daysadd(date(i),round(365.*irs_length)); %maturity dates of discount curve
+    Zero_Rate=irs(xx,:)'/100;
+    Zero_Dates=daysadd(date(xx),round(365.*irs_length)); %maturity dates of discount curve
     ZeroData=[Zero_Dates Zero_Rate];
-    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(i));
+    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(xx));
     %assume constant hazard rate of 39.5%
-    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(i));
-    ProbDef_mat(i,:)=ProbData(:,2)';
-    Haz_mat(i,:)=HazData(:,2)';
+    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(xx));
+    ProbDef_mat(xx,:)=ProbData(:,2)';
+    Haz_mat(xx,:)=HazData(:,2)';
     
-    ProbDef_matConH(i,:)=ProbDataConH(:,2)';
-    Haz_matConH(i,:)=HazDataConH(:,2)';
-    if mod(i,10)==0
-        display i
+    ProbDef_matConH(xx,:)=ProbDataConH(:,2)';
+    Haz_matConH(xx,:)=HazDataConH(:,2)';
+    if mod(xx,10)==0
+        display xx
     end
 end
 
@@ -89,6 +93,9 @@ elseif i==2
 elseif i==3
      csvwrite('Bootstrap_NewYork_results.csv',keymat)
     csvwrite('Bootstrap_NewYork_resultsConH.csv',keymatConH)
+  elseif i==4
+    csvwrite('Bootstrap_London_results.csv',keymat)
+    csvwrite('Bootstrap_London_resultsConH.csv',keymatConH) 
 end
 end
 
@@ -99,13 +106,15 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Estimating risk-neutral default probabilites from CDS
 %COMPOSITE
-for i=1:3
+for i=1:4
     if i==1
        dataset=csvread(csvfile_ust);
     elseif i==2
         dataset=csvread(csvfile_ust_europe);
     elseif i==3
         dataset=csvread(csvfile_ust_newyork);    
+    elseif i==4
+        dataset=csvread(csvfile_ust_london); 
     end
     
 if test==1 
@@ -123,26 +132,26 @@ days_to_add=round(365.*irs_length);
 recoveryConH=ones(size(recovery))*.395;
 
 %Run code in parallel to spped up
-parfor i=1:length(date)
-    Settle=date(i);
+parfor xx=1:length(date)
+    Settle=date(xx);
     Spread_Time=spread_length;
-    Spread=100*parspreads(i,:);
-    Market_Dates=daysadd(date(i),round(365.*spread_length)); %maturity dates of all CDS
+    Spread=100*parspreads(xx,:);
+    Market_Dates=daysadd(date(xx),round(365.*spread_length)); %maturity dates of all CDS
     MarketData=[Market_Dates, Spread'];
     Zero_Time=[spread_length]';
-    Zero_Rate=irs(i,:)'/100;
-    Zero_Dates=daysadd(date(i),round(365.*irs_length)); %maturity dates of discount curve
+    Zero_Rate=irs(xx,:)'/100;
+    Zero_Dates=daysadd(date(xx),round(365.*irs_length)); %maturity dates of discount curve
     ZeroData=[Zero_Dates Zero_Rate];
-    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(i));
+    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(xx));
     %assume constant hazard rate of 39.5%
-    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(i));
-    ProbDef_mat(i,:)=ProbData(:,2)';
-    Haz_mat(i,:)=HazData(:,2)';
+    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(xx));
+    ProbDef_mat(xx,:)=ProbData(:,2)';
+    Haz_mat(xx,:)=HazData(:,2)';
     
-    ProbDef_matConH(i,:)=ProbDataConH(:,2)';
-    Haz_matConH(i,:)=HazDataConH(:,2)';
-    if mod(i,10)==0
-        display i
+    ProbDef_matConH(xx,:)=ProbDataConH(:,2)';
+    Haz_matConH(xx,:)=HazDataConH(:,2)';
+    if mod(xx,10)==0
+        display xx
     end
 end
 
@@ -165,6 +174,9 @@ elseif i==2
 elseif i==3
      csvwrite('Bootstrap_NewYork_results_UST.csv',keymat)
      csvwrite('Bootstrap_NewYork_resultsConH_UST.csv',keymatConH)
+elseif i==4
+     csvwrite('Bootstrap_London_results_UST.csv',keymat)
+     csvwrite('Bootstrap_London_resultsConH_UST.csv',keymatConH)
 end
 
 end
@@ -206,15 +218,14 @@ keymat=[date,ProbDef_mat,Haz_mat,time_est];
 cd(apath)
 csvwrite('Bootstrap_June16.csv',keymat)
 
-
-
-%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 %BLOOMBERG and Datastream%
-%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %USING US Treasury Zeros to discount.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-test=0;
+clear ProbDef_mat Haz_mat ProbDef_matConH Haz_matConH
 for i=1:2
     if i==1
        dataset=csvread(csvfile_bb);
@@ -239,26 +250,26 @@ days_to_add=round(365.*irs_length);
 recoveryConH=ones(size(recovery))*.395;
 
 %Run code in parallel to spped up
-parfor i=1:length(date)
-    Settle=date(i);
+for xx=1:length(date)
+    Settle=date(xx);
     Spread_Time=spread_length;
-    Spread=100*parspreads(i,:);
-    Market_Dates=daysadd(date(i),round(365.*spread_length)); %maturity dates of all CDS
+    Spread=100*parspreads(xx,:);
+    Market_Dates=daysadd(date(xx),round(365.*spread_length)); %maturity dates of all CDS
     MarketData=[Market_Dates, Spread'];
-    Zero_Time=[spread_length]';
-    Zero_Rate=irs(i,:)'/100;
-    Zero_Dates=daysadd(date(i),round(365.*irs_length)); %maturity dates of discount curve
+    Zero_Time=spread_length';
+    Zero_Rate=irs(xx,:)'/100;
+    Zero_Dates=daysadd(date(xx),round(365.*irs_length)); %maturity dates of discount curve
     ZeroData=[Zero_Dates Zero_Rate];
-    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(i));
+    [ProbData,HazData] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recovery(xx));
     %assume constant hazard rate of 39.5%
-    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(i));
-    ProbDef_mat(i,:)=ProbData(:,2)';
-    Haz_mat(i,:)=HazData(:,2)';
+    [ProbDataConH,HazDataConH] = cdsbootstrap(ZeroData,MarketData,Settle,'RecoveryRate',recoveryConH(xx));
+    ProbDef_mat(xx,:)=ProbData(:,2)';
+    Haz_mat(xx,:)=HazData(:,2)';
     
-    ProbDef_matConH(i,:)=ProbDataConH(:,2)';
-    Haz_matConH(i,:)=HazDataConH(:,2)';
-    if mod(i,10)==0
-        display i
+    ProbDef_matConH(xx,:)=ProbDataConH(:,2)';
+    Haz_matConH(xx,:)=HazDataConH(:,2)';
+    if mod(xx,10)==0
+        display xx
     end
 end
 
