@@ -54,6 +54,9 @@ if "$RSControl" == "" {
 	* Run with other equity indices
 	local use_equityind 0
 	
+	*Run with GDP Warrants
+	local use_warrant 1
+	
 	* Each of these will run with both local and ADR versions
 	* Run with single name stocks
 	local use_singlenames 0
@@ -113,7 +116,7 @@ if "$RSControl" == "" {
 
 }
 else {
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout exclude_SC_day regs exclusions daytype bstyle ivstderrs {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -207,6 +210,10 @@ if `use_otherdefp' == 0 {
 if `use_equityind' == 0 {
 	drop if regexm(industry_sector,"EquityInd")
 }
+
+if `use_warrant'==0 {
+	drop if regexm(industry_sector,"gdpw")
+}	
 
 if `use_bonds' == 0 {
 	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"nmlbond") 

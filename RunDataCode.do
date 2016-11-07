@@ -11,6 +11,8 @@ do ${csd_dir}/BlueRateMaker_v2.do
 
 do ${csd_dir}/DataCleaningScripts/ADRVolume.do
 
+do ${csd_dir}/Seasonal/Seasonal.do
+
 do ${csd_dir}/DataCleaningScripts/RER_GDP_Maker.do
 
 do ${csd_dir}/ADR_CRSP.do

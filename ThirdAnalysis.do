@@ -132,6 +132,7 @@ append using "$apath/Additonal_Securities.dta"
 *Append Bond level data
 append using "$apath/bondlevel.dta"
 append using "$apath/domestic_bonds.dta"
+append using  "$apath/gdpw_merge.dta"
 save "`temp'", replace
 
 use "$bbpath/Latam_equities.dta", clear

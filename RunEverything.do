@@ -77,6 +77,7 @@ global RSuse_gdpmodels 0
 
 global RSuse_bonds 1
 global RSuse_mexbrl 1
+global RSuse_warrant 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
 global RSuse_singlenames 0
