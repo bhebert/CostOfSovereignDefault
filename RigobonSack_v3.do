@@ -112,7 +112,7 @@ if "$RSControl" == "" {
 	//local ivstderrs
 	
 	* turn off if not running with soy
-	local soycontrols SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
+	*local soycontrols SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
 
 }
 else {
@@ -305,6 +305,8 @@ if `exclude_SC_day' == 1 {
 	local ext_style `ext_style'_NoSC
 }
 
+
+
 drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
 
@@ -463,6 +465,7 @@ local bsfile "$apath/bsfile.dta"
 gen rtype = "ADRs"
 replace rtype = "FX" if regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"DSBlue") | regexm(industry_sector,"Official")
 replace rtype = "Other" if regexm(industry_sector,"Mexico") | regexm(industry_sector,"Brazil")
+
 
 foreach rg in `regs' {
 	
