@@ -38,15 +38,15 @@ save "$hf/spy_`datenum'_collapse.dta"
 
 *TIMES
 local start_4Dec2012=13.25 
-local end_4Dec2012=13.75
+local end_4Dec2012=13.75+1
 local start_7Oct2013=9.5
-local end_7Oct2013=11.75
+local end_7Oct2013=11.75+1
 local start_10Jan2014=14.30
-local end_10Jan2014=14.8
+local end_10Jan2014=14.8+1
 local start_16Jun2014=9.55
-local end_16Jun2014=9.55
+local end_16Jun2014=9.55+1
 local start_26Jun2014=11.6666666666666667
-local end_26Jun2014=14.083333333333333333
+local end_26Jun2014=14.083333333333333333+1
 
 *QUOTES
 foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
@@ -176,8 +176,15 @@ foreach y in "Europe" "NewYork" "Asia" "Japan"  "LondonMidday" {
 }	
 drop _m
 save "$apath/triangle_merged.dta", replace	
-
-use "$apath/triangle_merged.dta", clear
+use "$apath/triangle_merged_hf.dta", clear
+replace dprob=dprob*100
+*replace date=date-1 if close=="Japan"
+*replace time=17 if close=="Japan"
+keep if date==td(4dec2012) | date==td(7Oct2013) | date==td(10Jan2014) | date==td(16Jun2014) | date==td(26Jun2014)
+gen sym="DPROB"
+save "$apath/hf_merge.dta", replace
+	
+*RISK NEUTRAL PROBS
 foreach x of varlist _all {
 	if "`x'"~="date" {
 		rename `x' type`x'
@@ -198,14 +205,36 @@ rename type dprob
 sort date time
 save "$apath/triangle_merged_hf.dta", replace	
 
-use "$apath/triangle_merged_hf.dta", clear
+*RISK NEUTRAL PROBS
+use date ust_def5y ust_def5y_europe ust_def5y_london using "$apath/Default_Prob_All.dta", clear
+rename ust_def5y NewYork
+rename ust_def5y_europe Europe
+rename ust_def5y_london London
+
+foreach x of varlist _all {
+	if "`x'"~="date" {
+		destring `x', replace force
+		rename `x' type`x'
+	}
+}
+	
+reshape long type, i(date) j(close)	 str
+gen time=.
+replace time=15.5 if close=="NewYork"
+replace time=9.5 if close=="Europe"
+replace time=10.5 if close=="London"
+keep if time~=.
+rename type dprob
+sort date time
+save "$apath/dprob_hf.dta", replace	
+
+use "$apath/dprob_hf.dta", clear
 replace dprob=dprob*100
-*replace date=date-1 if close=="Japan"
-*replace time=17 if close=="Japan"
 keep if date==td(4dec2012) | date==td(7Oct2013) | date==td(10Jan2014) | date==td(16Jun2014) | date==td(26Jun2014)
 gen sym="DPROB"
-save "$apath/hf_merge.dta", replace
+save "$apath/dprob_hf_merge.dta", replace
 	
+
 
 
 use  "$hf/spy_4Dec2012_collapse.dta", clear
@@ -252,12 +281,12 @@ foreach datenum in "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
 	append using "$hf/hf_`datenum'_index"
 }	
 
-append using "$apath/hf_merge.dta"
+*append using "$apath/hf_merge.dta"
+append using "$apath/dprob_hf_merge.dta"
 replace close="London Midday" if close=="LondonMidday"
 replace close="London" if close=="london"
 format date %td
 replace time=16.5 if time>16.5 & dprob~=.
-replace time=9 if time==7
 mmerge time date using "$hf/spy_merge"
 
 bysort date: gen startdprobtemp=dprob if close=="Europe"
@@ -265,11 +294,17 @@ bysort date: egen startdprob=max(startdprobtemp)
 gen dprob2=dprob-startdprob
 
 discard
+replace return=0 if time==9.5
+replace return_msci=0 if time==9.5
+
 foreach datenum in "4Dec2012" "7Oct2013" "10Jan2014" "16Jun2014" "26Jun2014" {
 	local stime=`start_`datenum''
 	local etime=`end_`datenum''	
-	twoway (line return_msci time, sort) (line spy time, sort) (scatter dprob2 time, sort yaxis(2) mlabel(close)) if date==td(`datenum') & time>=9.5 & time<=16, title("`datenum'") name(n`datenum') ylabel(-10(5)5) ylabel(-10(5)5,axis(2)) ytitle("Return") ytitle("Default Probability Change",axis(2)) xline(`stime') xline(`etime') legend(order(1  "MSCI-Only Index" 2 "S&P" 3 "Default Probability (Right Axis)")) 
-	graph export "$rpath/hf_tri_`datenum'.png", replace
+	twoway (line return_msci time, sort) (line spy time, sort) (scatter dprob2 time, sort yaxis(2) mlabel(close)) if date==td(`datenum') & time>=9.5 & time<=16, title("`datenum'") name(n`datenum') ylabel(-10(5)15) ylabel(-10(5)15,axis(2)) ytitle("Return") ytitle("Default Probability Change",axis(2)) xline(`etime') legend(order(1  "MSCI-Only Index" 2 "S&P" 3 "Default Probability (Right Axis)")) 
+	graph export "$rpath/hf_`datenum'.png", replace
+	*CENTER AT 0???
+	twoway (line return_msci time, sort) (line spy time, sort) (scatter dprob2 time, sort yaxis(2) mlabel(close)) if date==td(`datenum') & time>=9.5 & time<=16, title("`datenum'") name(n`datenum'ns) ytitle("Return") ytitle("Default Probability Change",axis(2)) xline(`etime') legend(order(1  "MSCI-Only Index" 2 "S&P" 3 "Default Probability (Right Axis)")) 
+	graph export "$rpath/hf_`datenum'_noscale.png", replace
 }
 
 
