@@ -339,7 +339,7 @@ replace eventday = 1 if date == td(29nov2012)
 * Appeals court denies to stay order requiring Argentina to post security.
 * 1:15pm time stamp on order.
 replace event_intra = 1 if date == td(04dec2012)
-if `alt_dates' == 1 {
+if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(05dec2012)
 }
 else {
@@ -350,7 +350,7 @@ else {
 * 1:50pm time stamp on order.
 * This is misleading. Order created 
 replace event_onedayN = 1 if date == td(06dec2012)
-if `alt_dates' == 1 {
+if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(07dec2012)
 }
 else {
@@ -441,7 +441,7 @@ replace eventday = 1 if date == td(27mar2013)
 * However, the ruling is listed at 10:17am
 *replace WSJ_date=1 if date==td(23aug2013)
 replace event_onedayN = 1 if date==td(23aug2013)
-if `alt_dates' == 1 {
+if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(26aug2013)
 }
 else {
@@ -491,7 +491,7 @@ replace eventday = 1 if date == td(19nov2013)
 * Supreme court grants cert.
 if `alt_dates' < 2 {
 	replace event_intra = 1 if date==td(10jan2014)
-	if `alt_dates' == 1 {
+	if `alt_dates' > 0 {
 		replace eventday = 1 if date == td(13jan2014)
 	}
 	else {
@@ -532,7 +532,7 @@ replace eventday = 1 if date == td(24jun2014)
 * 2:05pm EDT.
 * Possible confound: Argentina said some stuff at the UN on the same day.
 replace event_intra = 1 if date==td(26jun2014)
-if `alt_dates' == 1 {
+if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(27jun2014)
 }
 else {
