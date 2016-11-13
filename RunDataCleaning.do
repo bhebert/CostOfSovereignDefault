@@ -24,7 +24,7 @@ do ${csd_dir}/DataCleaningScripts/BCS.do
 
 do ${csd_dir}/DataCleaningScripts/GDP_Inflation_Cleaning.do
 
-do "${csd_dir}/DataCleaningScripts/GDP_Warrant_Cleaning.do"
+do ${csd_dir}/DataCleaningScripts/GDP_Warrant_Cleaning.do
 
 do ${csd_dir}/DataCleaningScripts/Additional_ADRs.do
 
