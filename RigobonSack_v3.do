@@ -119,11 +119,8 @@ if "$RSControl" == "" {
 
 }
 else {
-<<<<<<< HEAD
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs {
-=======
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols {
->>>>>>> origin/master
+
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
