@@ -99,8 +99,12 @@ foreach x in open high low last turnover_nominal turnover {
 	}
 *SAME BOND AS EF0151748
 gen ISIN="XS0209139244"
-rename last px_close
-rename open px_open
+
+rename last px_open
+gen px_close = .
+*rename last px_close
+*rename open px_open
+
 gen Ticker="gdpw_bfeur"
 gen market="Index"
 gen industry_sector=Ticker
@@ -126,8 +130,12 @@ gen market="Index"
 gen industry_sector=Ticker
 *THIS IS THE SAME BOND AS "EF0131575"
 gen ISIN="US040114GM64"
-rename last px_close
-rename open px_open
+
+rename last px_open
+gen px_close = .
+*rename last px_close
+*rename open px_open
+
 save "`bfusd'", replace
 
 use "`bfusd'", clear

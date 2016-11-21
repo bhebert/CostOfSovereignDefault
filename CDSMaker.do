@@ -175,8 +175,9 @@ if `cds_i_marks' ==  0 {
 	gen cds_onedayN = px_last`nyc' - L.px_last`nyc'
 	gen cds_onedayL = px_last`london' - L.px_last`london'
 	gen cds_twoday = px_last`nyc' - L2.px_last`nyc'
-
-	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+	gen cds_twodayL = px_last`london' - L.px_last`london'
+	
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 }
 else if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 	*gen mark = abs(D.DS) < 0.001
@@ -193,11 +194,12 @@ else if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 	gen cds_nightbefore = .
 
 	gen cds_1_5 = .
-	gen cds_onedayN = .
-	gen cds_onedayL = D.CDS
+	gen cds_onedayN = D.CDS
+	gen cds_onedayL = .
 	gen cds_twoday = CDS - L2.CDS
+	gen cds_twodayL = .
 	
-	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 
 }
 else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
@@ -211,8 +213,9 @@ else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
 	gen cds_onedayL = Spread5yE - L.Spread5yE
 	
 	gen cds_twoday = Spread5yN - L2.Spread5yN
+	gen cds_twodayL = Spread5yE - L2.Spread5yE
 
-	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 
 }
 
@@ -226,8 +229,9 @@ else if `cds_i_marks' == 8 | `cds_i_marks' == 7 | `cds_i_marks' == 9 {
 	gen cds_onedayN = Spread5yN - L.Spread5yN
 	gen cds_onedayL = .
 	gen cds_twoday = Spread5yN - L2.Spread5yN
+	gen cds_twodayL = .
 
-	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 
 }
 
@@ -242,8 +246,9 @@ else{
 	gen cds_onedayL = px_open`nyc_i' - L.px_open`nyc_i'
 	
 	gen cds_twoday = px_last`nyc_i' - L2.px_last`nyc_i'
+	gen cds_twodayL = px_open`nyc_i' - L2.px_open`nyc_i'
 
-	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday
+	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 
 }
 
@@ -264,15 +269,16 @@ gen event_onedayN = 0
 gen event_onedayL = 0
 gen eventexcluded = 0
 gen event_twoday = 0
+gen event_twodayL = 0
 
 gen eventday = 0
+gen eventdayL = 0
 
 * The first court ruling.
 replace eventexcluded = 1 if date==td(07dec2011)
 
 *replace WSJ_date=1 if date==td(23feb2012)
 * I cannot find any contemporaneous news articles for this one.
-* There is also no move in the CDS.
 replace eventexcluded = 1 if date==td(23feb2012)
 
 *replace WSJ_date=1 if date==td(05mar2012)
@@ -323,6 +329,7 @@ if `alt_dates' == 3 | `alt_dates' == 5 {
 else {
 	replace event_onedayL = 1 if date == td(27nov2012)
 	replace eventday = 1 if date == td(27nov2012)
+	replace eventdayL = 1 if date == td(28nov2012)
 }
 
 *replace WSJ_date=1 if date==td(28nov2012)
@@ -335,10 +342,12 @@ else {
 
 replace event_nightbefore = 1 if date==td(29nov2012)
 replace eventday = 1 if date == td(29nov2012)
+replace eventdayL = 1 if date == td(30nov2012)
 
 * Appeals court denies to stay order requiring Argentina to post security.
 * 1:15pm time stamp on order.
 replace event_intra = 1 if date == td(04dec2012)
+replace eventdayL = 1 if date == td(05dec2012)
 if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(05dec2012)
 }
@@ -350,6 +359,7 @@ else {
 * 1:50pm time stamp on order.
 * This is misleading. Order created 
 replace event_onedayN = 1 if date == td(06dec2012)
+replace eventdayL = 1 if date == td(07dec2012)
 if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(07dec2012)
 }
@@ -365,6 +375,7 @@ else {
 * Therefore, I beleive this event was overnight.
 replace event_nightbefore = 1 if date==td(11jan2013)
 replace eventday = 1 if date == td(11jan2013)
+replace eventdayL = 1 if date == td(11jan2013)
 
 
 * Appeals court denies appeal for panel rehearing.
@@ -393,6 +404,7 @@ replace eventexcluded = 1 if date==td(28feb2013)
 if `alt_dates' < 4 {
 	replace event_onedayL = 1 if date == td(04mar2013)
 	replace eventday = 1 if date == td(04mar2013)
+	replace eventdayL = 1 if date == td(04mar2013)
 }
 else {
 	replace eventexcluded = 1 if date == td(04mar2013)
@@ -405,6 +417,7 @@ else {
 *replace WSJ_date=1 if date==td(26mar2013)
 replace event_onedayL = 1 if date==td(27mar2013)
 replace eventday = 1 if date == td(27mar2013)
+replace eventdayL = 1 if date == td(27mar2013)
 
 
 *replace WSJ_date=1 if date==td(29mar2013)
@@ -441,6 +454,7 @@ replace eventday = 1 if date == td(27mar2013)
 * However, the ruling is listed at 10:17am
 *replace WSJ_date=1 if date==td(23aug2013)
 replace event_onedayN = 1 if date==td(23aug2013)
+replace eventdayL = 1 if date == td(26aug2013)
 if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(26aug2013)
 }
@@ -469,12 +483,14 @@ replace eventexcluded = 1 if date==td(26sep2013)
 * The actual order was signed on the 3rd at 2:46pm.
 replace event_onedayL = 1 if date==td(04oct2013)
 replace eventday = 1 if date == td(04oct2013)
+replace eventdayL = 1 if date == td(04oct2013)
 
 if `alt_dates' < 2 {
 	* This was the denial of supreme court appeal
 	replace event_intra = 1 if date==td(07oct2013)
 	* must be the 8th, not 7th, to avoid overlap with the 4th
 	replace eventday = 1 if date == td(08oct2013)
+	replace eventdayL = 1 if date == td(08oct2013)
 	* AP story at 9:35am EDT/10:35am ART.
 }
 else {
@@ -487,10 +503,12 @@ else {
 *replace WSJ_date=1 if date==td(18nov2013)
 replace event_onedayL = 1 if date==td(19nov2013)
 replace eventday = 1 if date == td(19nov2013)
+replace eventdayL = 1 if date == td(19nov2013)
 
 * Supreme court grants cert.
 if `alt_dates' < 2 {
 	replace event_intra = 1 if date==td(10jan2014)
+	replace eventdayL = 1 if date == td(13jan2014)
 	if `alt_dates' > 0 {
 		replace eventday = 1 if date == td(13jan2014)
 	}
@@ -509,6 +527,7 @@ else {
 *replace event_intra = 1 if date==td(16jun2014)
 replace event_intra = 1 if date==td(16jun2014)
 replace eventday = 1 if date == td(16jun2014)
+replace eventdayL = 1 if date == td(17jun2014)
 
 * Griesa forbids argentine law exchange
 * possible confound: Argentina proposes debt swap plan on 19th
@@ -518,7 +537,7 @@ replace eventday = 1 if date == td(16jun2014)
 * media reports of a later afternoon release.
 //replace event_onedayL = 1 if date==td(23jun2014)
 replace event_nightbefore = 1 if date==td(23jun2014)
-
+replace eventdayL = 1 if date==td(23jun2014)
 
 * Griesa appoints special master. 1:05pm
 * http://www.bloomberg.com/news/2014-06-23/argentina-bond-judge-picks-special-master-to-guide-negotiations.html
@@ -526,12 +545,14 @@ replace event_nightbefore = 1 if date==td(23jun2014)
 * 
 replace event_onedayL = 1 if date==td(24jun2014)
 replace eventday = 1 if date == td(24jun2014)
+replace eventdayL = 1 if date==td(25jun2014)
 
 * Griesa denies stay.
 * http://www.bloomberg.com/news/2014-06-26/argentina-bond-fight-judge-rejects-stay-of-debt-ruling.html
 * 2:05pm EDT.
 * Possible confound: Argentina said some stuff at the UN on the same day.
 replace event_intra = 1 if date==td(26jun2014)
+replace eventdayL = 1 if date == td(27jun2014)
 if `alt_dates' > 0 {
 	replace eventday = 1 if date == td(27jun2014)
 }

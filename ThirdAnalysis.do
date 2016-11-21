@@ -184,14 +184,14 @@ use "$apath/MarketFactorsNew.dta", clear
 levelsof ticker, local(factors)
 
 * Now there is a factor_intraSPX, factor_intraVIX, etc...
-reshape wide factor_intra factor_nightbefore factor_onedayN factor_onedayL factor_1_5 factor_twoday, i(date) j(ticker) string
+reshape wide factor_intra factor_nightbefore factor_onedayN factor_onedayL factor_1_5 factor_twoday factor_twodayL, i(date) j(ticker) string
 
 local fnames
 local fprefs
 
 foreach nm in `factors' {
 	local fprefs `fprefs' `nm'_
-	foreach et in intra nightbefore onedayN onedayL 1_5 twoday {
+	foreach et in intra nightbefore onedayN onedayL 1_5 twoday twodayL {
 		rename factor_`et'`nm' `nm'_`et'
 		local fnames `fnames' `nm'_`et'
 		
@@ -228,7 +228,7 @@ format bdate %tbbasic
 sort firm_id bdate
 tsset firm_id bdate
 
-local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday
+local rtypes return_intra return_onedayN return_onedayL return_nightbefore return_1_5 return_twoday return_twodayL
 global rtypes `rtypes'
 
 gen return_intra = 100*log(px_close/px_open)
@@ -237,6 +237,8 @@ gen return_onedayL = 100*log(total_return / L.total_return) - return_intra + L.r
 gen return_nightbefore = return_onedayN - return_intra
 gen return_twoday = 100*log(total_return / L2.total_return) 
 gen return_1_5 = return_twoday - return_intra
+* computer entirely with opens, ignores dividends unless "baked in" to opens
+gen return_twodayL = 100*log(px_open / L2.px_open) 
  
 append using "$apath/ValueIndex_ADR.dta"
 append using "$apath/LocalValueIndex.dta"
@@ -460,6 +462,7 @@ reshape long return_ cds_ event_ `fprefs' cnt_return_, i(date ind_id) j(day_type
 rename cnt_ nfirms
 
 rename eventday event_day
+rename eventdayL event_dayL
 
 gen adrreturn = .
 		

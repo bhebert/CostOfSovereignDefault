@@ -68,7 +68,7 @@ use "$apath/MarketFactorsNew.dta", clear
 * be needed to avoid dropping them later
 levelsof ticker, local(factors)
 * Now there is a factor_intraSPX, factor_intraVIX, etc...
-reshape wide factor_intra factor_nightbefore factor_onedayN factor_onedayL factor_1_5 factor_twoday, i(date) j(ticker) string
+reshape wide factor_intra factor_nightbefore factor_onedayN factor_onedayL factor_1_5 factor_twoday factor_twodayL, i(date) j(ticker) string
 local fnames
 local fprefs
 foreach nm in `factors' {

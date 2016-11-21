@@ -32,6 +32,7 @@ gen factor_nightbefore = 100*log(open/L.close)
 gen factor_onedayN = 100*log(close / L.close)
 gen factor_onedayL = 100*log(open / L.open)
 gen factor_twoday = 100*log(close / L2.close)
+gen factor_twodayL = 100*log(open / L2.open)
 
 gen factor_1_5 = factor_twoday - factor_intra
 

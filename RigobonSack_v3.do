@@ -22,12 +22,12 @@ if "$RSControl" == "" {
 	local use_local 0
 	
 	* Run with ADR data
-	local use_adrs 1
+	local use_adrs 0
 	
 	* Run with exchange rates
-	local use_exrates 1
+	local use_exrates 0
 	
-	local use_coreonly 1
+	local use_coreonly 0
 	
 	*Run with NDF rates
 	local use_ndf 0
@@ -101,7 +101,7 @@ if "$RSControl" == "" {
 	* Determines which kind of day to use
 	* Options are opens, closes, and twoday
 	* Opens doesn't fully work right now
-	local daytype twoday
+	local daytype twodayL
 	
 	* use date for twoday, eventclosedate for closes, and eventopendate for opens
 	local cvar date
@@ -219,9 +219,12 @@ if `use_equityind' == 0 {
 if `use_warrant'==0 {
 	drop if regexm(industry_sector,"gdpw")
 }	
+else { 
+	local ext `ext'Warrants
+}
 
 if `use_bonds' == 0 {
-	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"nmlbond") 
+	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"NMLbond") | regexm(industry_sector,"nmlbond") 
 }
 	
 
@@ -268,9 +271,14 @@ local ext_style `ext'`ext_style'
 * Code to choose event and non-event days
 gen eventvar = .
 
-if regexm("`daytype'","twoday") {
-	drop if ~regexm(day_type,"twoday")
+if "`daytype'"=="twoday" {
+	drop if day_type!="twoday"
 	replace eventvar = event_day
+	local clause mod(dayindex,2)==0 &
+}
+else if "`daytype'"=="twodayL" {
+	drop if day_type!="twodayL"
+	replace eventvar = event_dayL
 	local clause mod(dayindex,2)==0 &
 }
 else if regexm("`daytype'","opens") {
@@ -287,6 +295,7 @@ else {
 	local clause
 	local ext_style `ext_style'_closes
 }
+
 
 gen next_return = F2.return_
 
