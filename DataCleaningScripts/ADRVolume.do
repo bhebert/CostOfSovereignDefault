@@ -31,11 +31,11 @@ gen bolsar_usd=bolsar_volume_value/adrblue
 
 replace bolsar_usd=bolsar_usd/(10^6)
 replace adr_turnover=adr_turnover/(10^6)
-save "$mainpath/CRSP/ADR_Bolsar_Volume.dta", replace
+save "$apath/ADR_Bolsar_Volume.dta", replace
 
 
 *TABLE 
-use "$mainpath/CRSP/ADR_Bolsar_Volume.dta", clear
+use "$apath/ADR_Bolsar_Volume.dta", clear
 drop if adr_turnover<0 | bolsar_usd<0
 gen month=mofd(date)
 format month %tm
