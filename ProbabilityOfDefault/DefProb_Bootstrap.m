@@ -1,11 +1,14 @@
-clear all
 %Estimating risk-neutral default probabilites from CDS
 %set to 1 to test changes to file.  Takes too long otherwise.
-test=0
 
-
+if user==1
 assignin('base','dir_user','/Users/jschreger/Dropbox/')
 assignin('base','dir_csd','/Users/jschreger/Documents/CostofSovereignDefault')
+elseif user==2
+assignin('base','dir_user','BENS DROP PATH')
+assignin('base','dir_csd','BENS GIT PATH')
+end
+
 assignin('base','apath',[dir_csd '/Datasets/'])
 assignin('base','pod',[dir_user 'Cost of Sovereign Default/Markit/Prob of Default/'])
 assignin('base','csvfile',[apath 'Matlab_spreads_zero.csv'])
