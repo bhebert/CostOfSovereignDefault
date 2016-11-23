@@ -222,14 +222,18 @@ do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
 
-global RSuse_adrs 0
-global RSuse_exrates 0
+global RSuse_adrs 1
+global RSuse_exrates 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
-global RSuse_coreonly 0
+global RSuse_coreonly 1
 global RSuse_warrant 1
 global RSregs OLS RS_CDS_IV
 global RSdaytype twodayL
+global RSexclude_SC_day 1
+do ${csd_dir}/RigobonSack_v3.do
+
+global RSexclude_SC_day 0
 do ${csd_dir}/RigobonSack_v3.do
 
 //DTCC Table

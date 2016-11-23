@@ -166,6 +166,10 @@ if "`soycontrols'" != "" {
 	local nodropsoy | regexm(firmname,"SoybeanFutures_US")
 }
 
+if `use_warrant'==1 {
+	local nodropwarrants | regexm(industry_sector,"gdpw")
+}
+
 local ext 
 
 use "$apath/ThirdAnalysis.dta", clear
@@ -193,7 +197,7 @@ if `use_exrates' == 0 {
 
 if `use_coreonly' == 1 {
 	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"INDEX_US") | regexm(firmname,"YPF_US") `nodropsoy')
-	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official"))
+	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official") `nodropwarrants')
 }
 
 if `use_ndf'==0 {
@@ -318,7 +322,7 @@ if `exclusions' == 1 {
 replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
 
 if `exclude_SC_day' == 1 {
-	drop if date == mdy(6,16,2014)
+	drop if date == mdy(6,16,2014) | date == mdy(6,17,2014)
 	local ext_style `ext_style'_NoSC
 }
 
@@ -636,6 +640,11 @@ local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 	local exnames OfficialRate dolarblue ADRBlue  BCS
+	if `use_warrant' == 1 {
+		local inames ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
+		local exnames ADRBlue
+	}
+	
 }
 else {
 	local inames INDEX EqIndex
