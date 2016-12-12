@@ -133,6 +133,7 @@ append using "$apath/Additonal_Securities.dta"
 append using "$apath/bondlevel.dta"
 append using "$apath/domestic_bonds.dta"
 append using  "$apath/gdpw_merge.dta"
+append using "$apath/eurotlx.dta"
 save "`temp'", replace
 
 use "$bbpath/Latam_equities.dta", clear

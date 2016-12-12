@@ -228,7 +228,7 @@ else {
 }
 
 if `use_bonds' == 0 {
-	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"NMLbond") | regexm(industry_sector,"nmlbond") 
+	drop if regexm(industry_sector,"defbond") | regexm(industry_sector,"rsbond") | regexm(industry_sector,"bonar") | regexm(industry_sector,"boden") | regexm(industry_sector,"NMLbond") | regexm(industry_sector,"nmlbond") | regexm(industry_sector,"eurotlx")
 }
 	
 
