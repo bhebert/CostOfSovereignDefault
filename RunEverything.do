@@ -32,7 +32,7 @@ global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 global RSivstderrs robust
 global alt_rho = 0
 
-
+global RSwarrants_run 0
 global hetero_event 0
 global RSuse_local 0
 global RSuse_adrs 1
@@ -230,11 +230,15 @@ global RSuse_coreonly 1
 global RSuse_warrant 1
 global RSregs OLS RS_CDS_IV
 global RSdaytype twodayL
+global RSwarrants_run 1
 global RSexclude_SC_day 1
+
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/ThirdAnalysis.do
+
 do ${csd_dir}/RigobonSack_v3.do
 
-global RSexclude_SC_day 0
-do ${csd_dir}/RigobonSack_v3.do
+
 
 //DTCC Table
 do ${csd_dir}/DataCleaningScripts/DTCC_Clean.do
