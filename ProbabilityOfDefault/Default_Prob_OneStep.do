@@ -315,12 +315,12 @@ export delimited using "$apath/Matlab_June16.csv", replace novarnames
 **************************************************
 *Declare whether user is Jesse or Ben. Jesse is 1. Ben is 2.
 *test=0 means full run, test=1 is a test;
-global test=1
-if "$whomai"=="JesseS" {
+global test=0
+if "$whoami"=="JesseS" {
 global user=1
 }
 
-if "$whomai"=="BenH" {
+if regexm("$whoami","BenH") {
 global user=2
 }
 
