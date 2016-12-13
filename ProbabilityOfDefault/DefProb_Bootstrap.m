@@ -27,7 +27,7 @@ assignin('base','csvfile_ds',[apath 'Matlab_DSspreads_zero_UST.csv'])
 %COMPOSITE
  delete(gcp)
  parpool
-for i=4:4
+for i=1:4
     if i==1
        dataset=csvread(csvfile);
     elseif i==2
