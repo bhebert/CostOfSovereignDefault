@@ -18,6 +18,13 @@ local cds_i_marks 8
 * 4: exclude 3 (incl 4Mar13) from ref report, 5: exclude all 4 from ref report
 local alt_dates 1
 
+local defprobfile "$apath/Default_Prob_All.dta"
+capture confirm file `defprobfile'
+if _rc != 0 {
+	local defprobfile "$mpath/Default_Prob_All.dta"
+}
+
+
 if "$RSalt_dates" == "1" {
 	local alt_dates 0
 }
@@ -35,11 +42,20 @@ if "$RSalt_dates" == "5" {
 }
 
 if "$cds_robust"=="1" {
-	local cds_i_marks 7
+	if "$cds_n"=="5yLon" {
+		local cds_i_marks 10
 	}
+	else{
+		local cds_i_marks 7
+	}
+}
 
 if "$hetero_event" == "1" {
 	local cds_i_marks 6
+}
+
+if "$RSwarrants_run" == "1" {
+	local cds_i_marks 10
 }
 
 
@@ -118,24 +134,26 @@ else if `cds_i_marks' == 6 {
 	*use "$mpath/Default_Prob.dta", clear
 	*rename europe Spread5yE
 	*rename composite Spread5yN
-	use "$mpath/Default_Prob_All.dta", clear
+	use "`defprobfile'", clear
 	/*keep date ust_def5y ust_def5y_europe 
 	rename ust_def5y_europe Spread5yE
 	rename ust_def5y Spread5yN*/
 	keep date def5y def5y_europe 
 	rename def5y_europe Spread5yE
 	rename def5y Spread5yN
+	
+	* why is the line here?
 	global cds_app ""
 }
 
 else if `cds_i_marks' == 7 {
-	use "$mpath/Default_Prob_All.dta", clear
+	use "`defprobfile'", clear
 	keep date  $cds_n
 	rename $cds_n Spread5yN
 }
 
 else if `cds_i_marks' == 8  {
-	use "$mpath/Default_Prob_All.dta", clear
+	use "`defprobfile'", clear
 	keep date mC5_5y 
 	rename  mC5_5y Spread5yN
 }
@@ -147,6 +165,14 @@ else if `cds_i_marks' == 9  {
 	replace px_close=log(px_close)
 	rename  px_close Spread5yN
 }
+else if `cds_i_marks' == 10 {
+	use "`defprobfile'", clear
+
+	keep date def5y def5y_london
+	rename def5y_london Spread5yE
+	rename def5y Spread5yN
+}
+
 
 * We use a business day calendar to figure out
 * the financial returns. This only deals with 
@@ -202,7 +228,7 @@ else if `cds_i_marks' == 2 | `cds_i_marks' == 4 {
 	keep bdate date cds_intra cds_nightbefore cds_1_5 cds_onedayN cds_onedayL cds_twoday cds_twodayL
 
 }
-else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 {
+else if `cds_i_marks' == 3 | `cds_i_marks' == 5 | `cds_i_marks' == 6 | `cds_i_marks' == 10 {
 
 	gen cds_intra = Spread5yN - Spread5yE
 	gen cds_nightbefore = Spread5yE - L.Spread5yN
