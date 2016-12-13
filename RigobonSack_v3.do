@@ -322,7 +322,7 @@ if `exclusions' == 1 {
 replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
 
 if `exclude_SC_day' == 1 {
-	drop if date == mdy(6,16,2014) | date == mdy(6,17,2014)
+	drop if (date == mdy(6,16,2014) | date == mdy(6,17,2014)) & ~regexm(industry_sector,"gdpw")
 	local ext_style `ext_style'_NoSC
 }
 
