@@ -5,8 +5,8 @@ if user==1
 assignin('base','dir_user','/Users/jschreger/Dropbox/')
 assignin('base','dir_csd','/Users/jschreger/Documents/CostofSovereignDefault')
 elseif user==2
-assignin('base','dir_user','BENS DROP PATH')
-assignin('base','dir_csd','BENS GIT PATH')
+assignin('base','dir_user','/Users/bhebert/Dropbox')
+assignin('base','dir_csd','/Users/bhebert/CostOfSovereignDefault')
 end
 
 assignin('base','apath',[dir_csd '/Datasets/'])
