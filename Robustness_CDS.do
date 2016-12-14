@@ -12,17 +12,33 @@
 
 *do ${csd_dir}/GlobalFactors.do
 
+* This can only be run from RunEverything
+
 global cds_robust 1
-foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
+foreach x in   PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond log_g17px_eurotlx def5y_london def5y_europe {
 	global cds_app "_`x'"
 	global cds_n "`x'"
+
+	
+	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" | "`x'" == "def5y_europe" {
+		global RSdaytype twodayL
+		global RSexclude_SC_day 1
+	}
+	else {
+		global RSdaytype twoday
+		global RSexclude_SC_day 0
+	}
+	
 	do ${csd_dir}/CDSMaker.do
 	do ${csd_dir}/ThirdAnalysis.do
+	
 	do "$csd_dir/RigobonSack_v3.do"	
 	//do ${csd_dir}/RunDataCode.do
 	//do ${csd_dir}/RunAnalysis.do
 }
 
+global RSdaytype twoday
+global RSexclude_SC_day 0
 
 *ORGANIZE RESULTS
 import excel "$rpath/RS_CDS_IV_reshapeADRs_PUF_1y.xls", firstrow sheet("Sheet1") clear
