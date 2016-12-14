@@ -1,4 +1,5 @@
 *Bond level data]
+set more off
 
 *Cleaning exchange rate data
 tempfile eur bondtemp
@@ -207,6 +208,19 @@ gen rsbondys=rsbondy-svenpy20
 gen g17ys=g17y-svenpy05
 drop sven* _merge
 save "$apath/bond_dprob_merge.dta", replace
+
+use "$apath/eurotlx.dta", clear
+keep if Ticker=="eurotlx"
+gen log_g17px_eurotlx = log(px_last)
+keep date log_g17px_eurotlx
+
+mmerge date using "$apath/bond_dprob_merge.dta", unmatched(using)
+drop _merge
+
+sort date
+
+save "$apath/bond_dprob_merge.dta", replace
+
 
 /*
 gen nn=_n
