@@ -30,6 +30,8 @@ do ${csd_dir}/DataCleaningScripts/Additional_ADRs.do
 
 do ${csd_dir}/DataCleaningScripts/Ambito.do
 
+do ${csd_dir}/DataCleaningScripts/euro_tlx.do
+
 do ${csd_dir}/DataCleaningScripts/Cleaning_Bond_Level.do
 
 do ${csd_dir}/DataCleaningScripts/TC_clean.do
@@ -39,8 +41,6 @@ do ${csd_dir}/DataCleaningScripts/Other_Equities.do
 do ${csd_dir}/DataCleaningScripts/CRSP_ADR_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Clean_TGNO4.do
-
-do ${csd_dir}/DataCleaningScripts/euro_tlx.do
 
 do ${csd_dir}/DataCleaningScripts/CDS_BB_DS.do
 
