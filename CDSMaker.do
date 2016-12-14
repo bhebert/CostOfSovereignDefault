@@ -42,7 +42,7 @@ if "$RSalt_dates" == "5" {
 }
 
 if "$cds_robust"=="1" {
-	if "$cds_n"=="5yLon" {
+	if "$RSdaytype" == "twodayL" {
 		local cds_i_marks 10
 	}
 	else{
@@ -168,8 +168,15 @@ else if `cds_i_marks' == 9  {
 else if `cds_i_marks' == 10 {
 	use "`defprobfile'", clear
 
-	keep date def5y def5y_london
-	rename def5y_london Spread5yE
+	if "$cds_robust" == 1 {
+		local cdsname $cds_n
+	}
+	else {
+		local cdsname def5y_london
+	}
+	
+	keep date def5y $cds_n
+	rename $cds_n Spread5yE
 	rename def5y Spread5yN
 }
 
@@ -553,7 +560,7 @@ else {
 *replace event_intra = 1 if date==td(16jun2014)
 replace event_intra = 1 if date==td(16jun2014)
 replace eventday = 1 if date == td(16jun2014)
-replace eventdayL = 1 if date == td(17jun2014)
+replace eventdayL = 1 if date == td(16jun2014)
 
 * Griesa forbids argentine law exchange
 * possible confound: Argentina proposes debt swap plan on 19th
