@@ -28,4 +28,5 @@ gen px_open=.
 gen total_return=px_last
 gen market="Index"
 gen industry_sector="eurotlx"
+drop if px_last == .
 save "$apath/eurotlx.dta", replace
