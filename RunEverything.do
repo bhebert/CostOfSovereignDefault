@@ -37,6 +37,7 @@ global hetero_event 0
 global RSuse_local 0
 global RSuse_adrs 1
 global RSuse_exrates 1
+global RSuse_indexonly 0
 
 // Code for testing only
  if `run_test' == 1 {
@@ -212,10 +213,12 @@ do ${csd_dir}/SetupPaths.do*/
 
 // CDS measure robustness
 global RSuse_gdpmodels 0
+global RSuse_indexonly 1
 do ${csd_dir}/Robustness_CDS.do
 
 // Hetero event study
 global hetero_event 1
+global RSuse_indexonly 0
 
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/ThirdAnalysis.do
@@ -227,6 +230,7 @@ global RSuse_exrates 1
 global RSuse_otherdefp 0
 global RSuse_equityind 0
 global RSuse_coreonly 1
+global RSuse_indexonly 1
 global RSuse_warrant 1
 global RSregs OLS RS_CDS_IV
 global RSdaytype twodayL
