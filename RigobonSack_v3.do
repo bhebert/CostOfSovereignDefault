@@ -28,6 +28,7 @@ if "$RSControl" == "" {
 	local use_exrates 0
 	
 	local use_coreonly 0
+	local use_indexonly 0
 	
 	*Run with NDF rates
 	local use_ndf 0
@@ -120,7 +121,7 @@ if "$RSControl" == "" {
 }
 else {
 
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols use_indexonly {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -198,6 +199,10 @@ if `use_exrates' == 0 {
 if `use_coreonly' == 1 {
 	drop if market == "US" & ~(regexm(industry_sector,"ValueINDEXNew") | regexm(industry_sector,"ValueBankINDEXNew") | regexm(industry_sector,"ValueNonFinINDEXNew") | regexm(firmname,"INDEX_US") | regexm(firmname,"YPF_US") `nodropsoy')
 	drop if market != "US" & ~(regexm(industry_sector,"ADRBlue") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"Official") `nodropwarrants')
+}
+
+if `use_indexonly' == 1 {
+	keep if (market == "US" & regexm(industry_sector,"ValueINDEXNew")) `nodropwarrants'
 }
 
 if `use_ndf'==0 {
@@ -640,7 +645,7 @@ local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 	local exnames OfficialRate dolarblue ADRBlue  BCS
-	if `use_warrant' == 1 {
+	if "`daytype'" == "twodayL" | "`daytype'" == "oepns" {
 		local inames ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 		local exnames ADRBlue
 	}
@@ -649,6 +654,11 @@ if `use_coreonly' != 0 {
 else {
 	local inames INDEX EqIndex
 }
+if `use_indexonly' != 0 {
+	local inames ValueINDEXNew
+	local exnames
+}
+
 if `use_adrs' != 0 & `use_coreonly' == 0 {
 	local inames `inames' ValueIndex
 }
