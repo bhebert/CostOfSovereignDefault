@@ -168,7 +168,7 @@ else if `cds_i_marks' == 9  {
 else if `cds_i_marks' == 10 {
 	use "`defprobfile'", clear
 
-	if "$cds_robust" == 1 {
+	if "$cds_robust" == "1" {
 		local cdsname $cds_n
 	}
 	else {
