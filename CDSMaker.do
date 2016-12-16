@@ -173,6 +173,7 @@ else if `cds_i_marks' == 10 {
 	}
 	else {
 		local cdsname def5y_london
+		//local cdsname log_g17px_eurotlx
 	}
 	
 	keep date def5y `cdsname'
