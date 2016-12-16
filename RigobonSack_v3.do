@@ -327,14 +327,15 @@ if `exclusions' == 1 {
 replace nonevent = 0 if nonevent == 1 & (date < `mindate' | date > `maxdate')
 
 if `exclude_SC_day' == 1 {
-	drop if (date == mdy(6,16,2014) | date == mdy(6,17,2014)) & ~regexm(industry_sector,"gdpw")
+	drop if (date == mdy(6,16,2014) | date == mdy(6,17,2014)) & ~(regexm(industry_sector,"gdpw") | regexm(industry_sector,"eurotlx"))
 	local ext_style `ext_style'_NoSC
 }
 
 
-
 drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
+
+
 
 if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {	
 	expand 2 if firmname == "ValueINDEXNew_US" | firmname == "$HFExName", gen(vGDP)
@@ -645,7 +646,7 @@ local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 	local exnames OfficialRate dolarblue ADRBlue  BCS
-	if "`daytype'" == "twodayL" | "`daytype'" == "oepns" {
+	if "`daytype'" == "twodayL" | "`daytype'" == "opens" {
 		local inames ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
 		local exnames ADRBlue
 	}
