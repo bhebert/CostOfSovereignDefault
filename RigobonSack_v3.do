@@ -168,7 +168,7 @@ if "`soycontrols'" != "" {
 }
 
 if `use_warrant'==1 {
-	local nodropwarrants | regexm(industry_sector,"gdpw")
+	local nodropwarrants | regexm(industry_sector,"gdpw") | regexm(industry_sector,"eurotlx")
 }
 
 local ext 

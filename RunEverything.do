@@ -232,6 +232,7 @@ global RSuse_equityind 0
 global RSuse_coreonly 1
 global RSuse_indexonly 1
 global RSuse_warrant 1
+global RSuse_bonds 1
 global RSregs OLS RS_CDS_IV
 global RSdaytype twodayL
 global RSwarrants_run 1
