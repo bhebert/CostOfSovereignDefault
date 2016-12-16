@@ -15,7 +15,7 @@
 * This can only be run from RunEverything
 
 global cds_robust 1
-foreach x in  log_g17px_eurotlx def5y_london def5y_europe PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
+foreach x in  log_g17px_eurotlx logg17 def5y_london def5y_europe PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
 	global cds_app "_`x'"
 	global cds_n "`x'"
 
