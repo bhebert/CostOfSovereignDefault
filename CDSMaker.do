@@ -175,8 +175,8 @@ else if `cds_i_marks' == 10 {
 		local cdsname def5y_london
 	}
 	
-	keep date def5y $cds_n
-	rename $cds_n Spread5yE
+	keep date def5y `cdsname'
+	rename `cdsname' Spread5yE
 	rename def5y Spread5yN
 }
 
