@@ -24,9 +24,10 @@ foreach x in px_last px_ask px_bid px_volume {
 *use  "$miscdata/EuroTLXData", clear
 keep date px_last
 gen Ticker="eurotlx"
-gen px_open=.
-gen total_return=px_last
+gen px_open=px_last
+gen total_return=.
+replace px_last = .
 gen market="Index"
 gen industry_sector="eurotlx"
-drop if px_last == .
+drop if px_open == .
 save "$apath/eurotlx.dta", replace

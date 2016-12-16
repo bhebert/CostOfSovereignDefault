@@ -211,7 +211,7 @@ save "$apath/bond_dprob_merge.dta", replace
 
 use "$apath/eurotlx.dta", clear
 keep if Ticker=="eurotlx"
-gen log_g17px_eurotlx = log(px_last)
+gen log_g17px_eurotlx = log(px_open)
 keep date log_g17px_eurotlx
 
 mmerge date using "$apath/bond_dprob_merge.dta", unmatched(using)
