@@ -1,5 +1,5 @@
 
-local run_test 0
+local run_test 1
 
 matrix drop _all
 
