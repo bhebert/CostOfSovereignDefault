@@ -20,13 +20,23 @@ foreach x in  log_g17px_eurotlx logg17 def5y_london def5y_europe PUF_1y PUF_3y P
 	global cds_n "`x'"
 
 	
-	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" | "`x'" == "def5y_europe" {
+	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" {
 		global RSdaytype twodayL
 		global RSexclude_SC_day 1
+		global RSuse_warrant 1
+		global RSuse_bonds 1
+	}
+	else if "`x'" == "def5y_europe" {
+		global RSdaytype twodayL
+		global RSexclude_SC_day 1
+		global RSuse_warrant 0
+		global RSuse_bonds 0
 	}
 	else {
 		global RSdaytype twoday
 		global RSexclude_SC_day 0
+		global RSuse_warrant 0
+		global RSuse_bonds 0
 	}
 	
 	do ${csd_dir}/CDSMaker.do
@@ -46,14 +56,19 @@ gen cds_type="PUF_1y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
-foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond NoSC_log_g17px_eurotlx NoSC_def5y_london NoSC_def5y_europe {
-	cap{
-	import excel "$rpath/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
+foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond Warrants_NoSC_log_g17px_eurotlx Warrants_NoSC_def5y_london NoSC_def5y_europe logg17 {
+	**cap{
+	if regexm("`x'","Warrants") {
+		import excel "$rpath/RS_CDS_IV_reshapeADRs`x'.xls", sheet("Sheet1") firstrow clear
+	}
+	else {
+		import excel "$rpath/RS_CDS_IV_reshapeADRs_`x'.xls", sheet("Sheet1") firstrow clear
+	}
 	keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 	gen cds_type="`x'"
 	append using "$rpath/temp.dta"
 	save "$rpath/temp.dta", replace
-	}
+	**}
 }	
 
 
