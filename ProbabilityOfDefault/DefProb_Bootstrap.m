@@ -17,9 +17,15 @@ assignin('base','csvfile_june16',[apath 'Matlab_June16.csv'])
 assignin('base','csvfile_europe',[apath 'Matlab_Europe_zero.csv'])
 assignin('base','csvfile_newyork',[apath 'Matlab_NewYork_zero.csv'])
 assignin('base','csvfile_london',[apath 'Matlab_London_zero.csv'])
+assignin('base','csvfile_londonmidday',[apath 'Matlab_LondonMidday_zero.csv'])
+assignin('base','csvfile_asia',[apath 'Matlab_Asia_zero.csv'])
+assignin('base','csvfile_japan',[apath 'Matlab_Japan_zero.csv'])
 assignin('base','csvfile_ust_europe',[apath 'Matlab_Europe_spreads_zero_UST.csv'])
 assignin('base','csvfile_ust_newyork',[apath 'Matlab_NewYork_spreads_zero_UST.csv'])
 assignin('base','csvfile_ust_london',[apath 'Matlab_London_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_londonmidday',[apath 'Matlab_LondonMidday_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_asia',[apath 'Matlab_Asia_spreads_zero_UST.csv'])
+assignin('base','csvfile_ust_japan',[apath 'Matlab_Japan_spreads_zero_UST.csv'])
 assignin('base','csvfile_bb',[apath 'Matlab_BBspreads_zero_UST.csv'])
 assignin('base','csvfile_ds',[apath 'Matlab_DSspreads_zero_UST.csv'])
 
@@ -27,7 +33,7 @@ assignin('base','csvfile_ds',[apath 'Matlab_DSspreads_zero_UST.csv'])
 %COMPOSITE
  delete(gcp)
  parpool
-for i=1:4
+for i=1:7
     if i==1
        dataset=csvread(csvfile);
     elseif i==2
@@ -36,8 +42,13 @@ for i=1:4
         dataset=csvread(csvfile_newyork);    
     elseif i==4
         dataset=csvread(csvfile_london);    
-    end
-    
+    elseif i==5
+        dataset=csvread(csvfile_londonmidday);
+    elseif i==6
+        dataset=csvread(csvfile_asia);    
+    elseif i==7
+        dataset=csvread(csvfile_japan);    
+    end    
 if test==1 
     dataset=dataset(700:710,:);
 end
@@ -88,17 +99,26 @@ keymatConH=[date_stata,ProbDef_matConH,Haz_matConH];
 
 cd(apath)
 if i==1
-csvwrite('Bootstrap_results.csv',keymat)
-csvwrite('Bootstrap_resultsConH.csv',keymatConH)
+	csvwrite('Bootstrap_results.csv',keymat)
+	csvwrite('Bootstrap_resultsConH.csv',keymatConH)
 elseif i==2
     csvwrite('Bootstrap_Europe_results.csv',keymat)
     csvwrite('Bootstrap_Europe_resultsConH.csv',keymatConH)
 elseif i==3
-     csvwrite('Bootstrap_NewYork_results.csv',keymat)
+    csvwrite('Bootstrap_NewYork_results.csv',keymat)
     csvwrite('Bootstrap_NewYork_resultsConH.csv',keymatConH)
-  elseif i==4
+elseif i==4
     csvwrite('Bootstrap_London_results.csv',keymat)
     csvwrite('Bootstrap_London_resultsConH.csv',keymatConH) 
+elseif i==5
+    csvwrite('Bootstrap_LondonMidday_results.csv',keymat)
+    csvwrite('Bootstrap_LondonMidday_resultsConH.csv',keymatConH)
+elseif i==6
+    csvwrite('Bootstrap_Asia_results.csv',keymat)
+    csvwrite('Bootstrap_Asia_resultsConH.csv',keymatConH)
+elseif i==7
+    csvwrite('Bootstrap_Japan_results.csv',keymat)
+    csvwrite('Bootstrap_Japan_resultsConH.csv',keymatConH)     
 end
 end
 
@@ -109,7 +129,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Estimating risk-neutral default probabilites from CDS
 %COMPOSITE
-for i=1:4
+for i=1:7
     if i==1
        dataset=csvread(csvfile_ust);
     elseif i==2
@@ -118,6 +138,12 @@ for i=1:4
         dataset=csvread(csvfile_ust_newyork);    
     elseif i==4
         dataset=csvread(csvfile_ust_london); 
+    elseif i==5
+        dataset=csvread(csvfile_ust_londonmidday);
+    elseif i==6
+        dataset=csvread(csvfile_ust_asia);    
+    elseif i==7
+        dataset=csvread(csvfile_ust_japan); 
     end
     
 if test==1 
@@ -180,6 +206,15 @@ elseif i==3
 elseif i==4
      csvwrite('Bootstrap_London_results_UST.csv',keymat)
      csvwrite('Bootstrap_London_resultsConH_UST.csv',keymatConH)
+elseif i==5
+   csvwrite('Bootstrap_LondonMidday_results_UST.csv',keymat)
+    csvwrite('Bootstrap_LondonMidday_resultsConH_UST.csv',keymatConH)
+elseif i==6
+     csvwrite('Bootstrap_Asia_results_UST.csv',keymat)
+     csvwrite('Bootstrap_Asia_resultsConH_UST.csv',keymatConH)
+elseif i==7
+     csvwrite('Bootstrap_Japan_results_UST.csv',keymat)
+     csvwrite('Bootstrap_Japan_resultsConH_UST.csv',keymatConH)     
 end
 
 end

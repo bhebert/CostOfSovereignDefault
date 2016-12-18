@@ -333,7 +333,7 @@ shell $matlab -nosplash -nodesktop -r "user=$user; test=$test; DefProb_Bootstrap
 
 tempfile temp1 temp2
 set more off
-foreach y in "" "_europe" "_newyork" "_london" {
+foreach y in "" "_europe" "_newyork" "_london" "_londonmidday" "_asia" "_japan" {
 
 forvalues i=1/4 {
 if `i'==1 {
@@ -501,7 +501,7 @@ drop if _merge==2
 save "$apath/Default_Prob_All.dta", replace
 
 use "$apath/Default_Prob_All.dta", clear
-foreach y in "_europe" "_newyork" "_london" {
+foreach y in "_europe" "_newyork" "_london" "_londonmidday" "_asia" "_japan" {
 
 mmerge date using "$apath/cumdef_hazard_ConH`y'.dta", ukeep(def6m def1y def2y def3y def4y def5y def7y def10y )
 foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
@@ -536,7 +536,7 @@ mmerge date using "$apath/cumdef_hazard.dta", ukeep(def6m def1y def2y def3y def4
 mmerge date using "$apath/cumdef_hazard_triangle.dta", ukeep(tri*)
 drop tri_def15y tri_conH_def15y tri_def20y tri_conH_def20y tri_def30y tri_conH_def30y
 
-foreach y in "" "_europe" "_newyork" "_london" {
+foreach y in "" "_europe" "_newyork" "_london" "_londonmidday" "_asia" "_japan"{
 foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	label var def`x'`y' "`x' Cumulative Default Probability, Composite, IRS Zero, `y'"
 	label var conh_def`x'`y' "`x' Cumulative Default Probability, Composite Constant 39.5% Recovery, IRS Zero, `y'"
