@@ -1,5 +1,5 @@
 
-local run_test 1
+local run_test 0
 
 matrix drop _all
 
@@ -225,6 +225,8 @@ do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
 
+/* now produced as part of robustness
+
 global RSuse_adrs 1
 global RSuse_exrates 1
 global RSuse_otherdefp 0
@@ -241,7 +243,7 @@ global RSexclude_SC_day 1
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/ThirdAnalysis.do
 
-do ${csd_dir}/RigobonSack_v3.do
+do ${csd_dir}/RigobonSack_v3.do*/
 
 
 
