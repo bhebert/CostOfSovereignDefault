@@ -5,7 +5,6 @@ cap mkdir $hftemp
 *DATASET OF HF default profs
 *RISK NEUTRAL PROBS
 use date ust_def5y*  using "$apath/Default_Prob_All.dta", clear
-drop ust_def5y_newyork
 rename ust_def5y ust_def5y_composite
 renpfix ust_def5y_	
 
@@ -18,13 +17,14 @@ foreach x of varlist _all {
 	
 reshape long type, i(date) j(close)	 str
 gen timemin=""
-replace timemin="15:30" if close=="composite"
+replace timemin="16:00" if close=="composite"
+replace timemin="15:30" if close=="newyork"
 replace timemin="09:30" if close=="europe"
 replace timemin="10:30" if close=="london"
 replace timemin="04:00" if close=="asia"
 replace timemin="07:00" if close=="londonmidday"
 replace timemin="02:00" if close=="japan"
-keep if timemin~=.
+keep if timemin~=""
 rename type dprob
 sort date time
 
@@ -40,9 +40,9 @@ order clockstr
 gen double date_obs=clock(clockstr,"MDYhm")
 format date_obs %tc
 order date_obs
-drop clockstr month year time day close 
+drop clockstr month year time day 
 replace dprob=dprob*100
-drop if drob==.
+drop if dprob==.
 gen symbol="dprob"
 save "$apath/dprob_hf_all.dta", replace
 	
@@ -143,8 +143,9 @@ twoway (line return date_obs if symbol=="YPF") (connected dprob date_obs if symb
 graph export "$rpath/hf_`date'.png", replace
 }
 
-
-
+******************
+*NICE NEW FIGURES*
+******************
 use "$hftemp/master_winsor.dta", clear
 keep if symbol=="YPF"
 append using "$apath/dprob_hf_all.dta" 
@@ -161,51 +162,36 @@ gen time=hour+minute/60
 replace time=time/8
 gen timedate=date+time
 
-twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2))  if date>=td(27nov2012) & date<=td(29nov2012), title("SCDAY")  xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
-
+*twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2))  if date>=td(27nov2012) & date<=td(29nov2012), title("SCDAY")  xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
+discard
 foreach date in "27nov2012" "29nov2012" "05dec2012" "07dec2012" "11jan2013" "04mar2013" "27mar2013" "26aug2013" "04oct2013" "08oct2013" "19nov2013" "13jan2014" "16jun2014" "24jun2014" "27jun2014" {
-twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2))  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("hf_`date'") xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
+local d1_open=td(`date')-1+0.188
+local d1_close=td(`date')
+local d2_open=td(`date')+0.188
+local d2_close=td(`date')+1
+local d3_open=td(`date')+1+0.188
+local d3_close=td(`date')+2
+
+twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2)) (scatter dprob timedate if symbol=="dprob" & close=="composite", yaxis(2))  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("test_`date'") xlabel(, labsize(vsmall) ) legend(order(1 "YPF Return" 2 "Prob. of Default")) xlabel(`d1_open' "D-1 9:30 am" `d1_close' "D-1 4:00 pm" `d2_open' "D 9:30 am" `d2_close' "D 4:00 pm" `d3_open' "D+1 9:30 am" `d3_close' "D+1 4:00 pm", labsize(small) angle(45)) xtitle("") graphregion(color(white))
 graph export "$rpath/hf_`date'_newaxis.png", replace
 }
 
-/*
-tostring hour, replace
-tostring minute, replace
-replace hour="0"+hour
-replace hour=substr(hour,-2,2)
-replace minute="0"+minute
-replace minute=substr(minute,-2,2)
-gen timemin=hour+":"+minute
-gen month=month(date)
-gen year=year(date)
-gen day=day(date)
-order month year day
-foreach x in month year day {
-	tostring `x', replace
-}
-gen  clockstrgraph=month+"/"+day+"/"+year+" "+timemin
-gen double date_obsgraph=clock(clockstrgraph,"MDYhm")
-format date_obsgraph %tc
-*/
 
 
-discard
-twoway (line return date_obsgraph if symbol=="YPF") (connected dprob date_obsgraph if symbol=="dprob", yaxis(2))  if date>=td(16jun2014)-1 & date<=td(16jun2014)+1, title("SCDAY") name("hf_dddd") xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
-
-twoway (line return date_obs if symbol=="YPF") (connected dprob date_obs if symbol=="dprob", yaxis(2))  if date>=td(16jun2014)-1 & date<=td(16jun2014)+1, title("SCDAY") name("hf_dddd2") xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
-
-*CREATE INDEX
+*******************
+*CREATE INDEX******
+*******************
 use "$hftemp/master_winsor.dta", clear
 levelsof (symbol), local(sum)
 discard
-	gen return_raw=return
+gen return_raw=return
 gen prob=0
 foreach x of local sym {
-	summ lchange if sym=="`x'"
-	local tempup=r(mean)+r(sd)
-	local tempdown=r(mean)-r(sd)
-	replace prob=1 if (lchange>`tempup' | lchange<`tempdown') & (fchange>`tempup' | fchange<`tempdown') & sign(fchange)~=sign(lchange) & sym=="`x'"
-	replace return=. if prob==1
+summ lchange if sym=="`x'"
+local tempup=r(mean)+r(sd)
+local tempdown=r(mean)-r(sd)
+replace prob=1 if (lchange>`tempup' | lchange<`tempdown') & (fchange>`tempup' | fchange<`tempdown') & sign(fchange)~=sign(lchange) & sym=="`x'"
+replace return=. if prob==1
 
 	local stime=`start_`datenum''
 	local etime=`end_`datenum''
@@ -218,7 +204,7 @@ foreach x of local sym {
 	local critsd=2
 	sort sid n
 	replace return=l.return if return>(median+`critsd'*sd) |return<(median-`critsd'*sd) & symbol=="`x'"
-	twoway (line return time, sort) (line return_raw time, sort) if symbol=="`x'" & time>`stime'-1 & time<`etime'+3 , xline(`stime') xline(`etime') name("`x'date_`datenum'") title("`x': `datenum'")
+	*twoway (line return time, sort) (line return_raw time, sort) if symbol=="`x'" & time>`stime'-1 & time<`etime'+3 , xline(`stime') xline(`etime') name("`x'date_`datenum'") title("`x': `datenum'")
 	*graph export "$rpath/hf_`datenum'_`x'.png", replace
 }
 
