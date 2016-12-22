@@ -582,6 +582,14 @@ mmerge date using "$apath/cumdef_ds.dta", uname(ds_)
 mmerge date using "$apath/cumdef_hazard_triangle_bb.dta", uname(bb_) ukeep(tri*)
 mmerge date using "$apath/cumdef_hazard_triangle_ds.dta", uname(ds_) ukeep(tri*)
 mmerge date using "$apath/bond_dprob_merge.dta"
+
+
+** code to generate triangles for bonds
+
+gen g17_bbg_tri = 1-(1-g17ys / (1-`recov'))^`tenor'
+gen g17_eurotlx_tri = 1-(1-g17ys_eurotlx / (1-`recov'))^`tenor'
+gen rsbond_bbg_tri = 1-(1-rsbondys / (1-`recov'))^`tenor'
+
 save  "$apath/Default_Prob_All.dta", replace
 
 *Default Probability Figures
