@@ -15,12 +15,12 @@
 * This can only be run from RunEverything
 
 global cds_robust 1
-foreach x in  log_g17px_eurotlx logg17 def5y_london def5y_europe PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
+foreach x in  log_g17px_eurotlx logg17 g17ys g17ys_eurotlx def5y_london def5y_europe PUF_1y PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond  {
 	global cds_app "_`x'"
 	global cds_n "`x'"
 
 	
-	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" {
+	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" | "`x'" == "g17ys_eurotlx" {
 		global RSdaytype twodayL
 		global RSexclude_SC_day 1
 		global RSuse_warrant 1
@@ -56,7 +56,7 @@ gen cds_type="PUF_1y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
-foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond Warrants_NoSC_log_g17px_eurotlx Warrants_NoSC_def5y_london NoSC_def5y_europe logg17 {
+foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond Warrants_NoSC_log_g17px_eurotlx Warrants_NoSC_def5y_london NoSC_def5y_europe logg17 g17ys Warrants_NoSC_g17ys_eurotlx {
 	**cap{
 	if regexm("`x'","Warrants") {
 		import excel "$rpath/RS_CDS_IV_reshapeADRs`x'.xls", sheet("Sheet1") firstrow clear
