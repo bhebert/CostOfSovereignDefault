@@ -1,5 +1,6 @@
 
 local run_test 0
+local run_defprob 1
 
 matrix drop _all
 
@@ -16,6 +17,10 @@ log using "$logname", replace
 rmfiles, folder(${apath}) match(*.dta) 
 
 do ${csd_dir}/RunDataCleaning.do
+
+if `run_defprob' == 1 {
+	do ${csd_dir}/ProbabilityOfDefault/Default_Prob_OneStep.do
+}
 
 do ${csd_dir}/RunDataCode.do
 
