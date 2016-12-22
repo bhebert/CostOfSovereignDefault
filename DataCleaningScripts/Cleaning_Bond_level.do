@@ -222,6 +222,27 @@ sort date
 save "$apath/bond_dprob_merge.dta", replace
 
 
+keep date logg17 log_g17px_eurotlx g17y
+
+rename g17y yieldbbg
+rename logg17 logpricebbg
+rename log_g17px_eurotlx logpriceeurotlx
+
+reshape long yield logprice, i(date) j(source) string
+
+reg yield c.logprice##c.logprice##c.logprice##c.date if date <= mdy(7,31,2014)
+predict pyield
+
+drop if source=="bbg"
+drop if pyield==.
+keep date pyield
+rename pyield g17y_eurotlx
+mmerge date using "$apath/bond_dprob_merge.dta", unmatched(using)
+
+gen g17ys_eurotlx = g17y_eurotlx - g17y + g17ys
+
+save "$apath/bond_dprob_merge.dta", replace
+
 /*
 gen nn=_n
 tsset nn
