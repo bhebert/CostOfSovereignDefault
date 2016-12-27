@@ -2,6 +2,32 @@ global hf "$mainpath/HF_Data"
 global hftemp "$apath/hf"
 cap mkdir $hftemp
 
+*CLOSING MARKS
+use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
+*add missing equity
+append using "$apath/TGNO4.dta"
+drop if date == .
+drop if Ticker==""
+keep if market=="US"
+keep if inlist(Ticker,"BFR","BMA","EDN","GGAL","IRS")==1 | inlist(Ticker,"PAM","PZE","TEO","TGS","YPF")==1
+keep date px_open px_last Ticker
+reshape long px, i(date Ticker) j(timestr) str
+gen timemin="09:30" if timestr=="_open"
+replace timemin="16:00" if timestr=="_last"
+drop times
+rename Ticker symbol
+gen month=month(date)
+gen year=year(date)
+gen day=day(date)
+foreach x in month year day {
+	tostring `x', replace
+}
+rename px mid
+gen psource="bloomberg"
+keep if date>=td(01jan2011) & date<=td(31jul2014)
+save "$apath/open_close_forhf.dta", replace
+
+
 *DATASET OF HF default profs
 *RISK NEUTRAL PROBS
 use date ust_def5y*  using "$apath/Default_Prob_All.dta", clear
@@ -31,6 +57,7 @@ sort date time
 gen month=month(date)
 gen year=year(date)
 gen day=day(date)
+
 order month year day
 foreach x in month year day {
 	tostring `x', replace
@@ -49,11 +76,11 @@ save "$apath/dprob_hf_all.dta", replace
 
 *Clean November and December 2012
 *FIX CLOCK TIME
-
 use "$hf/Argentina_Nov_Dec_2012.dta", clear
 foreach x in "Aug_2013" "Jan_2013" "Jan_2014" "Jun_2014" "Mar_2013" "Nov_2013" "Oct_2013" {
 	append using "$hf/Argentina_`x'.dta"
 }
+gen psource="taq"
 
 gen month=month(date)
 gen year=year(date)
@@ -68,8 +95,13 @@ replace timeminfl=subinstr(timeminfl,":",".",.)
 destring timeminfl, replace
 
 *only within trading hours
-drop if timeminfl<9.3 | timeminfl>16
+*Last 2 minutes just close quotes
+drop if timeminfl<9.3 | timeminfl>15.58
 drop timeminfl
+drop if bid==0 | ofr==0 | bidsiz==0 | ofrsiz==0
+
+*MERGE IN THE BLOOMBERG DATA
+append using "$apath/open_close_forhf.dta"
 
 *gen  clockstr=month+"/"+day+"/"+year+" "+time
 gen  clockstr=month+"/"+day+"/"+year+" "+timemin	
@@ -79,23 +111,22 @@ format date_obs %tc
 order date_obs
 drop clockstr month year time
 
-drop if bid==0 | ofr==0 | bidsiz==0 | ofrsiz==0
 
 *only keep 12
 *Regular (NASD open) (12) - Indicates normal trading environment. May be used by NASD
 *market makers in place of Mode 10 to indicatethe first quote of the day 
 *or if a market maker re-opens a security during the day (see Mode 8). */
-keep if mode==12
+keep if mode==12 | psource=="bloomberg"
 gen bidask=ofr-bid
-drop if bidask<0
+drop if bidask<0 & psource~="bloomberg"
 levelsof (symbol), local(sum)
 foreach x of local sym {
-	summ bidask if sym=="`x'", detail
-	drop if bidask>r(p90) & sym=="`x'"
+	summ bidask if sym=="`x'" & psource~="bloomberg", detail
+	drop if bidask>r(p90) & sym=="`x'" & psource~="bloomberg"
 }
 
-collapse (median)  bid ofr, by(symbol date_obs)
-gen mid=(bid+ofr)/2
+replace mid=(ofr+bid)/2 if mid==.
+collapse (median)  mid, by(symbol date_obs psource)
 
 bysort symbol: egen double starttime=min(date_obs) 
 bysort symbol: egen starttemp=median(mid) if date_obs==starttime 
@@ -172,15 +203,65 @@ local d2_close=td(`date')+1
 local d3_open=td(`date')+1+0.188
 local d3_close=td(`date')+2
 
-twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2)) (scatter dprob timedate if symbol=="dprob" & close=="composite", yaxis(2))  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("test_`date'") xlabel(, labsize(vsmall) ) legend(order(1 "YPF Return" 2 "Prob. of Default")) xlabel(`d1_open' "D-1 9:30 am" `d1_close' "D-1 4:00 pm" `d2_open' "D 9:30 am" `d2_close' "D 4:00 pm" `d3_open' "D+1 9:30 am" `d3_close' "D+1 4:00 pm", labsize(small) angle(45)) xtitle("") graphregion(color(white))
+twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2)) (scatter dprob timedate if symbol=="dprob" & close=="composite", yaxis(2)) (scatter return timedate if symbol=="YPF" & psource=="bloomberg")  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("test_`date'") xlabel(, labsize(vsmall) ) legend(order(1 "YPF Return" 2 "Prob. of Default" 3 "Composite CDS" 4 "Bloomberg YPF O/C")) xlabel(`d1_open' "D-1 9:30 am" `d1_close' "D-1 4:00 pm" `d2_open' "D 9:30 am" `d2_close' "D 4:00 pm" `d3_open' "D+1 9:30 am" `d3_close' "D+1 4:00 pm", labsize(small) angle(45)) xtitle("") graphregion(color(white))
 graph export "$rpath/hf_`date'_newaxis.png", replace
 }
+
+
+************************************
+*NEW FIGURES THAT MATCH REGRESSIONS
+************************************
+use "$hftemp/master_winsor.dta", clear
+keep if symbol=="YPF"
+append using "$apath/dprob_hf_all.dta" 
+gen minute=mm(date_obs)
+gen hour=hh(date_obs)
+
+forvalues x=1/1 {
+	if `x'==1 {
+	local sd=td(23nov2012) 
+	local ld=td(27nov2012) 
+	}
+	keep if date>=`sd' & date<=`ld'
+}
+drop if date==`sd' & symbol~="dprob" & (psource~="bloomberg" | hour<15)
+drop if date==`sd' & symbol=="dprob" & close~="composite"
+
+*****************************************
+*Declare start to be price at start close
+*Calculate returns
+*then only keep 2 day window
+*rescale so we have date_obs is 0+time and 1+time.
+
+
+
+
+
+
+
 
 
 
 *******************
 *CREATE INDEX******
 *******************
+use "$hftemp/master_winsor.dta", clear
+foreach date in "27nov2012" "29nov2012" "05dec2012" "07dec2012" "11jan2013" "04mar2013" "27mar2013" "26aug2013" "04oct2013" "08oct2013" "19nov2013" "13jan2014" "16jun2014" "24jun2014" "27jun2014" {
+
+
+
+
+
+
+
+
+
+
+
+
+*******************
+*OLD WAY
+*************
 use "$hftemp/master_winsor.dta", clear
 levelsof (symbol), local(sum)
 discard
