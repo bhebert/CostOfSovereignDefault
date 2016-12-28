@@ -3,6 +3,7 @@ local run_test 0
 local run_defprob 1
 
 matrix drop _all
+macro drop cds_n cds_app cds_robust
 
 do ${csd_dir}/SetupPaths.do
 
@@ -21,6 +22,7 @@ do ${csd_dir}/RunDataCleaning.do
 if `run_defprob' == 1 {
 	do ${csd_dir}/ProbabilityOfDefault/Default_Prob_OneStep.do
 }
+
 
 do ${csd_dir}/RunDataCode.do
 
@@ -218,7 +220,7 @@ do ${csd_dir}/SetupPaths.do*/
 
 // CDS measure robustness
 global RSuse_gdpmodels 0
-global RSuse_indexonly 1
+*global RSuse_indexonly 1
 do ${csd_dir}/Robustness_CDS.do
 
 // Hetero event study
@@ -230,7 +232,6 @@ do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
 
-/* now produced as part of robustness
 
 global RSuse_adrs 1
 global RSuse_exrates 1
@@ -248,7 +249,7 @@ global RSexclude_SC_day 1
 do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/ThirdAnalysis.do
 
-do ${csd_dir}/RigobonSack_v3.do*/
+do ${csd_dir}/RigobonSack_v3.do
 
 
 

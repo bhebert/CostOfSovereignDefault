@@ -23,8 +23,8 @@ foreach x in  log_g17px_eurotlx logg17 g17ys g17ys_eurotlx def5y_london def5y_eu
 	if "`x'" == "log_g17px_eurotlx" | "`x'" == "def5y_london" | "`x'" == "g17ys_eurotlx" {
 		global RSdaytype twodayL
 		global RSexclude_SC_day 1
-		global RSuse_warrant 1
-		global RSuse_bonds 1
+		global RSuse_warrant 0
+		global RSuse_bonds 0
 	}
 	else if "`x'" == "def5y_europe" {
 		global RSdaytype twodayL
