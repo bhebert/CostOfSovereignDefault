@@ -56,7 +56,7 @@ gen cds_type="PUF_1y"
 keep if variables=="cds2" | variables=="Robust_SE" | variables=="Full_SE" | variables=="CI_95"
 save "$rpath/temp.dta", replace
 
-foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond Warrants_NoSC_log_g17px_eurotlx Warrants_NoSC_def5y_london NoSC_def5y_europe logg17 g17ys Warrants_NoSC_g17ys_eurotlx {
+foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y  conh_ust_def1y conh_ust_def3y conh_ust_def5y tri_conH_def1y tri_conH_def3y tri_conH_def5y tri_def5y bb_tri_def5y  ds_tri_def5y  rsbondys logrsbond NoSC_log_g17px_eurotlx NoSC_def5y_london NoSC_def5y_europe logg17 g17ys NoSC_g17ys_eurotlx {
 	**cap{
 	if regexm("`x'","Warrants") {
 		import excel "$rpath/RS_CDS_IV_reshapeADRs`x'.xls", sheet("Sheet1") firstrow clear
