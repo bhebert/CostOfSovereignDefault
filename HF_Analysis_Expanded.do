@@ -30,8 +30,10 @@ save "$apath/open_close_forhf.dta", replace
 
 *DATASET OF HF default profs
 *RISK NEUTRAL PROBS
-use date ust_def5y*  using "$apath/Default_Prob_All.dta", clear
+use date ust_def5y* mC5_5y  using "$apath/Default_Prob_All.dta", clear
 rename ust_def5y ust_def5y_composite
+*drop ust_def5y
+*rename mC5_5y ust_def5y_composite
 renpfix ust_def5y_	
 
 foreach x of varlist _all {
@@ -96,7 +98,7 @@ destring timeminfl, replace
 
 *only within trading hours
 *Last 2 minutes just close quotes
-drop if timeminfl<9.3 | timeminfl>15.58
+drop if timeminfl<9.3 | timeminfl>15.55
 drop timeminfl
 drop if bid==0 | ofr==0 | bidsiz==0 | ofrsiz==0
 
@@ -131,23 +133,301 @@ collapse (median)  mid, by(symbol date_obs psource)
 bysort symbol: egen double starttime=min(date_obs) 
 bysort symbol: egen starttemp=median(mid) if date_obs==starttime 
 bysort symbol: egen start=max(starttemp) 
-gen return=100*(log(mid)-log(start))
-drop if return==.
 drop start*
-
-*WINSORIZE
-levelsof (symbol), local(sym)
-foreach x of local sym {
-summ return if symbol=="`x'" & return~=., detail
-	replace return=r(p1) if return<r(p1) & symbol=="`x'"
-	replace return=r(p99) if return>r(p99) & symbol=="`x'"
-}
 gen msci=0
 replace msci=1 if sym=="YPF" |  sym=="BMA" |  sym=="GGAL" |  sym=="PZE" |  sym=="TEO" | sym=="BFR"
 gen date=dofc(date_obs)
 format date %td
-save "$hftemp/master_winsor.dta", replace
+save "$hftemp/master.dta", replace
 
+
+
+*******************
+*CREATE INDEX******
+*******************
+discard
+set more off
+forvalues x=1/15 {
+use "$hftemp/master.dta", clear
+append using "$apath/dprob_hf_all.dta" 
+gen minute=mm(date_obs)
+gen hour=hh(date_obs)
+*0.99 "Close 0" 
+*1.1875 "Open 1" 
+*2 "Close 1 " 
+*2.1875 "Open 2 "
+*3 "Close 2"
+local c0=.99
+local o1=1.1875
+local c1=2
+local o2=2.1875
+local c2=3
+local prestart=`c0'
+	if `x'==1 {
+	local sd=td(23nov2012) 
+	local ld=td(27nov2012) 
+	local titledate="November 27, 2012"
+	local preend=`o1'
+	local winend=`o2'
+	}
+	if `x'==2 {
+	local sd=td(27nov2012) 
+	local ld=td(29nov2012) 
+	local titledate="November 29, 2012"
+	local preend=`c1'
+	local winend=`o2'
+	}		
+	if `x'==3 {
+	local sd=td(03dec2012) 
+	local ld=td(05dec2012) 
+	local titledate="December 5, 2012"	
+	local preend=`o1'
+	local winend=`c1'
+	}		
+		if `x'==4 {
+	local sd=td(05dec2012) 
+	local ld=td(07dec2012) 
+	local titledate="December 7, 2012"	
+	local preend=`c1'
+	local winend=`c2'
+	}		
+		if `x'==5 {
+	local sd=td(09jan2013) 
+	local ld=td(11jan2013) 
+	local titledate="January 11, 2013"
+	local preend=`c1'	
+	local winend=`o2'
+	}		
+		if `x'==6 {
+	local sd=td(28feb2013) 
+	local ld=td(04mar2013) 
+	local titledate="March 4, 2013"	
+	local preend=`o1'
+	local winend=`o2'
+	}		
+		if `x'==7 {
+	local sd=td(25mar2013) 
+	local ld=td(27mar2013) 
+	local titledate="March 27, 2013"
+	local preend=`o1'
+	local winend=`o2'
+	}		
+		if `x'==8 {
+	local sd=td(22aug2013) 
+	local ld=td(26aug2013) 
+	local titledate="August 26, 2013"
+	local preend=`c0'
+	local winend=`c1'	
+	}		
+		if `x'==9 {
+	local sd=td(02oct2013) 
+	local ld=td(04oct2013) 
+	local titledate="October 4, 2013"
+	local preend=`o1'	
+	local winend=`o2'
+	}		
+		if `x'==10 {
+	local sd=td(04oct2013) 
+	local ld=td(08oct2013) 
+	local titledate="October 8, 2013"
+	local preend=`o1'
+	local winend=`c1'	
+	}				
+	if `x'==11 {
+	local sd=td(15nov2013) 
+	local ld=td(19nov2013) 
+	local titledate="November 19, 2013"	
+	local preend=`o1'
+	local winend=`o2'
+	}		
+		if `x'==12 {
+	local sd=td(09jan2014) 
+	local ld=td(13jan2014) 
+	local titledate="January 13, 2014"	
+	local preend=`o1'
+	local winend=`c1'
+	}		
+		if `x'==13 {
+	local sd=td(12jun2014) 
+	local ld=td(16jun2014) 
+	local titledate="June 16, 2014"	
+	local preend=`o2'
+	local winend=`c2'
+	}		
+		if `x'==14 {
+	local sd=td(20jun2014) 
+	local ld=td(24jun2014) 
+	local titledate="June 24, 2014"	
+	local preend=`o1'
+	local winend=`o2'
+	}	
+	if `x'==15 {
+	local sd=td(25jun2014) 
+	local ld=td(27jun2014) 
+	local titledate="June 27, 2014"	
+	local preend=`o1'
+	local winend=`c1'
+	}		
+	
+local winstart=`preend'
+	
+	
+keep if date>=`sd' & date<=`ld'
+drop if date==`sd' & symbol~="dprob" & (psource~="bloomberg" | hour<15)
+bysort symbol: gen startpricetemp=mid if date==`sd' & psource=="bloomberg"
+bysort symbol: egen startprice=max(startpricetemp)
+replace date=. if psource=="bloomberg" & date==`sd'
+drop if date==`sd' 
+gen time=hour+minute/60
+gen timeround=round(hour*10+minute/6+.49)
+order time timeround
+collapse (median) mid (lastnm) minute hour startprice, by(symbol date timeround)
+
+gen return=100*((mid-startprice)/startprice)
+drop if return==.
+
+*WINSORIZE
+levelsof (symbol), local(sym)
+foreach xxx of local sym {
+summ return if symbol=="`xxx'" & return~=., detail
+	replace return=r(p1) if return<r(p1) & symbol=="`xxx'"
+	replace return=r(p99) if return>r(p99) & symbol=="`xxx'"
+}
+
+gen quarter=qofd(date)
+mmerge quarter symbol using  "$apath/US_weighting.dta", umatch(quarter Ticker) ukeep(weight weight_exypf)
+keep if _merge==3 | symbol=="dprob"
+bysort timeround date: egen weight_sum=sum(weight)
+replace weight=weight/weight_sum
+bysort timeround date: egen weight_exypf_sum=sum(weight_exypf)
+replace weight_exypf=weight_exypf/weight_exypf_sum
+gen return_weight=return*weight
+gen return_weight_exypf=return*weight_exypf
+
+*bysort date timeround: egen countnm=count(return)
+collapse (mean) return (sum) return_weight return_weight_exypf (lastnm) minute hour, by(timeround date)
+
+*GO TO LOG RETURNS
+foreach ret in return return_weight return_weight_exypf {
+	replace `ret'=100*log((`ret'/100)+1)
+}	
+
+
+**************
+*default prob*
+**************
+append using "$apath/dprob_hf_all.dta" 
+keep if (date>=`sd' & date<=`ld') | date==.
+replace minute=mm(date_obs) if minute==.
+replace hour=hh(date_obs) if hour==.
+gen startdprobtemp=dprob if date==`sd' & close=="composite"
+egen startdprob=max(startdprobtemp)
+drop startdprobtemp
+drop if date==`sd' & close~="composite"
+replace hour=. if date==`sd' & close=="composite"
+replace minute=. if date==`sd' & close=="composite"
+replace date=. if date==`sd' & close=="composite"
+
+gen delta_dprob=dprob-startdprob
+
+replace minute=15 if hour==7
+replace hour=9 if hour==7 & symbol=="dprob"
+replace minute=45 if hour==4 & symbol=="dprob"
+replace hour=8 if hour==4 & symbol=="dprob"
+replace minute=15 if hour==2 & symbol=="dprob"
+replace hour=8 if hour==2 & symbol=="dprob"
+replace hour=hour-8
+gen time=hour+minute/60
+replace time=time/8
+gen datestr=date
+tostring datestr, replace
+encode datestr, gen(did)
+gen timedate=did+time-1
+replace timedate=.99 if date==.
+drop if timedate<.99
+
+summ return
+local tempmin=abs(r(min))
+local tempmax=abs(r(max))
+local temp=ceil(max(`tempmin',`tempmax'))
+local temp=ceil(`temp'/3)*3
+local ticksize=`temp'/3
+
+summ delta
+local tempmind=abs(r(min))
+local tempmaxd=abs(r(max))
+local tempd=ceil(max(`tempmind',`tempmaxd'))
+local tempd=ceil(`tempd'/3)*3
+local ticksized=`tempd'/3
+
+local tempcombo=ceil(max(`tempd',`temp'))
+local tempcombo=ceil(`tempcombo'/3)*3
+local ticksizecombo=`tempcombo'/3
+
+drop if return==. & symbol~="dprob"
+*twoway (line return timedate if date==`ld', lcolor(blue) sort) (line delta_dprob timedate, yaxis(2) sort) (line return timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return timedate if date==., mcolor(blue) sort), title("`titledate'") name("f`x'") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in Prob. of Default" 3 "test" 4 "test"))  xtitle("") graphregion(color(white)) ylabel(-`temp'(`ticksize')`temp', labels) ymtick(none) ylabel(-`tempd'(`ticksized')`tempd', labels axis(2)) ymtick(none, axis(2)) ytitle("") ytitle("",axis(2))
+*graph export "$rpath/f`x'.eps", replace
+
+*twoway (line return timedate if date==`ld', lcolor(blue) sort ) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon)) (line return timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return timedate if date==., mcolor(blue) sort), title("`titledate'") name("event`x'") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-`tempcombo'(`ticksizecombo')`tempcombo', labels) ymtick(none) ytitle("") xlabel(0.99 "Close" 1.1875 "Open" 2 "Close" 2.1875 "Open" 3 "Close", labsize(small) angle(45))
+*graph export "$rpath/event`x'.eps", replace
+
+*twoway (line return_weight timedate if date==`ld', lcolor(blue) sort ) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon)) (line return_weight timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return_weight timedate if date==., mcolor(blue) sort), title("`titledate'") name("f`x'_weight") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-`tempcombo'(`ticksizecombo')`tempcombo', labels) ymtick(none) ytitle("") xlabel(0.99 "Close" 1.1875 "Open" 2 "Close" 2.1875 "Open" 3 "Close", labsize(small) angle(45))
+*graph export "$rpath/event`x'_weight.eps", replace
+
+*twoway (line return_weight_exypf timedate if date==`ld', lcolor(blue) sort ) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon))  (scatter delta_dprob timedate if close=="composite", sort  mcolor(green) msize(large)) (line return_weight_exypf timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return_weight_exypf timedate if date==., mcolor(blue) sort), title("`titledate'") name("f`x'_weight_exypf") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default" 3 "Composite CDS" ))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-`tempcombo'(`ticksizecombo')`tempcombo', labels) ymtick(none) ytitle("") xlabel(0.99 "Close" 1.1875 "Open" 2 "Close" 2.1875 "Open" 3 "Close", labsize(small) angle(45))
+*graph export "$rpath/event`x'_weight_exypf.eps", replace
+
+*SHADING
+twoway (scatteri -`tempcombo' `prestart' -`tempcombo' `preend' `tempcombo' `preend' `tempcombo' `prestart', recast(area) color(grey*0.3)) (line return_weight_exypf timedate if date==`ld', lcolor(blue) sort ) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon))  (scatter delta_dprob timedate if close=="composite", sort  mcolor(green) msize(large)) (line return_weight_exypf timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return_weight_exypf timedate if date==., mcolor(blue) sort) , title("`titledate'") name("f`x'_weight_exypf_shade") xlabel(, labsize(vsmall) ) legend(order(1 "Pre-Event" 2 "Index Return" 3 "Change in  Prob. of Default" 4 "Composite CDS"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-`tempcombo'(`ticksizecombo')`tempcombo', labels) ymtick(none) ytitle("") xlabel(0.99 "Close" 1.1875 "Open" 2 "Close" 2.1875 "Open" 3 "Close", labsize(small) angle(45))
+graph export "$rpath/event`x'_weight_exypf_shade.eps", replace
+
+
+*SHADING EVENT
+twoway (scatteri -`tempcombo' `winstart' -`tempcombo' `winend' `tempcombo' `winend' `tempcombo' `winstart', recast(area) color(blue*0.3)) (line return_weight_exypf timedate if date==`ld', lcolor(blue) sort ) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon))  (scatter delta_dprob timedate if close=="composite", sort  mcolor(green) msize(large)) (line return_weight_exypf timedate if date~=`ld' & date~=., lcolor(blue) sort)  (scatter return_weight_exypf timedate if date==., mcolor(blue) sort), title("`titledate'") name("f`x'_weight_exypf_shade_event") xlabel(, labsize(vsmall) ) legend(order(1 "Event Window" 2 "Index Return" 3 "Change in  Prob. of Default" 4 "Composite CDS"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-`tempcombo'(`ticksizecombo')`tempcombo', labels) ymtick(none) ytitle("") xlabel(0.99 "Close" 1.1875 "Open" 2 "Close" 2.1875 "Open" 3 "Close", labsize(small) angle(45))
+graph export "$rpath/event`x'_weight_exypf_shade_event.eps", replace
+graph export "$rpath/writeup_`x'.eps", replace
+
+
+*EVENT ONLY
+twoway (line return_weight_exypf timedate, lcolor(blue) sort) (connected delta_dprob timedate, sort lcolor(maroon) mcolor(maroon))  (scatter delta_dprob timedate if close=="composite", sort  mcolor(green) msize(large)) if timedate>=`winstart' & timedate<=`winend', title("`titledate'") name("f`x'_windowonly") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-12(2)12, labels) ymtick(none) ytitle("") 
+graph export "$rpath/event`x'_windowonly.eps", replace
+
+
+
+keep if date==`ld'
+keep if timeround==160  | close=="composite"
+collapse (lastnm) delta_dprob return return_weight return_weight_exypf , by(date)
+gen eventnum=`x'
+save "$apath/`x'_hf.dta", replace
+}
+
+use "$apath/1_hf.dta", clear
+erase "$apath/1_hf.dta"
+forvalues x=2/15 {
+	append using "$apath/`x'_hf.dta"
+	erase "$apath/`x'_hf.dta"
+}
+order event date delta return return_weight return_weight_exypf
+save "$apath/hf_summary.dta", replace
+twoway (scatter return delta, ml(eventnum)) (scatter return_weight delta, ml(eventnum)) (scatter return_weight_exypf delta, ml(eventnum)), ytitle("Equity Return") xtitle("Change in Default Probability") graphregion(color(white)) name("HF_Scatter") 
+graph export "$rpath/hf_scatter.eps", replace
+export excel using "$rpath/hf_summ.xls", firstrow(variables) replace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 use "$hftemp/master_winsor.dta", clear
 *Nearest 5 minutes
 gen minute=mm(date_obs)
@@ -173,6 +453,7 @@ foreach date in "27nov2012" "29nov2012" "05dec2012" "07dec2012" "11jan2013" "04m
 twoway (line return date_obs if symbol=="YPF") (connected dprob date_obs if symbol=="dprob", yaxis(2))  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("hf_`date'") xlabel(, labsize(vsmall) angle(45)) legend(order(1 "YPF Return" 2 "Prob. of Default"))
 graph export "$rpath/hf_`date'.png", replace
 }
+
 
 ******************
 *NICE NEW FIGURES*
@@ -206,53 +487,116 @@ local d3_close=td(`date')+2
 twoway (line return timedate if symbol=="YPF") (connected dprob timedate if symbol=="dprob", yaxis(2)) (scatter dprob timedate if symbol=="dprob" & close=="composite", yaxis(2)) (scatter return timedate if symbol=="YPF" & psource=="bloomberg")  if date>=td(`date')-1 & date<=td(`date')+1, title("`date'") name("test_`date'") xlabel(, labsize(vsmall) ) legend(order(1 "YPF Return" 2 "Prob. of Default" 3 "Composite CDS" 4 "Bloomberg YPF O/C")) xlabel(`d1_open' "D-1 9:30 am" `d1_close' "D-1 4:00 pm" `d2_open' "D 9:30 am" `d2_close' "D 4:00 pm" `d3_open' "D+1 9:30 am" `d3_close' "D+1 4:00 pm", labsize(small) angle(45)) xtitle("") graphregion(color(white))
 graph export "$rpath/hf_`date'_newaxis.png", replace
 }
+*/
+
+/*
 
 
-************************************
+*****************************
 *NEW FIGURES THAT MATCH REGRESSIONS
 ************************************
+
+forvalues x=1/15 {
 use "$hftemp/master_winsor.dta", clear
 keep if symbol=="YPF"
 append using "$apath/dprob_hf_all.dta" 
 gen minute=mm(date_obs)
 gen hour=hh(date_obs)
-
-forvalues x=1/1 {
 	if `x'==1 {
 	local sd=td(23nov2012) 
 	local ld=td(27nov2012) 
 	}
+	if `x'==2 {
+	local sd=td(27nov2012) 
+	local ld=td(29nov2012) 
+	}		
+	if `x'==3 {
+	local sd=td(03dec2012) 
+	local ld=td(05dec2012) 
+	}		
+		if `x'==4 {
+	local sd=td(05dec2012) 
+	local ld=td(07dec2012) 
+	}		
+		if `x'==5 {
+	local sd=td(09jan2013) 
+	local ld=td(11jan2013) 
+	}		
+		if `x'==6 {
+	local sd=td(28feb2013) 
+	local ld=td(04mar2013) 
+	}		
+		if `x'==7 {
+	local sd=td(25mar2013) 
+	local ld=td(27mar2013) 
+	}		
+		if `x'==8 {
+	local sd=td(22aug2013) 
+	local ld=td(26aug2013) 
+	}		
+		if `x'==9 {
+	local sd=td(02oct2013) 
+	local ld=td(04oct2013) 
+	}		
+		if `x'==10 {
+	local sd=td(04oct2013) 
+	local ld=td(08oct2013) 
+	}				
+	if `x'==11 {
+	local sd=td(15nov2013) 
+	local ld=td(19nov2013) 
+	}		
+		if `x'==12 {
+	local sd=td(09jan2013) 
+	local ld=td(13jan2013) 
+	}		
+		if `x'==13 {
+	local sd=td(12jun2014) 
+	local ld=td(16jun2014) 
+	}		
+		if `x'==14 {
+	local sd=td(20jun2014) 
+	local ld=td(24jun2014) 
+	}	
+	if `x'==15 {
+	local sd=td(25jun2014) 
+	local ld=td(27jun2014) 
+	}			
 	keep if date>=`sd' & date<=`ld'
-}
+
 drop if date==`sd' & symbol~="dprob" & (psource~="bloomberg" | hour<15)
 drop if date==`sd' & symbol=="dprob" & close~="composite"
+drop return
+gen startpricetemp=mid if date==`sd' & psource=="bloomberg"
+egen startprice=max(startpricetemp)
+gen startdprobtemp=dprob if date==`sd' & close=="composite"
+egen startdprob=max(startdprobtemp)
+order  startprice startdprob
+drop *temp
+drop if date==`sd'
+gen return=100*(log(mid)-log(startprice))
+gen delta_dprob=dprob-startdprob
+
+replace hour=9 if hour==7 & symbol=="dprob"
+replace minute=30 if hour==4 & symbol=="dprob"
+replace hour=8 if hour==4 & symbol=="dprob"
+replace hour=8 if hour==2 & symbol=="dprob"
+replace hour=hour-8
+gen time=hour+minute/60
+replace time=time/8
+gen datestr=date
+tostring datestr, replace
+encode datestr, gen(did)
+
+gen timedate=did+time-1
+twoway (line return timedate if symbol=="YPF") (connected delta_dprob timedate if symbol=="dprob", yaxis(2)), title("`x'") name("f`x'") xlabel(, labsize(vsmall) ) legend(order(1 "YPF Return" 2 "Prob. of Default" 3 "Composite CDS" 4 "Bloomberg YPF O/C"))  xtitle("") graphregion(color(white))
+}
 
 *****************************************
 *Declare start to be price at start close
 *Calculate returns
 *then only keep 2 day window
 *rescale so we have date_obs is 0+time and 1+time.
-
-
-
-
-
-
-
-
-
-
-*******************
-*CREATE INDEX******
-*******************
-use "$hftemp/master_winsor.dta", clear
-foreach date in "27nov2012" "29nov2012" "05dec2012" "07dec2012" "11jan2013" "04mar2013" "27mar2013" "26aug2013" "04oct2013" "08oct2013" "19nov2013" "13jan2014" "16jun2014" "24jun2014" "27jun2014" {
-
-
-
-
-
-
 
 
 
