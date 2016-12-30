@@ -423,6 +423,117 @@ export excel using "$rpath/hf_summ.xls", firstrow(variables) replace
 
 
 
+************
+*EVENT ONLY*
+
+*******************
+*CREATE INDEX******
+*******************
+discard
+set more off
+forvalues x=1/5 {
+use "$hftemp/master.dta", clear
+gen minute=mm(date_obs)
+gen hour=hh(date_obs)
+
+
+	if `x'==1 {
+	local sd=td(04dec2012) 
+	local ld=td(04dec2012) 
+	local titledate="December 4, 2012"	
+	}		
+	
+	if `x'==2 {
+	local sd=td(07oct2013) 
+	local ld=td(07oct2013) 
+	local titledate="October 7, 2013"
+	}
+	
+	if `x'==3 {
+	local sd=td(10jan2014) 
+	local ld=td(10jan2014) 
+	local titledate="January 10, 2014"	
+	}		
+	
+	if `x'==4 {
+	local sd=td(16jun2014) 
+	local ld=td(16jun2014) 
+	local titledate="June 16, 2014"	
+
+	}		
+
+	if `x'==5 {
+	local sd=td(26jun2014) 
+	local ld=td(26jun2014) 
+	local titledate="June 26, 2014"	
+	}		
+
+		
+	
+keep if date>=`sd' & date<=`ld'
+bysort symbol: gen startpricetemp=mid if date==`sd' & psource=="bloomberg" & hour==9
+bysort symbol: egen startprice=max(startpricetemp)
+gen time=hour+minute/60
+gen timeround=round(hour*10+minute/6+.49)
+order time timeround
+collapse (median) mid (lastnm) minute hour startprice, by(symbol date timeround)
+
+gen return=100*((mid-startprice)/startprice)
+drop if return==.
+
+*WINSORIZE
+levelsof (symbol), local(sym)
+foreach xxx of local sym {
+summ return if symbol=="`xxx'" & return~=., detail
+	replace return=r(p1) if return<r(p1) & symbol=="`xxx'"
+	replace return=r(p99) if return>r(p99) & symbol=="`xxx'"
+}
+
+gen quarter=qofd(date)
+mmerge quarter symbol using  "$apath/US_weighting.dta", umatch(quarter Ticker) ukeep(weight weight_exypf)
+keep if _merge==3 | symbol=="dprob"
+bysort timeround date: egen weight_sum=sum(weight)
+replace weight=weight/weight_sum
+bysort timeround date: egen weight_exypf_sum=sum(weight_exypf)
+replace weight_exypf=weight_exypf/weight_exypf_sum
+gen return_weight=return*weight
+gen return_weight_exypf=return*weight_exypf
+
+*bysort date timeround: egen countnm=count(return)
+collapse (mean) return (sum) return_weight return_weight_exypf (lastnm) minute hour, by(timeround date)
+
+*GO TO LOG RETURNS
+foreach ret in return return_weight return_weight_exypf {
+	replace `ret'=100*log((`ret'/100)+1)
+}	
+
+
+**************
+*default prob*
+**************
+append using "$apath/dprob_hf_all.dta" 
+keep if date>=`sd' & date<=`ld'
+replace minute=mm(date_obs) if minute==.
+replace hour=hh(date_obs) if hour==.
+gen startdprobtemp=dprob if date==`sd' & close=="europe"
+egen startdprob=max(startdprobtemp)
+drop startdprobtemp
+drop if close=="japan" | close=="asia" | close=="londonmidday"
+
+
+gen delta_dprob=dprob-startdprob
+
+gen time=hour+minute/60
+
+*EVENT ONLY
+twoway (line return_weight_exypf time, lcolor(blue) sort) (scatter delta_dprob time, sort lcolor(maroon) mcolor(maroon) ml(close)) if time>=9.5 & time<=16, title("xx") name("xx") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-12(2)12, labels) ymtick(none) ytitle("") 
+graph export "$rpath/event`x'_windowonly.eps", replace
+
+
+
+
+
+
 
 
 
