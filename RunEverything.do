@@ -252,6 +252,25 @@ do ${csd_dir}/ThirdAnalysis.do
 do ${csd_dir}/RigobonSack_v3.do
 
 
+*WARRANTS FIGURE
+global RSuse_adrs 1
+global RSuse_exrates 1
+global RSuse_otherdefp 0
+global RSuse_equityind 0
+global RSuse_coreonly 1
+global RSuse_indexonly 1
+global RSuse_warrant 1
+global RSuse_bonds 0
+global RSregs OLS RS_CDS_IV
+global RSdaytype twodayL
+global RSwarrants_run 1
+global RSexclude_SC_day 0
+
+do ${csd_dir}/CDSMaker.do
+do ${csd_dir}/ThirdAnalysis.do
+do ${csd_dir}/Summary_Plots_Warrants.do
+
+
 
 //DTCC Table
 do ${csd_dir}/DataCleaningScripts/DTCC_Clean.do
