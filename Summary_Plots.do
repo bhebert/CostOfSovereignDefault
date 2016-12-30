@@ -30,7 +30,7 @@ local y=`y'+1
 }*/
 replace cds=cds_*100
 
-local indplot ADRB_PBRTS ADRBlue BCS   dolarblue 
+local indplot ADRB_PBRTS ADRBlue BCS   dolarblue gdpw_bfeur gdpw_bfusd 
 local y=1
 discard
 foreach x of local indplot {
