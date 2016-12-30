@@ -30,7 +30,18 @@ local y=`y'+1
 }*/
 replace cds=cds_*100
 
-local indplot ADRB_PBRTS ADRBlue BCS   dolarblue gdpw_bfeur gdpw_bfusd 
+*WARRANT PLOTS
+local warrantplot gdpw_bfeur gdpw_bfusd 
+local y=1
+discard
+foreach x of local warrantplot {
+twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(n2)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="twodayL", legend(order(1 "Non-Event" 2 "Event")) xtitle("Change in Default Probability") ytitle("Log Change") name("TwodayL_`x'") graphregion(fcolor(white) lcolor(white))
+graph export "$rpath/Scatter_`x'_twodayL.eps", replace
+local y=`y'+1
+} 
+
+*EXCHANGE RATE PLOTS
+local indplot ADRB_PBRTS ADRBlue BCS   dolarblue 
 local y=1
 discard
 foreach x of local indplot {
