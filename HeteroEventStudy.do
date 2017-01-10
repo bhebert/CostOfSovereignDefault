@@ -158,7 +158,7 @@ gen J1 = CAR / sqrt(Vest) / N
 by ind_id shocktype: egen Nintra = count(resid_zs) if day_type=="intra"
 by ind_id shocktype: egen CARintra = sum(resids) if day_type=="intra"
 by ind_id shocktype: egen DCDSintra = sum(cds_resids*(resid_zs!=.)) if day_type=="intra"
-by ind_id shocktype: egen Vestintra = sum(sdevs*sdevs/N/N*(resid_zs!=.)) if day_type=="intra"
+by ind_id shocktype: egen Vestintra = sum(sdevs*sdevs/Nintra/Nintra*(resid_zs!=.)) if day_type=="intra"
 by ind_id shocktype: egen J2intra = mean(resid_zs) if day_type=="intra"
 
 * Compute the J1 and J2 from CLM textbook.
@@ -171,7 +171,7 @@ save "`temp'", replace
 keep if firmname=="`example_sec'"
 keep if day_type=="intra"
 keep if event_ == 1
-keep firmname day_type date cds_resids resids sdevs cds_sdevs
+//keep firmname day_type date cds_resids resids sdevs cds_sdevs
 sort date
 export excel using "$rpath/HeteroEventStudy_IntraData.xls", firstrow(variables) replace
 
