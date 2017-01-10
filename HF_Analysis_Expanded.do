@@ -416,16 +416,8 @@ export excel using "$rpath/hf_summ.xls", firstrow(variables) replace
 
 
 
-
-
-
-
-
-
-
 ************
 *EVENT ONLY*
-
 *******************
 *CREATE INDEX******
 *******************
@@ -437,9 +429,13 @@ gen minute=mm(date_obs)
 gen hour=hh(date_obs)
 
 
+
 	if `x'==1 {
 	local sd=td(04dec2012) 
 	local ld=td(04dec2012) 
+	local yhigh=6
+	local ylow=-`yhigh'
+	local step=3
 	local titledate="December 4, 2012"	
 	}		
 	
@@ -447,17 +443,26 @@ gen hour=hh(date_obs)
 	local sd=td(07oct2013) 
 	local ld=td(07oct2013) 
 	local titledate="October 7, 2013"
+	local yhigh=6
+	local ylow=-`yhigh'
+	local step=3
 	}
 	
 	if `x'==3 {
 	local sd=td(10jan2014) 
 	local ld=td(10jan2014) 
+	local yhigh=4
+	local ylow=-`yhigh'
+	local step=2
 	local titledate="January 10, 2014"	
 	}		
 	
 	if `x'==4 {
 	local sd=td(16jun2014) 
 	local ld=td(16jun2014) 
+	local yhigh=12
+	local ylow=-`yhigh'	
+	local step=4
 	local titledate="June 16, 2014"	
 
 	}		
@@ -466,6 +471,10 @@ gen hour=hh(date_obs)
 	local sd=td(26jun2014) 
 	local ld=td(26jun2014) 
 	local titledate="June 26, 2014"	
+	local yhigh=4
+	local ylow=-`yhigh'	
+	local step=2
+	
 	}		
 
 		
@@ -519,16 +528,16 @@ gen startdprobtemp=dprob if date==`sd' & close=="europe"
 egen startdprob=max(startdprobtemp)
 drop startdprobtemp
 drop if close=="japan" | close=="asia" | close=="londonmidday"
-
+gen cshort=upper(substr(close,1,1))
 
 gen delta_dprob=dprob-startdprob
 
 gen time=hour+minute/60
 
 *EVENT ONLY
-twoway (line return_weight_exypf time, lcolor(blue) sort) (scatter delta_dprob time, sort lcolor(maroon) mcolor(maroon) ml(close)) if time>=9.5 & time<=16, title("xx") name("xx") xlabel(, labsize(vsmall) ) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(-12(2)12, labels) ymtick(none) ytitle("") 
+twoway (line return_weight_exypf time, lcolor(blue) sort) (scatter delta_dprob time, sort lcolor(maroon) mcolor(maroon) ml(cshort)) if time>=9.5 & time<=16, title("`titledate'") name("x`x'") xlabel(9.5 "9:30 am" 12 "12:00 pm" 14 "2:00 pm" 16 "4:00 pm",angle(45)) legend(order(1 "Index Return" 2 "Change in  Prob. of Default"))  ytitle("Percent") xtitle("") graphregion(color(white)) ylabel(`ylow'(`step')`yhigh', labels) ymtick(none) ytitle("") 
 graph export "$rpath/event`x'_windowonly.eps", replace
-
+}
 
 
 
