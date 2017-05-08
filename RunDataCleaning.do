@@ -12,7 +12,9 @@ do ${csd_dir}/DataCleaningScripts/Commodity_Clean.do
 *do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
 *do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
 
-do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
+** Candidate for removal
+** Data comes from somewhere else
+** do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
 
 do ${csd_dir}/DataCleaningScripts/dolarblue_clean.do
 
