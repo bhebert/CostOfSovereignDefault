@@ -2,8 +2,9 @@
 * Path to root of location with data files
 * "$droppath" may not be defined for you
 * Edit the entire path to wherver the data files are
-global csd_data "$droppath/Cost of Sovereign Default"
+*global csd_data "$droppath/Cost of Sovereign Default"
 
+global cds_data "$droppath/Hebert_Schreger_AER/AER-Data"
 
 
 * Code to setup global path variables
