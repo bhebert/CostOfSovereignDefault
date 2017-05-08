@@ -15,3 +15,7 @@ mmerge
 rmfiles
 sxpose
 
+
+note that these packages can be installed using (for example)
+"ssc install ivreg2"
+
