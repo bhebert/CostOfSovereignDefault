@@ -1,4 +1,4 @@
-import excel "$miscdata/EuroTLXData.xlsx", sheet("Sheet1") allstring clear
+import excel "$bbpath/EuroTLXData.xlsx", sheet("Sheet1") allstring clear
 drop if _n==1
 drop I J K L M N
 foreach x of varlist _all {
@@ -20,8 +20,7 @@ foreach x in px_last px_ask px_bid px_volume {
 	replace `x'="" if regexm(`x',"#N")==1
 	destring `x', replace	
 }
-*save "$miscdata/EuroTLXData", replace
-*use  "$miscdata/EuroTLXData", clear
+
 keep date px_last
 gen Ticker="eurotlx"
 gen px_open=px_last

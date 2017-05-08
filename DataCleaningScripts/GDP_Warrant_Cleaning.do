@@ -1,8 +1,8 @@
 
 
 *GDP WARRANTS
-global dir_inter "$mainpath/GDP Warrants/inter/"
-global dir_warrants "$mainpath/GDP Warrants"
+global dir_inter "$warrant_path/inter/"
+global dir_warrants "$warrant_path"
 cap mkdir $apath/winter
 set more off
 import excel "$dir_warrants/Warrant Info/GDP Warrants Full.xlsx", sheet("Prices") clear

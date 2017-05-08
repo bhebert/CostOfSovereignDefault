@@ -1,5 +1,5 @@
 *Clean CRSP ADR Data
-use "$miscdata/CRSP Security/ADR_CRSP_daily.dta", clear
+use "$crsp_path/ADR_CRSP_daily.dta", clear
 drop if ticker=="PC"
 encode ticker, gen (tid)
 bysort tid date: gen n=_n

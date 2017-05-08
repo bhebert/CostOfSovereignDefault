@@ -4,7 +4,7 @@
 
 *Clean data
 set more off
-use "$mainpath/CRSP/Argentina_ADRdta.dta", clear
+use "$crsp_path/Argentina_ADRdta.dta", clear
 drop if ticker=="PZL" | ticker=="POEA" | ticker=="POBR" | ticker=="PC" | ticker=="BRO"
 bysort ticker: tab comnam
 drop if comnam=="PENNZENERGY CO" | comnam=="POE & BROWN INC" | comnam=="PAMIDA HOLDINGS CORP" | comnam=="PACIFIC C M A INC"
@@ -33,7 +33,7 @@ replace ratio=1 if ADR_T=="YPF"
 save "$apath/CRSP_ADR.dta", replace
 
 
-use "$mainpath/Local Data/Bolsar/Bolsar_merged.dta", clear
+use "$local_path/Bolsar/Bolsar_merged.dta", clear
 rename ticker Ticker
  keep if Ticker=="GGAL" | Ticker=="TS" | Ticker=="FRAN" | Ticker=="BMA" | Ticker=="PAMP" | Ticker=="PESA" | Ticker=="APBR" | Ticker=="TECO2" | Ticker=="YPFD"
 rename Ticker Under_Ticker

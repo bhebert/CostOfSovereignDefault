@@ -18,10 +18,10 @@ foreach x of varlist _all {
 	}
 	
 	local ii=`i'-1
-save "$mainpath/Bloomberg/intermediate/BCS.dta", replace
+save "$apath/BCStemp.dta", replace
 	
 	forvalues i=1(2)`ii' {
-use "$mainpath/Bloomberg/intermediate/BCS.dta", clear
+use "$apath/BCStemp.dta", clear
 local y=`i'+1
 keep v`i' v`y'
 local temp=v`i'[1]
@@ -35,12 +35,12 @@ rename v`i' date
 rename v`y' px_last
 drop if _n==1 | _n==2
 local x=`y'/2
-save "$mainpath/Bloomberg/intermediate/BCS_`x'.dta", replace
+save "$apath/BCS_`x'.dta", replace
 }
 
-use "$mainpath/Bloomberg/intermediate/BCS_1.dta", clear
+use "$apath/BCS_1.dta", clear
 forvalues i=2/54 {
-append using "$mainpath/Bloomberg/intermediate/BCS_`i'.dta"
+append using "$apath/BCS_`i'.dta"
 }
 split ticker, p("_")
 rename ticker ticker_full
@@ -58,10 +58,10 @@ gen ARS_temp=0
 replace ARS_temp=1 if px_last>200 & date==td(16jun2014)
 bysort ticker_full: egen ARS=max(ARS_temp)
 drop ARS_temp
-save "$mainpath/Bloomberg/Datasets/BCS.dta", replace
+save "$apath/BCStemp.dta", replace
 
 *Drop bad data series 
-use  "$mainpath/Bloomberg/Datasets/BCS.dta", clear
+use  "$apath/BCStemp.dta", clear
 keep if yofd(date)>=2011 & yofd(date)<=td(01aug2014)
 encode bb_ticker, gen(tid)
 sort tid date

@@ -8,9 +8,9 @@ do ${csd_dir}/SetupPaths.do
 
 do ${csd_dir}/DataCleaningScripts/Commodity_Clean.do
 
-do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
-
-do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
+** Candidate for removal
+*do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
+*do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Clean_PUF.do
 
@@ -18,23 +18,28 @@ do ${csd_dir}/DataCleaningScripts/dolarblue_clean.do
 
 do ${csd_dir}/DataCleaningScripts/CRSP_Bolsar_Blue.do
 
-do ${csd_dir}/DataCleaningScripts/US_Inflation.do
+** Candidate for removal
+**do ${csd_dir}/DataCleaningScripts/US_Inflation.do
 
 do ${csd_dir}/DataCleaningScripts/BCS.do
 
-do ${csd_dir}/DataCleaningScripts/GDP_Inflation_Cleaning.do
+** Candidate for removal
+*do ${csd_dir}/DataCleaningScripts/GDP_Inflation_Cleaning.do
 
 do ${csd_dir}/DataCleaningScripts/GDP_Warrant_Cleaning.do
 
 do ${csd_dir}/DataCleaningScripts/Additional_ADRs.do
 
-do ${csd_dir}/DataCleaningScripts/Ambito.do
+
+** Candidate for removal-- alternative blue rate not mentioned in paper?
+*do ${csd_dir}/DataCleaningScripts/Ambito.do
 
 do ${csd_dir}/DataCleaningScripts/euro_tlx.do
 
 do ${csd_dir}/DataCleaningScripts/Cleaning_Bond_Level.do
 
-do ${csd_dir}/DataCleaningScripts/TC_clean.do
+** Candidate for removall- transfer and convertability rating?
+** do ${csd_dir}/DataCleaningScripts/TC_clean.do
 
 do ${csd_dir}/DataCleaningScripts/Other_Equities.do
 

@@ -1,6 +1,6 @@
 *CLEAN UP Bloomberg and Datastream April 2016
 tempfile bball cds1 cds2 cds3 cds4 cds5 cds6
-import excel "$miscdata/BB_DS_CDS_April2016/Argentina_BB_Full_April2016.xlsx", allstring sheet("data") clear
+import excel "$bbpath/Argentina_BB_Full_April2016.xlsx", allstring sheet("data") clear
 foreach x of varlist _all {
 	if `x'[2]=="" {
 		drop `x'

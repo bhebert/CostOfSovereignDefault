@@ -1,6 +1,15 @@
 
+
+** Set to 1 for running test, as opposed to everything
 local run_test 0
+
+** Set to 1 if regenerating default probabilities using matlab
 local run_defprob 1
+
+
+
+*** Should not need to edit below here
+
 
 matrix drop _all
 macro drop cds_n cds_app cds_robust

@@ -122,10 +122,11 @@ gen finvar = 0
 replace finvar = 1 if regexm(industry_sector,"Financial") | regexm(industry_sector,"Banks")
 replace finvar = . if regexm(industry_sector,"Real Estate") | regexm(industry_sector,"RlEst")
 
-
-rename Ticker ticker
+** We don't need TC ratings anymore
+/*rename Ticker ticker
 mmerge ticker using "$apath/TCind.dta", unmatched(master)
-rename ticker Ticker
+rename ticker Ticker*/
+
 save "`firmtabletemp'", replace
 
 **************************
