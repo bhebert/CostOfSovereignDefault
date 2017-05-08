@@ -15,13 +15,13 @@ save "`eur'", replace
 
 
 *Cleaning Bloomberg data
-global dir_inter "~/Dropbox/Cost of Sovereign Default/Bloomberg/intermediate"
-global dir_datasets "~/Dropbox/Cost of Sovereign Default/Bloomberg/Datasets"
+*global dir_inter "~/Dropbox/Cost of Sovereign Default/Bloomberg/intermediate"
+*global dir_datasets "~/Dropbox/Cost of Sovereign Default/Bloomberg/Datasets"
 tempfile Gov_time_series
 
 set more off
 local stale_thresh=.2
-import excel "$mainpath/Bloomberg/Data/Debt_Securities.xlsx", sheet("Gov_all") firstrow clear
+import excel "$bbpath/Data/Debt_Securities.xlsx", sheet("Gov_all") firstrow clear
 foreach x in Bond Name ISSUE_DT maturity market_issue ID_ISIN currency COLLECTIVE_ACTION_CLAUSE GOVERNING_LAW Defaulted cpn_typ CREDIT_EVENT_RESTRUCTURING AMT_OUTSTANDING AMT_ISSUED INFLATION_LINKED_INDICATOR security_typ CNTRY_ISSUE_ISO {
 local temp=lower("`x'")
 rename `x' `temp'
@@ -56,7 +56,7 @@ gen ticker=subinstr(bond," Corp","",.)
 order ticker
 save "$apath/Gov_bonds_static.dta", replace
 
-import excel "$mainpath/Bloomberg/Data/Debt_Securities.xlsx", sheet("Gov_Prices_Value")  allstring clear
+import excel "$bbpath/Data/Debt_Securities.xlsx", sheet("Gov_Prices_Value")  allstring clear
 foreach x of varlist _all {
 tostring `x', replace
 	if `x'[3]=="" | `x'[3]=="#N/A N/A" | `x'[3]=="#N/A" {
@@ -88,14 +88,14 @@ rename v`y' ytm_mid
 rename v`z' px_last
 drop if _n==1 | _n==2
 local x=`z'/3
-save "$mainpath/Bloomberg/intermediate/govbond_`x'.dta", replace
+save "$apath/govbond_`x'.dta", replace
 }	
 
 
 
-use "$mainpath/Bloomberg/intermediate/govbond_1.dta", clear
+use "$apath/govbond_1.dta", clear
 forvalues i=2/131 {
-append using "$mainpath/Bloomberg/intermediate/govbond_`i'.dta"
+append using "$apath/govbond_`i'.dta"
 }
 rename date datestr
 gen date=date(datestr,"MDY")

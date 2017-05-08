@@ -1,16 +1,21 @@
 
 * Path to root of location with data files
 * "$droppath" may not be defined for you
-* Edit the entire path to wherver the data files are
-*global csd_data "$droppath/Cost of Sovereign Default"
+* Edit the entire path to wherever the data files are
 
+
+*global csd_data "$droppath/Cost of Sovereign Default"
 global csd_data "$droppath/Hebert_Schreger_AER/AER-Data"
+
+* Path to root of location for results.
+* Directory must exist.
+global csd_results "$droppath/Cost of Sovereign Default/Results"
 
 
 * Code to setup global path variables
 * You should not need to edit below here
 
-global bbpath "$csd_data/Bloomberg/Datasets"
+global bbpath "$csd_data/Bloomberg"
 global opath "$csd_data/Notes"
 global fpath "$csd_data/Additional Data"
 global dpath "$csd_data/Datastream"
@@ -34,11 +39,11 @@ global mainpath "$csd_data"
 local sysdate = subinstr(c(current_date)," ","",.)
 
 if "$alt_rho" == "" | "$alt_rho" == "0" {
-	global rpath "$csd_data/Results/${whoami}_`sysdate'"
+	global rpath "$csd_results/${whoami}_`sysdate'"
 }
 else {
 	local ext = string($alt_rho)
-	global rpath "$csd_data/Results/${whoami}_`sysdate'_`ext'"
+	global rpath "$csd_results/${whoami}_`sysdate'_`ext'"
 }
 capture confirm file "$rpath/nul"
 if _rc { 

@@ -12,7 +12,7 @@ local event_cut 10
 
 tempfile adrtemp firmtabletemp
 
-use "$bbpath/ADR_Static.dta", clear
+use "$bbpath/Datasets/ADR_Static.dta", clear
 
 keep ticker ticker_short Primary_Exchange
 
