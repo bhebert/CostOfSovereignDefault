@@ -8,43 +8,6 @@ local tbill_weight 0
 
 set more off
 
-/*use "$apath/Datastream_Quarterly.dta", clear
-
-mmerge Ticker using "$apath/FirmTable.dta"
-keep if _merge==3
-split ADRticker, p(" ")
-drop ADRticker2 ADRticker3
-drop Ticker
-rename ADRticker1 Ticker
-keep Ticker quarter MV EPS ADRratio WC05101 leverage WC03255 WC03501 WC02999
-rename WC05101 DivPerShare
-rename WC03255 TotalDebt
-rename WC03501 BookCommon
-rename WC02999 TotalAssets
-
-drop if Ticker==""
-
-sort  Ticker quarter
-encode Ticker, gen(tid)
-tsset tid quarter
-
-gen MVye = MV
-
-gen year = year(dofq(quarter))
-
-* The total assets stuff is the same each quarter
-replace MVye = . if year == F.year
-
-gen negqtr = -quarter
-
-bysort tid year (negqtr): carryforward MVye, replace
-
-sort tid quarter
-
-gen MV2 = (L3.TotalAssets - L3.BookCommon + L3.MVye * 1000) / 1000
-
-replace leverage = MV2 / L3.MVye*/
-
 use "$apath/ADR_CRSP.dta", clear
 
 gen MV = marketeq
@@ -129,51 +92,10 @@ drop total_market total_market2
 replace quarter=quarter+1
 
 
-/*bysort quarter: egen total_market=sum(MV)
-gen weight=MV/total_market
-replace weight=0 if weight==.
-bysort quarter: egen test=sum(weight)
-drop test total_market
-
-bysort quarter: egen total_market=sum(MV) if Ticker~="YPFD"
-gen weight_exypf=MV/total_market if Ticker~="YPFD"
-replace weight_exypf=0 if weight_exypf==.
-bysort quarter: egen test=sum(weight_exypf)
-drop test total_market
-replace quarter=quarter+1*/
 
 save "$apath/AR_weighting.dta", replace
 
 
-
-
-
-******************************************
-*CONSTRUCT RETURNS ON THE  VALUE INDICES**
-******************************************
-
-*FACTOR STUFF
-*SET UP FACTORS FOR MERGE
-//use "$apath/MarketFactorsNew.dta", clear
-* Save the names of each factor variable, which will
-* be needed to avoid dropping them later
-//levelsof ticker, local(factors)
-* Now there is a factor_intraSPX, factor_intraVIX, etc...
-/*reshape wide factor_intra factor_nightbefore factor_onedayN factor_onedayL factor_1_5 factor_twoday factor_twodayL, i(date) j(ticker) string
-local fnames
-local fprefs
-foreach nm in `factors' {
-	local fprefs `fprefs' `nm'_
-	foreach et in intra nightbefore onedayN onedayL 1_5 twoday {
-		rename factor_`et'`nm' `nm'_`et'
-		local fnames `fnames' `nm'_`et'
-		
-	}
-}
-disp "`fnames'"
-disp "`fprefs'"
-tempfile factor_temp
-save "`factor_temp'", replace*/
 
 *******************************************************
 *Construct T-bill returns for inclusion in Value Index*
@@ -203,10 +125,6 @@ rename total_return total_return
 
 *Assuming the interest is earned overnight and there is no price movement
 gen px_open=1
-
-*Assuming the interest is earned between open and close
-*gen px_open=l.total_return
-*gen px_close=total_return
 gen px_close = 1
 
 gen Ticker="Tbill"
@@ -241,7 +159,7 @@ foreach mark in US AR {
 		
 		local weightfile="`mark'_weighting"
 		
-		use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
+		use "$bbpath/Datasets/BB_Local_ADR_Indices_April2014.dta", clear
 		
 		drop if date == .
 		drop if Ticker == ""
