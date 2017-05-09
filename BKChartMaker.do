@@ -1,9 +1,6 @@
 *EXAMPLE OF IMPORTING TABLE FOR CROSS SECTION
 	*IMPORT 2SLSIV
 	
-local droppath /Users/jesseschreger/Dropbox
-*local droppath C:/Users/Benjamin/Dropbox
-*local droppath /Users/bhebert/Dropbox
 
 
 *import excel "`dir_resultsb'/RS_CDS_IVHMLLocal_relative_noex_fixed.xlsx", sheet("Sheet1") clear
