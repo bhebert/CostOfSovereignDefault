@@ -175,7 +175,7 @@ foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
 use  "$mpath/Sameday_USD.dta", clear
 keep if snaptime=="`y'"
 keep date Spread* Recovery
-mmerge date using "$mpath/swaprates.dta"
+mmerge date using "$apath/swaprates.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -202,12 +202,10 @@ export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
 ****************************************
 use  "$mpath/Composite_USD.dta", clear
 keep date Spread* Recovery
-<<<<<<< HEAD
+
 mmerge date using "$apath/UST_Zero.dta"
 order date Recovery
-=======
-mmerge date using "$mpath/UST_Zero.dta"
->>>>>>> master
+
 drop _merge
 gen datenum=date
 order datenum date 
