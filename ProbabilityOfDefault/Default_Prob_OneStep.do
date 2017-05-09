@@ -316,19 +316,9 @@ export delimited using "$apath/Matlab_June16.csv", replace novarnames
 **************************************************
 *Open Matlab and Run the Bootstrapping
 **************************************************
-*Declare whether user is Jesse or Ben. Jesse is 1. Ben is 2.
-*test=0 means full run, test=1 is a test;
-global test=0
-if "$whoami"=="JesseS" {
-global user=1
-}
-
-if regexm("$whoami","BenH") {
-global user=2
-}
 
 cd $csd_dir/ProbabilityOfDefault
-shell $matlab -nosplash -nodesktop -r "user=$user; test=$test; DefProb_Bootstrap"
+shell $matlab -nosplash -nodesktop -r "apath='$apath/'; test=0; DefProb_Bootstrap"
 
 ***************************
 *FILES NOW BACK FROM MATLAB
