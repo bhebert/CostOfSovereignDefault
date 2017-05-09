@@ -2,15 +2,6 @@
 *Robustness Table*
 ******************
 
-*do ${csd_dir}/SetupPaths.do
-
-*do ${csd_dir}/StaticTable.do
-
-*do ${csd_dir}/ADR_Value.do
-
-*do ${csd_dir}/BlueRateMaker.do
-
-*do ${csd_dir}/GlobalFactors.do
 
 * This can only be run from RunEverything
 
@@ -43,8 +34,7 @@ foreach x in  log_g17px_eurotlx logg17 g17ys g17ys_eurotlx def5y_london def5y_eu
 	do ${csd_dir}/ThirdAnalysis.do
 	
 	do "$csd_dir/RigobonSack_v3.do"	
-	//do ${csd_dir}/RunDataCode.do
-	//do ${csd_dir}/RunAnalysis.do
+
 }
 
 global RSdaytype twoday
@@ -106,94 +96,6 @@ export excel using "$rpath/Robustness_Table_Compact.xls", firstrow(variables) re
 global cds_robust 0
 global cds_app ""
 global cds_n ""
-
-/*
-forvalues cdsii=1/14 {
-if `cdsii'==1 {
-	global cds_app "_3y"
-	global cds_n "def3y"
-}	
-else if `cdsii'==2 {
-	global cds_app "_7y"
-	global cds_n "def7y"
-}
-
-else if `cdsii'==3 {
-	global cds_app "_3yConR"
-	global cds_e "conh_def3y_europe"
-	global cds_n "conh_def3y"
-
-}
-
-else if `cdsii'==4 {
-	global cds_app "_5yConR"
-	global cds_e "conh_def5y_europe"
-	global cds_n "conh_def5y"
-}
-
-else if `cdsii'==5 {
-	global cds_app "_7yConR"
-	global cds_e "conh_def7y_europe"
-	global cds_n "conh_def7y"
-
-}
-
-else if `cdsii'==6 {
-	global cds_app "_3yTri"
-	global cds_e "tri_def3y_europe"
-	global cds_n "tri_def3y"
-
-}
-
-else if `cdsii'==7 {
-	global cds_app "_5yTri"
-	global cds_e "tri_def5y_europe"
-	global cds_n "tri_def5y"
-}
-
-else if `cdsii'==8 {
-	global cds_app "_7yTri"
-	global cds_e "tri_def7y_europe"
-	global cds_n "tri_def7y"
-}
-
-else if `cdsii'==9 {
-	global cds_app "_3yUST"
-	global cds_e "ust_def3y_europe"
-	global cds_n "ust_def3y"
-
-}
-
-else if `cdsii'==10 {
-	global cds_app "_5yUST"
-	global cds_e "ust_def5y_europe"
-	global cds_n "ust_def5y"
-}
-
-else if `cdsii'==11 {
-	global cds_app "_7yUST"
-	global cds_e "ust_def7y_europe"
-	global cds_n "ust_def7y"
-}
-
-
-else if `cdsii'==12 {
-	global cds_app "_3yNY"
-	global cds_e "def3y_europe"
-	global cds_n "def3y_newyork"
-}
-
-else if `cdsii'==13 {
-	global cds_app "_5yNY"
-	global cds_e "def5y_europe"
-	global cds_n "def5y_newyork"
-}
-
-else if `cdsii'==14 {
-	global cds_app "_7yNY"
-	global cds_e "def7y_europe"
-	global cds_n "def7y_newyork"
-}
 
 
 
