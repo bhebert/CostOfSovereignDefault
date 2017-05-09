@@ -12,7 +12,7 @@ rename ADRt adrticker
 save "`ticks'", replace
 
 *CRSP
-use "$mainpath/CRSP/ADR_Update_April2016.dta", clear
+use "$crsp_path/ADR_Update_April2016.dta", clear
 keep if date>=td(01jan2011) & date<=td(01aug2014)
 replace ticker="APSA" if ticker=="IRCP"
 mmerge ticker using "`ticks'", umatch(adrticker)

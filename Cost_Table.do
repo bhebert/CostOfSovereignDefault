@@ -17,7 +17,7 @@ local qyear_market yq(2011,2)
 
 local market_cut 200
 tempfile adrtemp firmtabletemp
-use "$bbpath/ADR_Static.dta", clear
+use "$bbpath/Datasets/ADR_Static.dta", clear
 keep ticker ticker_short Primary_Exchange
 rename ticker ADRticker
 gen ADRratio=2 if ADRticker != ""
