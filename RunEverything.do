@@ -1,7 +1,7 @@
 
 
 ** Set to 1 for running test, as opposed to everything
-local run_test 1
+local run_test 0
 
 ** Set to 1 if regenerating default probabilities using matlab
 local run_defprob 0
