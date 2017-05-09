@@ -11,8 +11,7 @@ local maxdate = mdy(1,1,2015)
 * Determine what to use for the summary statistics
 local sumname ValueINDEXNew_US
 
-*local factors
-//local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ soybean_ oil_
+
 local factors $all_factors
 
 if "$RSControl" == "" {
@@ -30,18 +29,8 @@ if "$RSControl" == "" {
 	local use_coreonly 0
 	local use_indexonly 0
 	
-	*Run with NDF rates
-	local use_ndf 0
-	
 	*Run with additional equities (Arcos Dorados, Petrobras, Tenaris)
 	local use_addeq 0
-	
-	*Run with US Breakeven Inflation Rates
-	local use_usbeinf 0
-	
-	* Run with the GDP models
-	* Requires use_adrs and use_exrates
-	local use_gdpmodels 0
 	
 	* Run with individual bond returns
 	local use_bonds 0
@@ -121,7 +110,7 @@ if "$RSControl" == "" {
 }
 else {
 
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_ndf use_addeq use_usbeinf use_gdpmodels use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols use_indexonly {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_addeq use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols use_indexonly {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -193,7 +182,7 @@ else {
 }
 
 if `use_exrates' == 0 {
-	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"ADRB_PBRTS") | regexm(industry_sector,"Contado_Ambito")
+	drop if regexm(industry_sector,"Blue") | regexm(industry_sector,"Official") | regexm(industry_sector,"ADRMinusDS") | regexm(industry_sector,"dolarblue") | regexm(industry_sector,"BCS") | regexm(industry_sector,"ADRB_PBRTS")
 }
 
 if `use_coreonly' == 1 {
@@ -203,14 +192,6 @@ if `use_coreonly' == 1 {
 
 if `use_indexonly' == 1 {
 	keep if (market == "US" & regexm(industry_sector,"ValueINDEXNew")) `nodropwarrants'
-}
-
-if `use_ndf'==0 {
-	drop if regexm(industry_sector,"NDF")  | regexm(industry_sector,"FWDP") 
-}
-
-if `use_usbeinf'==0 {
-	drop if regexm(industry_sector,"US10YBE")  | regexm(industry_sector,"US5YBE") 
 }
 	
 if `use_mexbrl' == 0 {
@@ -336,25 +317,6 @@ drop if eventvar == 0 & nonevent == 0
 drop if return_ == . | cds_ == .
 
 
-
-if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {	
-	expand 2 if firmname == "ValueINDEXNew_US" | firmname == "$HFExName", gen(vGDP)
-	replace firmname = "ValueINDEXNewGDP_US" if vGDP == 1 & firmname == "ValueINDEXNew_US"
-	replace industry_sector = "ValueINDEXNewGDP" if firmname == "ValueINDEXNewGDP_US"
-	replace firmname = "GDPExRate" if vGDP == 1 & firmname == "${HFExName}"
-	replace industry_sector = "GDPExRate" if firmname == "GDPExRate"
-	
-	
-	sort date firmname
-	by date: egen excnt = sum(firmname == "$HFExName")
-	by date: egen vicnt = sum(firmname == "ValueINDEXNew_US")
-	drop if (firmname == "ValueINDEXNewGDP_US" | firmname == "GDPExRate") & (excnt == . | excnt == 0)
-	drop if (firmname == "ValueINDEXNewGDP_US" | firmname == "GDPExRate") & (vicnt == . | vicnt == 0)
-	drop excnt vicnt vGDP
-}
-
-
-
 *Save dataset at this point to construct summary states
 save "$apath/data_for_summary.dta", replace
 
@@ -412,16 +374,10 @@ foreach ind_name in `names' {
 matrix cds_betas = J(`numnames',1,0)
 matrix rownames cds_betas = `names'
 
-* Add in the names of the GDP models
-disp "`use_adrs' `use_exrates' `use_gdpmodels'"
-disp "`names' $GDP_models"
-if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {
-	local names `names' $GDP_models
-}
 
 tsset, clear
 
-
+** code to compute formal tests of difference in variance
 if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 
 	** code to make some summary stats *
@@ -451,16 +407,6 @@ if `use_adrs' == 1 & regexm("`daytype'","twoday") {
 	su r*, detail
 	
 	use "`temp'", clear
-	
-	/*sort date industry_sector
-
-	by date: egen mexcds2 = mean(day_return2*regexm(industry_sector,"MexicoCDS"))
-
-	summ day_return2 mexcds2 if nonevent==1 & cds2~=. & day_return2~=. & regexm(industry_sector,"MexicoEquity")
-	summ day_return2 mexcds2 if event_day==1 & cds2~=. & day_return2~=. & regexm(industry_sector,"MexicoEquity")
-
-	corr day_return2 mexcds2 if nonevent==1 & cds2~=. & day_return2~=. & regexm(industry_sector,"MexicoEquity"), covariance
-	corr day_return2 mexcds2 if event_day==1 & cds2~=. & day_return2~=. & regexm(industry_sector,"MexicoEquity"), covariance*/
 
 	log close
 	if "$logname" != "" {
@@ -521,39 +467,23 @@ foreach rg in `regs' {
 			local outopts keep(cds_ holdout_ret) nocons ctitle("`ind_name'")
 		}
 		
-		if regexm("$GDP_models","`ind_name'") {
-			local extrastat `extrastat', Full_SE, e(se1), Num Events, e(num_e)
-		}
-		else {
-			su nfirms if regexm(firmname,"`ind_name'")
-			local nf = `r(mean)'
-			su enum if regexm(firmname,"`ind_name'")
-			local num_e = `r(mean)'
+		
+		su nfirms if regexm(firmname,"`ind_name'")
+		local nf = `r(mean)'
+		su enum if regexm(firmname,"`ind_name'")
+		local num_e = `r(mean)'
 			
-			local extrastat `extrastat', Num Firms, `nf', Num Events, `num_e'
-		}
-		
-
-		
+		local extrastat `extrastat', Num Firms, `nf', Num Events, `num_e'
 		
 		
 		*RUN THE REGRESSION
-		if regexm("$GDP_models","`ind_name'") {
-			GDP_BS_helper ``rg'', model_name(`ind_name') stderrs("`stderrs'") coef_name(cds_betas)
-			
-			local coef1 = _b[cds_]
-			local se1 = e(se1)
-		}
-		else {
-			``rg'' if regexm(firmname,"`ind_name'"), `stderrs'
-			
-			local coef1 = _b[cds_]
-			local se1 = _se[cds_]
-			matrix cds_betas[`namenum',1] = `coef1'
-		}
-
 		
-
+		``rg'' if regexm(firmname,"`ind_name'"), `stderrs'
+			
+		local coef1 = _b[cds_]
+		local se1 = _se[cds_]
+		matrix cds_betas[`namenum',1] = `coef1'
+		
 
 		if `relative_perf' == 1 {
 			//`no_exchange' != 1 &
@@ -573,25 +503,16 @@ foreach rg in `regs' {
 			local extrastat `extrastat', Index Beta, `beta_ind', Exchange Rate Beta, `beta_ex'
 		}
 		
-		if regexm("$GDP_models","`ind_name'") {
-			local bsvars ((_b[cds_]-`coef1')/e(se1))
-		}
-		else {
-			local bsvars ((_b[cds_]-`coef1')/_se[cds_])
-		}
+		
+		local bsvars ((_b[cds_]-`coef1')/_se[cds_])
 		local bsN 1
 		
 		estimates store etemp
 		save "`backupfile'", replace
 		
 		*Run bootstrap
-		if regexm("$GDP_models","`ind_name'") {
-			bootstrap `bsvars', `bstyle' saving("`bsfile'", replace): GDP_BS_helper ``rg'', model_name(`ind_name') stderrs("`stderrs'") randomize coef_name(cds_betas)
-		}
-		else {
-			disp "``rg'', `stderrs'"
-			bootstrap `bsvars', `bstyle' saving("`bsfile'", replace): ``rg'' if regexm(firmname,"`ind_name'"), `stderrs'
-		}
+		disp "``rg'', `stderrs'"
+		bootstrap `bsvars', `bstyle' saving("`bsfile'", replace): ``rg'' if regexm(firmname,"`ind_name'"), `stderrs'
 		
 		*Open bootstrap file
 		use "`bsfile'", clear
@@ -642,6 +563,10 @@ foreach rg in `regs' {
 	}
 }
 
+
+*** code below just formats the results
+
+
 local exnames
 if `use_coreonly' != 0 {
 	local inames INDEX ValueINDEXNew ValueBankIndexNew ValueNonFinIndexNew YPF
@@ -660,9 +585,9 @@ if `use_indexonly' != 0 {
 	local exnames
 }
 
-if `use_adrs' != 0 & `use_coreonly' == 0 {
-	local inames `inames' ValueIndex
-}
+*if `use_adrs' != 0 & `use_coreonly' == 0 {
+*	local inames `inames' ValueIndex
+*}
 
 if `use_industries' != 0 {
 	local inames `inames' Banks NonFinancial RlEst Enrgy NoDur Telcm Utils
@@ -685,10 +610,6 @@ if `use_exrates' != 0 & `use_coreonly' == 0 {
 	local exnames OfficialRate dolarblue ADRBlue  BCS DSBlue ADRMinusDS
 }
 
-local gdpnames
-if `use_adrs' != 0 & `use_exrates' != 0 & `use_gdpmodels' != 0 {
-	local gdpnames $GDP_models
-}
 
 local hmlnames
 if `use_hmls' != 0 {
@@ -706,7 +627,7 @@ if `use_highlow_ports' != 0 {
 
 }
 
-local varorder `inames2' `exnames' `gdpnames' `hmlnames' `mexbrl' `highlow_names'
+local varorder `inames2' `exnames' `hmlnames' `mexbrl' `highlow_names'
 disp "varorder: `varorder'"
 
 foreach x in  `regs' { 
@@ -757,11 +678,7 @@ foreach x in  `regs' {
 		rename excess_cds Coef_`x'
 	}
 
-	/*gen core=0
-	replace core=1 if firm=="OfficialRate" | firm=="DSBlue" |  firm=="ADRBlue"
-	replace core=2 if firm=="BrazilCDS" | firm=="BrazilEquity" | firm=="MexicoEquity" | firm=="MexicoCDS" 
-	sort core firm 
-	drop core */
+	
 	sxpose ,   clear
 
 	foreach y of varlist _all {
