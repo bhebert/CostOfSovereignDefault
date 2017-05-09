@@ -53,11 +53,7 @@ drop if ratio == .
 
 sort ADR_T date
 
-/*gen ratio=2
-replace ratio=10 if ADR_T=="BMA" | ADR_T=="GGAL" | ADR_T=="PZE"
-replace ratio=3 if ADR_T=="BFR" 
-replace ratio=5 if ADR_T=="TEO"
-replace ratio=25 if ADR_T=="PAM"*/
+
 
 replace px_open1=px_open1/ratio
 replace px_last1=px_last1/ratio
@@ -79,33 +75,6 @@ save "$apath/ADRBlue_All.dta", replace
 
 
 
-
-
-/*use "$apath/ADRBlue_All.dta", clear
-order date ADR_ Under_ px_open px_close total_return
-collapse (mean) px_open px_close total_return, by(date)
-gen Ticker="ADRBluedb"
-append using "$apath/ADRBlue_All.dta"
-replace Ticker=Under_T if Ticker==""
-order date Ticker px_open px_close
-save "$apath/ADRBluedb.dta", replace
-
-use "$apath/ADRBluedb.dta", clear
-append using "$apath/blue_rate.dta"
-append using "$apath/dolarblue.dta"
-twoway (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="ADRBluedb") (line px_close date if Ticker=="dolarblue", sort), legend(order( 1 "ADRBlue" 2 "ADRBluedb" 3 "dolarblue")) ytitle("Blue Rate")
-graph export "$rpath/Blue_Rate_Comparison.png", replace
-twoway (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="ADRBluedb") (line px_close date if Ticker=="dolarblue", sort) if date>=td(01jan2011) & date<=td(30jul2014), legend(order( 1 "ADRBlue" 2 "ADRBluedb" 3 "dolarblue")) ytitle("Blue Rate")
-graph export "$rpath/Blue_Rate_Comparison_Sample.png", replace
-twoway (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="ADRBluedb") (line px_close date if Ticker=="dolarblue", sort) if date>=td(01jun2014) & date<=td(30jun2014), legend(order( 1 "ADRBlue" 2 "ADRBluedb" 3 "dolarblue")) ytitle("Blue Rate")
-graph export "$rpath/Blue_Rate_Comparison_June2014.png", replace
-
-*use "$apath/ADRBluedb.dta", clear
-*keep if Ticker=="ADRBluedb"
-*keep date Ticker px_open px_close total_return
-*save "$apath/ADRBluedb_merge.dta", replace
-*/
-
 use "$apath/ADRBlue_All.dta", clear
 gen exclude=0
 bysort date: egen min_px_close=min(px_close)
@@ -113,16 +82,7 @@ bysort date: egen max_px_close=max(px_close)
 bysort date: egen count=count(px_close)
 bysort date: replace exclude=1 if (px_close==min_px_close | px_close==max_px_close) & count>=3
 
-*twoway (line px_close date if ADR_T=="BFR") (line px_close date if ADR_T=="BMA") (line px_close date if ADR_T=="GGAL") (line px_close date if ADR_T=="PAM") (line px_close date if ADR_T=="PBR") (line px_close date if ADR_T=="PZE") (line px_close date if ADR_T=="TEO") (line px_close date if ADR_T=="TS") if date>=td(10jun2014) & date<=td(20jun2014), ytitle("Blue Rate") legend(order(1 "BFR" 2 "BMA" 3 "GGAL" 4 "PAM" 5 "PBR" 6 "PZE" 7 "TEO" 8 "TS")) title("Why ADRBlue from BB won't work")
-*graph export "$rpath/ADRBlue_BB_Fail.png", replace
-*FOR A VARIANCE CUTOFF
-*bysort date: egen adrdb_temp =mean(px_close)
-*gen px_close_norm=px_close/adrdb_temp
-*bysort date: egen sd_px_close= sd(px_close_norm)
-*summ sd_px_close if yofd(date)>=2009, detail
-*replace px_close=. if sd_px_close>r(p99)  & sd_px_close~=. & yofd(date)>=2009
-*summ sd_px_close if yofd(date)<2009, detail
-*replace px_close=. if sd_px_close>r(p99)  & sd_px_close~=. & yofd(date)<2009
+
 drop if exclude==1
 collapse (mean) px_open px_close total_return, by(date)
 gen Ticker="ADRBlue"
