@@ -140,7 +140,16 @@ reshape wide px_close, i(date) j(Ticker) str
 renpfix px_close
 twoway  (line rsbond_usd_disc date) (line `hname' date), legend(order( 1 "Restructured Bond" 2 "Holdout Bond")) xtitle("") ytitle("Price") graphregion(fcolor(white) lcolor(white)) xlabel(18628 "2011" 18993 "2012" 19359 "2013" 19724 "2014", labsize(medium)) xline(19934, lwidth(.5) lcolor(black)) name("holdoutres") ylabel(0(20)100) 
 graph export "$rpath/BondTimeSeries.eps", replace
-mmerge date using "$mpath/Default_Prob_all.dta"
+
+local defprobfile "$apath/Default_Prob_All.dta"
+capture confirm file `defprobfile'
+if _rc != 0 {
+	local defprobfile "$mpath/Default_Prob_All.dta"
+}
+
+mmerge date using "`defprobfile'"
+
+
 label var rsbond_usd_disc "Price"
 label var defbond "Price"
 
@@ -167,11 +176,11 @@ graph export "$rpath/Defaulted_Defprob_inv.eps", replace
 *********************
 use "$apath/ADRBlue_All.dta", clear
 append using "$apath/blue_rate.dta"
-append using "$apath/NDF_Datastream.dta"
+*append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
 append using "$apath/bcs.dta"
 append using "$apath/ADRB_PBRTS.dta"
-append using "$apath/Contado.dta"
+*append using "$apath/Contado.dta"
 
 replace Ticker=ADR_Ticker if Ticker==""
 twoway (connected px_close date if Ticker=="BFR") (connected px_close date if Ticker=="BMA") (connected px_close date if Ticker=="GGAL") (connected px_close date if Ticker=="PAM") (connected px_close date if Ticker=="PBR") (connected px_close date if Ticker=="PZE") (connected px_close date if Ticker=="TEO") (line px_close date if Ticker=="TS") (line px_close date if Ticker=="dolarblue")  (connected px_close date if Ticker=="ADRB_PBRTS") (line px_close date if Ticker=="BCS") (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="YPFDBlue") (line px_close date if Ticker=="DSBlue") if date>=td(13jun2014) & date<=td(19jun2014), legend(order(1 "BFR" 2 "BMA" 3 "GGAL" 4 "PAM" 5 "PBR" 6 "PZE" 7 "TEO" 8 "TS" 9 "Dolarblue" 10 "ADRB_PBRTS" 11 "BCS" 12 "ADRBlue" 13 "YPF" 14 "DSBlue"))
