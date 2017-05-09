@@ -1,20 +1,16 @@
 set more off
 
-global forecast_path "`droppath'/Cost of Sovereign Default/Forecasts"
 
 
-*GDP Indices
-// Don't do this at all now
-local forecast 0
-*if 0, no forecast
-*if 1, only consensus and var
-*if 2, consensus and weo/DON'T USE THIS, IT IS NOT DONE YET
 
 *1 to use crsp, 0 bloomberg
 local crsp_adr 1
 
 * This controls which Exchange Rates to use
-global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M US10YBE US5YBE BCS ADRB_PBRTS Contado_Ambito
+global exrates ADRBlue DSBlue OfficialRate dolarblue BCS ADRB_PBRTS
+
+* global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M US10YBE US5YBE BCS ADRB_PBRTS Contado_Ambito
+
 
 * This controls which Latam equity/cds indices to use
 global latam Brazil Mexico
@@ -30,7 +26,8 @@ local excontrol ADRBlue
 
 local file ThirdAnalysis
 
-global static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar market_cap2011 TCind import_rev import_capx
+global static_vars export_share Government foreign_own indicator_adr es_industry import_intensity finvar market_cap2011 import_rev import_capx
+* TCind 
 
 local export_share_cut 25
 local Government_cut 0
@@ -47,7 +44,7 @@ local freq_cut 0.5
 local event_cut 10
 
 
-use "$bbpath/BB_Local_ADR_Indices_April2014.dta", clear
+use "$bbpath/Datasets/BB_Local_ADR_Indices_April2014.dta", clear
 *add missing equity
 append using "$apath/TGNO4.dta"
 drop if date == .
@@ -94,7 +91,7 @@ sort Ticker
 
 tempfile temp
 
-//took out AR value indices, since they aren't correct.
+
 foreach mark in US AR {
 	foreach indtype in ValueBank ValueNonFin ValueRE Value {
 		local filename= "`indtype'Index_`mark'_New"
@@ -111,12 +108,13 @@ foreach mark in US AR {
 save "`temp'", replace
 
 use "$apath/blue_rate.dta", clear
-append using "$apath/NDF_Datastream.dta"
+
+*append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
-append using "$apath/US_Breakeven.dta"
+*append using "$apath/US_Breakeven.dta"
 append using "$apath/bcs.dta"
 append using "$apath/ADRB_PBRTS.dta"
-append using "$apath/Contado.dta"
+*append using "$apath/Contado.dta"
 
 *append using "$apath/adrdb_altdata.dta"
 *append using "$apath/adrdb_merge.dta"
@@ -136,7 +134,7 @@ append using  "$apath/gdpw_merge.dta"
 append using "$apath/eurotlx.dta"
 save "`temp'", replace
 
-use "$bbpath/Latam_equities.dta", clear
+use "$bbpath/Datasets/Latam_equities.dta", clear
 drop if regexm(variable,"return")
 keep date $latam
 foreach cntry in $latam {
@@ -150,7 +148,7 @@ append using "`temp'"
 save "`temp'", replace
 
 
-use "$bbpath/Latam_CDS.dta", clear
+use "$bbpath/Datasets/Latam_CDS.dta", clear
 drop if regexm(reporter,"CBIN")
 keep date $latam
 foreach cntry in $latam {
@@ -241,43 +239,15 @@ gen return_1_5 = return_twoday - return_intra
 * computer entirely with opens, ignores dividends unless "baked in" to opens
 gen return_twodayL = 100*log(px_open / L2.px_open) 
  
-append using "$apath/ValueIndex_ADR.dta"
-append using "$apath/LocalValueIndex.dta"
+*append using "$apath/ValueIndex_ADR.dta"
+*append using "$apath/LocalValueIndex.dta"
+
+
 drop if date >= td(30jul2014)
 drop if date < td(1jan$startyear)
 
 *USE THIS DATASET TO CONSTRUCT NEW INDICES
 save "$apath/Index_Maker.dta", replace
-
-if `forecast'==0 {
-local gdp_indices  
-}
-else if `forecast'==1 {
-
-// I don't think this file exists any more
-append using "$apath/GDP_indices.dta"
-*Create list of indices
-levelsof(Ticker), local(tickers)
-local gdp_indices
-foreach x of local tickers {
-	if regexm("`x'","GDP")==1 {
-	local gdp_indices ="`gdp_indices'" +" " +"`x'"
-	}
-	}
-
-}
-else if `forecast'==2 {
-// These also don't exist any more
-append using "$apath/GDP_indices.dta"
-append using "$apath/weo_forecast_GDP.dta"
-levelsof(Ticker), local(tickers)
-local gdp_indices
-foreach x of local tickers {
-	if regexm("`x'","GDP")==1 {
-	local gdp_indices ="`gdp_indices'" +" " +"`x'"
-	}
-	}
-}
 
 // Code to go from log-returns to arithmetic returns
 // revent back to logs after making the portfolios
@@ -289,12 +259,6 @@ foreach rt in `rtypes' `fnames' {
 keep date bdate Ticker `rtypes' `fnames' industry_sector firm_id $static_vars market
 
 gen isstock = (market == "US" | market == "AR") & ~regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"Index")
-
-foreach x in  `gdp_indices' {
-	replace isstock=0 if industry_sector=="`x'"
-	}
-	
-//gen isstock = ~regexm(industry_sector,"ADRBlue") & ~regexm(industry_sector,"Official") & ~regexm(industry_sector,"DSBlue") & ~regexm(industry_sector,"Brazil") & ~regexm(industry_sector,"Mexico") & ~regexm(industry_sector,"INDEX") & ~regexm(industry_sector,"ETF")
 gen nonfinancial = isstock == 1 & finvar == 0
 
 * clean up ticker names
@@ -344,33 +308,6 @@ collapse (mean) `rtypes' `fnames' isstock nonfinancial ports (count) `crtypes', 
 
 
 replace Ticker="ValueIndex" if industry_sector=="ValueIndex"
-
-*This creates GDP=beta_G$*ValueIndex+beta_RER*ADR, now unncessary
-
-/*
-mmerge industry_sector using "$apath/gdp_weights.dta", unmatched(master)
-
-*save "$apath/temp_gdp.dta", replace
-*use  "$apath/temp_gdp.dta", clear
-*create 2 ADR Blues to use one for the index
-expand 2 if ports == 0 & regexm(industry_sector,"ADRBlue"), gen(gdp_adr_us)
-replace gdp_adr_us=1 if ports==1 & industry_sector=="ValueIndex"
-
-foreach rt in $rtypes {
-	gen ADR_GDP_temp_`rt'=`rt'*gdp_beta_adr if gdp_adr_us==1 & industry_sector=="ADRBlue"
-	bysort date: egen ADR_GDP_`rt'=max(ADR_GDP_temp_`rt')
-	*Replace one of the ValueIndex with GDP=beta_G$*ValueIndex+beta_RER*ADR
-	replace `rt'=gdp_beta_adr*`rt'+ADR_GDP_`rt' if gdp_adr_us==1 & industry_sector=="ValueIndex"
-	*drop ADR_GDP*
-}	
-replace industry_sector="GDP_Real" if industry_sector=="ValueIndex" & gdp_adr==1
-replace Ticker="GDP_Real" if industry_sector=="GDP_Real" 
-drop if Ticker=="ADRBlue" & gdp_adr_us==1
-replace isstock=0 if industry_sector=="GDP_Real" | industry_sector=="ValueIndex"
-replace ports=0 if industry_sector=="GDP_Real" | industry_sector=="ValueIndex"
-*/
-
-
 
 
 collapse (mean) $rtypes `fnames' isstock nonfinancial ports cnt_* , by(date industry_sector Ticker market)
