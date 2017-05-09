@@ -137,7 +137,7 @@ use  "$mpath/Composite_USD.dta", clear
 *	twoway (line hazard1 date, sort) if year(date)>=2012
 *		twoway (line hazard5 date, sort) if year(date)>=2012
 keep date Spread* Recovery
-mmerge date using "$mpath/swaprates.dta"
+mmerge date using "$apath/swaprates.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -203,7 +203,7 @@ export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
 
 use  "$mpath/Composite_USD.dta", clear
 keep date Spread* Recovery
-mmerge date using "$mpath/UST_Zero.dta"
+mmerge date using "$apath/UST_Zero.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -228,7 +228,7 @@ foreach y in "Europe" "NewYork" "Asia" "Japan" "London" "LondonMidday" {
 use  "$mpath/Sameday_USD.dta", clear
 keep if snaptime=="`y'"
 keep date Spread* Recovery
-mmerge date using "$mpath/UST_Zero.dta"
+mmerge date using "$apath/UST_Zero.dta"
 order date Recovery
 drop _merge
 gen datenum=date
@@ -259,7 +259,7 @@ use  "$apath/`xx'_CDS", clear
 foreach x of varlist cds* {
 	replace `x'=`x'/100
 	}
-mmerge date using "$mpath/UST_Zero.dta"
+mmerge date using "$apath/UST_Zero.dta"
 gen Recovery=39.5
 order date Recovery
 drop _merge
@@ -295,7 +295,7 @@ export delimited using "$apath/Matlab_DSspreads_zero_UST.csv", replace novarname
 use  "$mpath/Sameday_USD.dta", clear
 keep if date==td(16jun2014)
 keep date Spread* Recovery time_est
-mmerge date using "$mpath/swaprates.dta"
+mmerge date using "$apath/swaprates.dta"
 keep if _merge==3
 order date Recovery
 drop _merge
@@ -496,8 +496,10 @@ foreach x in def6m def1y def2y def3y def4y def5y def7y def10y {
 
 drop _merge 
 
+** can we delete this?
 mmerge date using "$mpath/PUF_NY.dta", ukeep(Upfront*)
 drop if _merge==2
+
 save "$apath/Default_Prob_All.dta", replace
 
 use "$apath/Default_Prob_All.dta", clear
