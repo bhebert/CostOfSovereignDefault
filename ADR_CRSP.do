@@ -22,7 +22,7 @@ drop if Ticker==""
 tempfile temp
 save "`temp'", replace
 
-use "$miscdata/CRSP Balance Sheet/All_ADRs.dta", clear
+use "$crsp_path/All_ADRs.dta", clear
 
 * This procedure follows Gorodnichenko & Weber
 * However, we use cshoq & prccq (Computstat quarter-end variables)
