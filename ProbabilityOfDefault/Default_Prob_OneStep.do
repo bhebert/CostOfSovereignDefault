@@ -200,11 +200,14 @@ export delimited using "$apath/Matlab_`y'_zero.csv", replace novarnames
 ****************************************
 *DATASET USING US TREASURY TO DISCOUNT
 ****************************************
-
 use  "$mpath/Composite_USD.dta", clear
 keep date Spread* Recovery
+<<<<<<< HEAD
 mmerge date using "$apath/UST_Zero.dta"
 order date Recovery
+=======
+mmerge date using "$mpath/UST_Zero.dta"
+>>>>>>> master
 drop _merge
 gen datenum=date
 order datenum date 
@@ -220,7 +223,8 @@ carryforward SVENY0`x', replace
 forvalues x=10/30 {
 carryforward SVENY`x', replace
 }
-
+order date Recovery  Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread15y Spread20y Spread30y
+save "$apath/Matlab_spreads_zero_UST_forcsv", replace
 export delimited using "$apath/Matlab_spreads_zero_UST.csv", replace novarnames
 
 *FOR SAMEDAY
@@ -245,8 +249,9 @@ carryforward SVENY0`x', replace
 forvalues x=10/30 {
 carryforward SVENY`x', replace
 }
-
+order date Recovery  Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread15y Spread20y Spread30y
 *export excel using "$mainpath/Markit/Prob of Default/Matlab_spreads_zero_UST.xls", replace 
+save "$apath/Matlab_`y'_spreads_zero_UST_forcsv", replace
 export delimited using "$apath/Matlab_`y'_spreads_zero_UST.csv", replace novarnames
 }
 
@@ -560,16 +565,20 @@ foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 	mmerge date using "$mpath/Composite_USD.dta", ukeep (Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y Spread20y Spread30y)
 	save "`temp1'", replace
 
+
 use "$mpath/Sameday_USD.dta", clear
-keep if snaptime=="NewYork" | snaptime=="Europe"
 replace snaptime="_newyork" if snaptime=="NewYork"
 replace snaptime="_europe" if snaptime=="Europe"
+replace snaptime="_asia" if snaptime=="Asia"
+replace snaptime="_london" if snaptime=="London"
+replace snaptime="_londonmidday" if snaptime=="LondonMidday"
+replace snaptime="_japan" if snaptime=="Japan"
 keep date snaptime Spread6m Spread1y Spread2y Spread3y Spread4y Spread5y Spread7y Spread10y
 reshape wide Spread*, i(date) j(snaptime) str
 mmerge date using "`temp1'"
 keep if date>=td(01jan2011) 
 
-foreach y in "" "_europe" "_newyork" {
+foreach y in "" "_europe" "_newyork" "_asia" "_london" "_londonmidday" "_japan" {
 	foreach x in 6m 1y 2y 3y 4y 5y 7y 10y {
 		label var Spread`x'`y' "`x' Par Spread, `y'"
 	}
