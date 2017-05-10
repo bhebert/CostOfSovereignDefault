@@ -74,7 +74,7 @@ foreach x in MV WC01705 WC01706 WC03051 WC03101 WC03251 WC03451 WC05101 WC05301 
 *CONSTRUCT 	quarter_data.dta
 *Originally in Datastream_clean_v2
 set more off
-import excel "$mainpath/Local Data/Datastream/Datastream_Static_0302.xlsx",  sheet("Quarterly") clear
+import excel "$dpath/Datastream/Datastream_Static_0302.xlsx",  sheet("Quarterly") clear
 foreach x of varlist _all {
 	 if `x'[1]=="#ERROR" {
 	 drop `x'
