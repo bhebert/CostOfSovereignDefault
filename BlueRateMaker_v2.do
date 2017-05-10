@@ -95,6 +95,23 @@ keep if Ticker=="ADRBlue"
 append using "`temp'"
 save "$apath/blue_rate.dta", replace
 
+
+** code to generate quarterly data series
+use "$apath/blue_rate.dta", clear
+browse
+gen quarter=qofd(date)
+format quarter %tq
+collapse (lastnm) px_close, by(quarter Ticker)
+reshape wide px_close, i(quarter) j(Ticker) string
+renpfix px_close
+
+keep quarter ADRBlue OfficialRate
+replace OfficialRate = 1 if quarter < yq(2001,4)
+replace OfficialRate = ADRBlue if quarter >= yq(2001,4) & quarter <= yq(2007,3)
+
+save "$apath/ADRBlue_quarter.dta", replace
+
+
 *CALCULATE DISPERSION NUMBER FOR PAPER
 use "$apath/ADRBlue_All.dta", clear
 gen ADRBluetemp=px_close if Ticker=="ADRBlue"
