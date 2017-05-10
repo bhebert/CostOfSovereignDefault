@@ -1,7 +1,14 @@
 set more off
 
 *OTHER MEASURES OF ARGENTINA'S SPread
-use "$apath/Default_Prob_All.dta", clear
+
+local defprobfile "$apath/Default_Prob_All.dta"
+capture confirm file `defprobfile'
+if _rc != 0 {
+	local defprobfile "$mpath/Default_Prob_All.dta"
+}
+
+use "`defprobfile'", clear
 keep date mC5_5y tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y
 foreach x in tri_def5y tri_conH_def5y bb_tri_def5y ds_tri_def5y mC5_5y{
 	rename `x' logval`x'
