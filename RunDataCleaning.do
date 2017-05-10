@@ -8,8 +8,9 @@ do ${csd_dir}/SetupPaths.do
 
 do ${csd_dir}/DataCleaningScripts/Commodity_Clean.do
 
+
 ** Candidate for removal
-*do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
+**do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
 *do ${csd_dir}/DataCleaningScripts/NDF_Clean.do
 
 ** Candidate for removal
