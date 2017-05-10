@@ -1,9 +1,9 @@
 
 
 *GDP WARRANTS
-global dir_inter "$warrant_path/inter/"
+
 global dir_warrants "$warrant_path"
-cap mkdir $apath/winter
+
 set more off
 import excel "$dir_warrants/Warrant Info/GDP Warrants Full.xlsx", sheet("Prices") clear
 foreach x of varlist _all {
@@ -18,11 +18,11 @@ foreach x of varlist _all {
 	rename `x' v`i'
 	local i=`i'+1
 	}
-save "$apath/winter/Warrant_inter.dta", replace
+save "$apath/Warrant_inter.dta", replace
 
 
 forvalues i=1(3)16 {
-use "$apath/winter/Warrant_inter.dta", clear
+use "$apath/Warrant_inter.dta", clear
 local y=`i'+1
 local z=`i'+2
 keep v`i' v`y' v`z'
@@ -35,13 +35,13 @@ rename v`y' px_last
 rename v`z' px_open
 drop if _n==1 | _n==2
 local x=`z'/3
-save "$apath/winter/Warrant_`x'.dta", replace
+save "$apath/Warrant_`x'.dta", replace
 }
 
 
-use "$apath/winter/Warrant_1.dta", clear
+use "$apath/Warrant_1.dta", clear
 forvalues i=2/6 {
-append using "$apath/winter/Warrant_`i'.dta"
+append using "$apath/Warrant_`i'.dta"
 }
 split ticker, p("_")
 drop ticker
