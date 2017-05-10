@@ -2,7 +2,7 @@
 *BCS: IMPORT ALL DATA
 tempfile tempbond
  set more off
-import excel "$bbpath/BlueChipSwap08132015.xlsx", sheet("BULK_DL") clear
+import excel "$bbpath/BlueChipSwap08132015.xlsx", sheet("Bulk_DL_Copy") clear
 *Note, this still generates output to dropbox, need to correct.
 foreach x of varlist _all {
 tostring `x', replace
@@ -19,6 +19,8 @@ foreach x of varlist _all {
 	
 	local ii=`i'-1
 save "$apath/BCStemp.dta", replace
+
+
 	
 	forvalues i=1(2)`ii' {
 use "$apath/BCStemp.dta", clear
@@ -31,26 +33,34 @@ replace v`i'=subinstr(v`i',"@","_",.)
 replace v`i'=subinstr(v`i'," ","_",.) if _n==1
 local temp=v`i'[1]
 gen ticker= "`temp'"
-rename v`i' date
-rename v`y' px_last
 drop if _n==1 | _n==2
+rename v`i' exceldate
+destring exceldate, replace force
+gen date = exceldate + td(30dec1899)
+format date %td
+drop exceldate
+rename v`y' px_last
 local x=`y'/2
+disp "x: `x' i: `i' y: `y'"
 save "$apath/BCS_`x'.dta", replace
 }
 
-use "$apath/BCS_1.dta", clear
+
+
+
+use "${apath}/BCS_1.dta", clear
 forvalues i=2/54 {
-append using "$apath/BCS_`i'.dta"
+append using "${apath}/BCS_`i'.dta"
 }
 split ticker, p("_")
 rename ticker ticker_full
 rename ticker1 Ticker
 rename ticker2 source
-rename date datestr
-gen date=date(datestr,"MDY")
-format date %td
+*rename date datestr
+*gen date=date(datestr,"MDY")
+*format date %td
 order date
-drop datestr
+*drop datestr
 destring px_last, replace force
 drop if date==.
 browse if date==td(16jun2014)
