@@ -22,7 +22,6 @@ log using "$logname", replace
 
 
 rmfiles, folder(${apath}) match(*.dta) 
-rmfiles, folder("${apath}/winter") match(*.dta) 
 rmfiles, folder(${apath}) match(*.csv)
 
 
