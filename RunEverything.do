@@ -21,6 +21,8 @@ global logname ${rpath}/everything.smcl
 log using "$logname", replace
 
 
+capture {
+
 rmfiles, folder(${apath}) match(*.dta) 
 rmfiles, folder(${apath}) match(*.csv)
 
