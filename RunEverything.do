@@ -22,6 +22,11 @@ log using "$logname", replace
 
 
 capture {
+	cd "$apath"
+	shell rm -f *.dta
+	shell rm -f *.csv
+	cd "$csd_dir"
+}
 
 rmfiles, folder(${apath}) match(*.dta) 
 rmfiles, folder(${apath}) match(*.csv)
