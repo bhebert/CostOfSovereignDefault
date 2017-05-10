@@ -4,7 +4,7 @@
 local run_test 0
 
 ** Set to 1 if regenerating default probabilities using matlab
-local run_defprob 0
+local run_defprob 1
 
 
 
@@ -22,6 +22,9 @@ log using "$logname", replace
 
 
 rmfiles, folder(${apath}) match(*.dta) 
+rmfiles, folder("${apath}/winter") match(*.dta) 
+rmfiles, folder(${apath}) match(*.csv)
+
 
 do ${csd_dir}/RunDataCleaning.do
 
@@ -41,7 +44,7 @@ global RSControl 1
 
 global RSexclusions 1
 global RSdaytype twoday
-global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
+global RSbstyle rep(100) strata(eventvar) seed(4251984) cluster(date)
 global RSivstderrs robust
 
 global RSwarrants_run 0
@@ -51,13 +54,14 @@ global RSuse_adrs 1
 global RSuse_exrates 1
 global RSuse_indexonly 0
 
+global RSrun_Ftests 1
+
 // Code for testing only
  if `run_test' == 1 {
 	global RSuse_addeq 0
 	global RSuse_otherdefp 0
 	global RSuse_coreonly 1
 	global RSuse_warrant 0
-	global RSuse_gdpmodels 0
 	global RSuse_bonds 0
 	global RSuse_mexbrl 0
 	global RSuse_otherdefp 0
@@ -101,6 +105,7 @@ global RSregs OLS 2SLS_IV RS_CDS_IV
 // This does most of the main tables
 do ${csd_dir}/RigobonSack_v3.do
 
+global RSrun_Ftests 0
 
 // Make the plots
 do ${csd_dir}/Summary_Plots.do
