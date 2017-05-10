@@ -51,6 +51,50 @@ drop total_market total_market2
 replace quarter=quarter+1
 save "$apath/US_weighting.dta", replace
 
+*******************
+*FOR LOCAL Value**
+*******************
+use "$apath/Datastream_Quarterly.dta", clear
+mmerge Ticker using "$apath/FirmTable.dta"
+keep if _merge==3
+split bb_ticker, p(" ")
+order bb_ticker*
+replace Ticker=bb_ticker1
+drop bb_tic*
+keep Ticker quarter MV EPS ADRratio WC05101 leverage WC02999
+rename WC05101 DivPerShare
+rename WC02999 TotalAssets
+drop if Ticker==""
+replace ADRratio = 1
+
+sort  Ticker quarter
+encode Ticker, gen(tid)
+tsset tid quarter
+gen MV2 = L3.TotalAssets / 1000
+
+replace leverage = MV2 / MV
+
+bysort quarter: egen total_market=sum(MV)
+bysort quarter: egen total_market2=sum(MV2)
+gen weight=MV/total_market
+gen weight2=MV2/total_market2
+replace weight=0 if weight==.
+replace weight2=0 if weight2==.
+drop total_market tid total_market2
+
+bysort quarter: egen total_market=sum(MV) if Ticker~="YPFD"
+bysort quarter: egen total_market2=sum(MV2) if Ticker~="YPFD"
+gen weight_exypf=MV/total_market if Ticker~="YPFD"
+gen weight_exypf2=MV2/total_market2 if Ticker~="YPFD"
+replace weight_exypf=0 if weight_exypf==.
+replace weight_exypf2=0 if weight_exypf2==.
+drop total_market total_market2
+replace quarter=quarter+1
+
+
+
+save "$apath/AR_weighting.dta", replace
+
 
 
 *******************************************************
@@ -91,13 +135,19 @@ save "$apath/Tbill_daily.dta", replace
 *****************
 ****VALUE INDEX*
 *****************
-foreach mark in US {
+foreach mark in US AR {
 
 	local tweight = `tbill_weight'
 	local types Value Delev Acct
 	local avars EPS EPSgrowth DivPerShare DPS2 ADRratio leverage
 	local avars2 EPS EPSgrowth DivPerShare DPS2
 	
+	if "`mark'" == "AR" {
+		local tweight = 0
+		local types Value
+		local avars
+		local avars2
+	}
 
 	foreach indtype in Value ValueNonFin ValueBank ValueRE  {
 
