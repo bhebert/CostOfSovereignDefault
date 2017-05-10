@@ -104,13 +104,12 @@ if "$RSControl" == "" {
 	local ivstderrs robust
 	//local ivstderrs
 	
-	* turn off if not running with soy
-	*local soycontrols SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_ oil_ soybean_
-
+	* Code to generate F-tests
+	local run_Ftests 1
 }
 else {
 
-	foreach lname in use_local use_adrs use_exrates use_coreonly use_addeq use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols use_indexonly {
+	foreach lname in use_local use_adrs use_exrates use_coreonly use_addeq use_bonds use_mexbrl use_otherdefp use_equityind use_singlenames use_highlow_ports use_hmls use_industries relative_perf use_index_beta no_exchange use_holdout use_warrant exclude_SC_day regs exclusions daytype bstyle ivstderrs soycontrols use_indexonly run_Ftests {
 		local `lname' ${RS`lname'}
 		disp "`lname': ``lname''"
 	}
@@ -378,7 +377,7 @@ matrix rownames cds_betas = `names'
 tsset, clear
 
 ** code to compute formal tests of difference in variance
-if `use_adrs' == 1 & regexm("`daytype'","twoday") {
+if `run_Ftests' == 1 {
 
 	** code to make some summary stats *
 	capture log close
