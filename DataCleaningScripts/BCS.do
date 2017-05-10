@@ -2,7 +2,7 @@
 *BCS: IMPORT ALL DATA
 tempfile tempbond
  set more off
-import excel "$mainpath/Bloomberg/BlueChipSwap08132015.xlsx", sheet("BULK_DL") clear
+import excel "$bbpath/BlueChipSwap08132015.xlsx", sheet("BULK_DL") clear
 *Note, this still generates output to dropbox, need to correct.
 foreach x of varlist _all {
 tostring `x', replace
@@ -58,10 +58,10 @@ gen ARS_temp=0
 replace ARS_temp=1 if px_last>200 & date==td(16jun2014)
 bysort ticker_full: egen ARS=max(ARS_temp)
 drop ARS_temp
-save "$apath/BCStemp.dta", replace
+save "$apath/BCStemp2.dta", replace
 
 *Drop bad data series 
-use  "$apath/BCStemp.dta", clear
+use  "$apath/BCStemp2.dta", clear
 keep if yofd(date)>=2011 & yofd(date)<=td(01aug2014)
 encode bb_ticker, gen(tid)
 sort tid date
