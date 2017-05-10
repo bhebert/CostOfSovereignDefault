@@ -1,26 +1,5 @@
 set more off
 
-use "$apath/Datastream_Quarterly.dta", clear
-
-mmerge Ticker using "$apath/FirmTable.dta"
-keep if _merge==3
-split ADRticker, p(" ")
-drop ADRticker2 ADRticker3
-drop Ticker
-rename ADRticker1 Ticker
-
-keep Ticker quarter MV EPS EPSNew ADRratio WC05101 leverage WC03255 WC03501 WC02999 WC05301 WC01705
-rename WC05101 DivPerShare
-rename WC03255 TotalDebt
-rename WC03501 BookCommon
-rename WC02999 TotalAssets
-rename WC05301 CommonOutstanding
-rename WC01705 NetIncomeDiluted
-
-drop if Ticker==""
-
-tempfile temp
-save "`temp'", replace
 
 use "$crsp_path/All_ADRs.dta", clear
 
@@ -66,7 +45,6 @@ mmerge quarter using "$apath/ADRBlue_quarter.dta", ukeep(ADRBlue OfficialRate) u
 
 rename tic Ticker
 
-mmerge Ticker quarter using "`temp'", unmatched(master)
 
 gen comp_rate = 1 / currtrq
 
@@ -102,13 +80,14 @@ replace repurchases = 0 if repurchases < 0 & repurchases != .
 
 replace repurchases = repurchases / commonshares
 
-format CommonOutstanding %9.2f
+*format CommonOutstanding %9.2f
 format quarter %tq
 
 gen crsp_lev = (atq - bookeq + marketeq) / marketeq
 
-order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
+order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq epsf12 dvpsxq cshoq cshprq cshfdq bookeq atq marketeq leverage crsp_lev
 
+* order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
 
 keep quarter Ticker marketeq crsp_lev epsfxq epspiq epsf12 dvpsxq repurchases commonshares adrrq peratio
 
