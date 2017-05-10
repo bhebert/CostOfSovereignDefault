@@ -246,7 +246,6 @@ gen return_twodayL = 100*log(px_open / L2.px_open)
 drop if date >= td(30jul2014)
 drop if date < td(1jan$startyear)
 
-*USE THIS DATASET TO CONSTRUCT NEW INDICES
 save "$apath/Index_Maker.dta", replace
 
 // Code to go from log-returns to arithmetic returns
