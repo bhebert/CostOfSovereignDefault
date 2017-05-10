@@ -92,7 +92,7 @@ sort Ticker
 tempfile temp
 
 
-foreach mark in US AR {
+foreach mark in US {
 	foreach indtype in ValueBank ValueNonFin ValueRE Value {
 		local filename= "`indtype'Index_`mark'_New"
 		append using "$apath/`indtype'Index_`mark'_New.dta"
