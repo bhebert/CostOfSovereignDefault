@@ -85,7 +85,7 @@ format quarter %tq
 
 gen crsp_lev = (atq - bookeq + marketeq) / marketeq
 
-order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq epsf12 dvpsxq cshoq cshprq cshfdq bookeq atq marketeq leverage crsp_lev
+order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq epsf12 dvpsxq cshoq cshprq cshfdq bookeq atq marketeq crsp_lev
 
 * order datadate datacqtr datafqtr quarter Ticker epspiq epsfxq EPSNew EPS epsf12 DivPerShare dvpsxq CommonOutstanding cshoq cshprq cshfdq BookCommon bookeq atq TotalAssets marketeq MV leverage crsp_lev
 
