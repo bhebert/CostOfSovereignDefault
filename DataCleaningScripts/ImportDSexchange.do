@@ -14,4 +14,4 @@ label var bm_premium_pct "Black Market Premium (Percent)"
 tsset date
 gen d_bm_premium=D.bm_premium
 gen d_bm_premium_pct=D.bm_premium_pct
-save "$apath/ARS_Blue.dta"
+save "$apath/ARS_Blue.dta", replace
