@@ -65,40 +65,5 @@ gen industry_sector=Ticker
 save "$apath/Additonal_Securities.dta", replace
 
 
-use "`temp'.dta", clear
-drop if Ticker=="ARCO"
-replace Ticker="PBR" if Ticker=="APBR"
-drop total name
-gen name=Ticker+"_"+market
-drop Ticker market
-reshape wide px*, i(date) j(name) string
-gen blue_open_PBR=2*px_openPBR_AR/px_openPBR_US
-gen blue_close_PBR=2*px_closePBR_AR/px_closePBR_US
-gen blue_open_TS=2*px_openTS_AR/px_openTS_US
-gen blue_close_TS=2*px_closeTS_AR/px_closeTS_US
-drop px*
-gen px_open=(blue_open_PBR+blue_open_TS)/2
-gen px_close=(blue_close_PBR+blue_close_TS)/2
-keep if yofd(date)>=2011
-keep date px_*
-gen Ticker="ADRB_PBRTS"
-gen total_return=px_close
-save "$apath/ADRB_PBRTS.dta", replace
-
-/*
-*CHECK IT IS FINE TO USE CRSP
-use "$apath/Additional_CRSP.dta", clear
-replace Ticker=Ticker+"_CRSP"
-append using  "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta"
-drop if market=="AR"
-
-gen tr_temp=total_return if date==td(13apr2012)
-bysort Ticker: egen tr2=max(tr_temp)
-replace total_return=total_return/tr2
-twoway (line total_return date if Ticker=="TS", sort) (line  total_return date if Ticker=="TS_CRSP", yaxis(2) sort) if yofd(date)>=2011
-twoway (line total_return date if Ticker=="PBR", sort) (line  total_return date if Ticker=="PBR_CRSP", yaxis(2) sort) if yofd(date)>=2011
-*/
-
-
 
 
