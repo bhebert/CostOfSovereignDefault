@@ -6,6 +6,8 @@ set more off
 
 do ${csd_dir}/SetupPaths.do
 
+do ${csd_dir}/DataCleaningScripts/DataCleaningFirstSteps.do
+
 do ${csd_dir}/DataCleaningScripts/Commodity_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
