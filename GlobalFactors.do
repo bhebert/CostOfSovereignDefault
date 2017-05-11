@@ -1,14 +1,14 @@
 set more off
 
 * This code loads the factors we use to compute excess returns
-use "$fpath/Addition_Vars.dta", clear
+use "$apath/Addition_Vars.dta", clear
 drop if ticker != "SPX_Price" & ticker != "VIX" & ticker != "EEMA"
 replace ticker = "SPX" if ticker=="SPX_Price"
 
 
 save "$apath/temp.dta", replace
 
-use "$dpath/CDS_Indices.dta", clear
+use "$apath/CDS_Indices.dta", clear
 keep date MCCIG5Y MCCNH5Y
 rename MCCIG5Y closeIG5Yr
 rename MCCNH5Y closeHY5Yr

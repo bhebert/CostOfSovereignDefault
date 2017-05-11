@@ -17,7 +17,7 @@ local qyear_market yq(2011,2)
 
 local market_cut 200
 tempfile adrtemp firmtabletemp
-use "$bbpath/Datasets/ADR_Static.dta", clear
+use "$apath/ADR_Static.dta", clear
 keep ticker ticker_short Primary_Exchange
 rename ticker ADRticker
 gen ADRratio=2 if ADRticker != ""
@@ -27,7 +27,7 @@ replace ADRratio=5 if regexm(ADRticker,"TEO")
 replace ADRratio=25 if regexm(ADRticker,"PAM")
 
 save "`adrtemp'", replace
-use "$dpath/DS_BB_Static_v2.dta", clear
+use "$apath/DS_BB_Static_v2.dta", clear
 keep Ticker isin_code indicator_adr //Industry_sector industry_Group
 rename isin_code ID_ISIN
 mmerge ID_ISIN using "$dpath/Market_Cap_Ticker_2011.dta", unmatched(both)
@@ -45,7 +45,7 @@ save "`firmtabletemp'", replace
 
 
 *Calculate 2011 exchange rate (using official)
-use "$dpath/ARS_Blue.dta", clear
+use "$apath/ARS_Blue.dta", clear
 keep  TDARSSP date
 rename TDARSSP Official
 keep if yofd(date)==2011
@@ -54,7 +54,7 @@ local fx=r(mean)
 
 
 *FULL MARKET Cap
-use  "$dpath/Market_Cap_Ticker_2011.dta", clear
+use  "$apath/Market_Cap_Ticker_2011.dta", clear
 gen market_cap_exypf=market_cap
 replace market_cap_exypf=. if Ticker=="YPF"
 collapse (sum) market_cap market_cap_exypf

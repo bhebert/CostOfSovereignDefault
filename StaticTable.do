@@ -12,7 +12,7 @@ local event_cut 10
 
 tempfile adrtemp firmtabletemp
 
-use "$bbpath/Datasets/ADR_Static.dta", clear
+use "$apath/ADR_Static.dta", clear
 
 keep ticker ticker_short Primary_Exchange
 
@@ -27,7 +27,7 @@ replace ADRratio=25 if regexm(ADRticker,"PAM")
 
 save "`adrtemp'", replace
 
-use "$dpath/DS_BB_Static_v2.dta", clear
+use "$apath/DS_BB_Static_v2.dta", clear
 
 *drop if Ticker == ""
 
@@ -45,7 +45,7 @@ drop FFCODE49
 
 rename isin_code ID_ISIN
 
-mmerge ID_ISIN using "$dpath/Market_Cap_Ticker_2011.dta", unmatched(both)
+mmerge ID_ISIN using "$apath/Market_Cap_Ticker_2011.dta", unmatched(both)
 *THIS USES THE OLD TICKER OF Transportadores de gas del norte
 replace bb_ticker="TGNO4 AR Equity" if bb_ticker=="TGNO2 AR Equity"
 
@@ -84,7 +84,7 @@ drop firstline
 tempfile tempf
 save "`tempf'", replace
 	
-use "$dpath/Export_TS_manual_Ticker.dta", clear
+use "$apath/Export_TS_manual_Ticker.dta", clear
 	
 drop if year(date) != `export_year'
 collapse (mean) export_share, by(ID_ISIN)
@@ -92,15 +92,15 @@ collapse (mean) export_share, by(ID_ISIN)
 mmerge ID_ISIN using "`tempf'", unmatched(using)
 drop _merge
 	
-mmerge ID_ISIN using "$dpath/Ownership_Ticker.dta", ukeep(Government) unmatched(both)
+mmerge ID_ISIN using "$apath/Ownership_Ticker.dta", ukeep(Government) unmatched(both)
 drop _merge
 	
-mmerge ID_ISIN using "$dpath/Foreign_Ownership_Ticker.dta", ukeep(foreign_own) unmatched(both)
+mmerge ID_ISIN using "$apath/Foreign_Ownership_Ticker.dta", ukeep(foreign_own) unmatched(both)
 drop _merge
 
 rename ID_ISIN isin_code
 
-mmerge isin_code using "$tpath/es_im_industry_Ticker.dta", ukeep(es_industry import_intensity)
+mmerge isin_code using "$apath/es_im_industry_Ticker.dta", ukeep(es_industry import_intensity)
 
 drop _merge
 

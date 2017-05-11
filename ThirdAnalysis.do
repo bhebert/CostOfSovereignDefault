@@ -44,7 +44,7 @@ local freq_cut 0.5
 local event_cut 10
 
 
-use "$bbpath/Datasets/BB_Local_ADR_Indices_April2014.dta", clear
+use "$apath/BB_Local_ADR_Indices_April2014.dta", clear
 *add missing equity
 append using "$apath/TGNO4.dta"
 drop if date == .
@@ -128,7 +128,7 @@ append using  "$apath/gdpw_merge.dta"
 append using "$apath/eurotlx.dta"
 save "`temp'", replace
 
-use "$bbpath/Datasets/Latam_equities.dta", clear
+use "$apath/Latam_equities.dta", clear
 drop if regexm(variable,"return")
 keep date $latam
 foreach cntry in $latam {
@@ -142,7 +142,7 @@ append using "`temp'"
 save "`temp'", replace
 
 
-use "$bbpath/Datasets/Latam_CDS.dta", clear
+use "$apath/Latam_CDS.dta", clear
 drop if regexm(reporter,"CBIN")
 keep date $latam
 foreach cntry in $latam {

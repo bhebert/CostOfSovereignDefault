@@ -1,6 +1,6 @@
 set more off
 
-use "$dpath/ARS_Blue.dta", clear
+use "$apath/ARS_Blue.dta", clear
 keep ARSUSDS TDARSSP date
 drop if date >= td(30jul2014)
 *drop if date < td(1jan2011)
