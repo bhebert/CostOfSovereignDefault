@@ -21,4 +21,4 @@ destring M*, replace force
 }
 
 twoway (line MCCED5Y date) (line MCCIG5Y date) (line MCCNH5Y date)
-save "$apath/CDS_Indices.dta"
+save "$apath/CDS_Indices.dta", replace
