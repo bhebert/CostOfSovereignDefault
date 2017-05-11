@@ -25,12 +25,12 @@ global ffpath "$csd_data/Argentina/Tradable/FF"
 global tpath "$csd_data/Argentina/Tradable"
 global gdppath "$csd_data/GDP Weighting"
 global miscdata "$csd_data/Misc Data"
-global forpath "$csd_data/Forecasts"
-global fweo_path "$csd_data/Forecasts/WEO"
+
 global crsp_path "$csd_data/CRSP"
 global local_path "$csd_data/Local Data"
 global holdpath "$csd_data/HoldingsData"
 global warrant_path "$csd_data/GDP Warrants"
+
 
 global mainpath "$csd_data"
 
