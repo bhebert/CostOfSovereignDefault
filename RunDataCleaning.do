@@ -19,7 +19,9 @@ do ${csd_dir}/DataCleaningScripts/Datastream_Quarterly_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/dolarblue_clean.do
 
-do ${csd_dir}/DataCleaningScripts/CRSP_Bolsar_Blue.do
+*Candidate for removal. Makes another blue rate we don't use
+*do ${csd_dir}/DataCleaningScripts/CRSP_Bolsar_Blue.do
+
 
 ** Candidate for removal
 **do ${csd_dir}/DataCleaningScripts/US_Inflation.do
