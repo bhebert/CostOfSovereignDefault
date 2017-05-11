@@ -109,15 +109,9 @@ save "`temp'", replace
 
 use "$apath/blue_rate.dta", clear
 
-*append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
-*append using "$apath/US_Breakeven.dta"
 append using "$apath/bcs.dta"
-append using "$apath/ADRB_PBRTS.dta"
-*append using "$apath/Contado.dta"
 
-*append using "$apath/adrdb_altdata.dta"
-*append using "$apath/adrdb_merge.dta"
 
 drop if ~regexm("$exrates",Ticker)
 gen industry_sector = Ticker
