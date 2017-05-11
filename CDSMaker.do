@@ -169,7 +169,8 @@ replace eventexcluded = 1 if date==td(05mar2012)
 
 * We exclude the 29th in the code, although the table says the 26th.
 * Will decide what to do here.
-replace eventexcluded = 1 if date==td(29oct2012)
+replace eventexcluded = 1 if date==td(26oct2012)
+*replace eventexcluded = 1 if date==td(29oct2012)
 
 replace eventexcluded = 1 if date == td(22nov2012)
 
