@@ -18,8 +18,6 @@ do ${csd_dir}/DataCleaningScripts/import_cds.do
 
 do ${csd_dir}/DataCleaningScripts/GSW_Clean.do
 
-do ${csd_dir}/DataCleaningScripts/Cleaning_Bond_level.do
-
 do ${csd_dir}/DataCleaningScripts/Cleaning_Bolsar.do
 
 do "${csd_dir}/DataCleaningScripts/Cleaning March 2015.do"
