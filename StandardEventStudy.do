@@ -50,7 +50,8 @@ if `exclusions' == 1 {
 
 	gen excludedday = eventexcluded == 1 | L.eventexcluded == 1 | F.eventexcluded == 1
 	
-	replace excludeday = 0 if date==td(25oct2012)
+	* fix for issue in CDSMaker.do see comment there
+	replace excludedday = 0 if date==td(25oct2012)
 	
 	replace nonevent = 0 if excludedday
 	replace eventvar = 0 if excludedday
