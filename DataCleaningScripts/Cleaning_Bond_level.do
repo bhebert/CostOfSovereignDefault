@@ -202,7 +202,7 @@ replace g17_fixed=. if date>=td(08nov2011) | date<=td(04may2012)
 rename ytm_midg g17y
 gen logrsbond=log(rsbond)
 gen logg17=log(g17)
-mmerge date using "$miscdata/GSW/GSW_Data.dta", ukeep(svenpy05 svenpy18 svenpy19 svenpy20)
+mmerge date using "$apath/GSW_Data.dta", ukeep(svenpy05 svenpy18 svenpy19 svenpy20)
 drop if _merge==2
 gen rsbondys=rsbondy-svenpy20
 gen g17ys=g17y-svenpy05
