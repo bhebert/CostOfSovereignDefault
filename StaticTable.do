@@ -34,7 +34,7 @@ use "$apath/DS_BB_Static_v2.dta", clear
 keep Ticker isin_code indicator_adr //Industry_sector industry_Group
 //rename Industry_sector industry_sector
 
-mmerge Ticker using "$ffpath/FamaFrench_Master.dta", unmatched(master) ukeep(FFCODE12 FFCODE49)
+mmerge Ticker using "$apath/FamaFrench_Master.dta", unmatched(master) ukeep(FFCODE12 FFCODE49)
 drop _merge
 
 replace FFCODE12 = "Diverse" if Ticker == "COM"
