@@ -18,16 +18,7 @@ bysort industry_sector market day_type  event_day: gen n2=_n if event_day==1
 sort industry_sector market day_type  eventcloses date
 bysort industry_sector market day_type  eventcloses: gen n1=_n if eventcloses==1
 
-*
-/*local indplot ADRB_PBRTS ADRBlue BCS Contado_Ambito DSBlue dolarblue ValueINDEXNew MexicoEquity
-discard
-foreach x of local indplot {
-twoway    (scatter return_ cds if event_day==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if event_day==1, mlabel(date)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="twoday" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) title("Two day: `x'") xtitle("Argentina CDS Spread Change") ytitle("Change") name("Twoday`y'") graphregion(fcolor(white) lcolor(white))
-graph export "$rpath/Scatter_`y'_twoday.eps", replace
-twoway    (scatter return_ cds if eventcloses==0, mcolor(gs9) msize(tiny)) (scatter return_ cds_ if eventcloses==1, mlabel(date)) if industry_sec=="`x'" & eventexcluded==0 & day_type=="onedayN" & market~="AR", legend(order(1 "Non-Event" 2 "Event")) title("One day: `x'") xtitle("Argentina CDS Spread Change") ytitle("Change") name("oneday`y'") graphregion(fcolor(white) lcolor(white))
-graph export "$rpath/Scatter_`y'_onedayN.eps", replace
-local y=`y'+1
-}*/
+
 replace cds=cds_*100
 
 *EXCHANGE RATE PLOTS
@@ -42,11 +33,6 @@ graph export "$rpath/Scatter_`x'_onedayN.eps", replace
 local y=`y'+1
 } 
 
-*FOR PRESENATIONS
-*Twoday_ValueINDEXNew
-*Twoday_MexicoEquity
-
-*Can add versions here to get old numbers back
 use "$apath/data_for_summary.dta", clear
 replace cds=cds_*100
 sort industry_sector market day_type event_day date
@@ -176,11 +162,8 @@ graph export "$rpath/Defaulted_Defprob_inv.eps", replace
 *********************
 use "$apath/ADRBlue_All.dta", clear
 append using "$apath/blue_rate.dta"
-*append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
 append using "$apath/bcs.dta"
-*append using "$apath/ADRB_PBRTS.dta"
-*append using "$apath/Contado.dta"
 
 replace Ticker=ADR_Ticker if Ticker==""
 twoway (connected px_close date if Ticker=="BFR") (connected px_close date if Ticker=="BMA") (connected px_close date if Ticker=="GGAL") (connected px_close date if Ticker=="PAM") (connected px_close date if Ticker=="PBR") (connected px_close date if Ticker=="PZE") (connected px_close date if Ticker=="TEO") (line px_close date if Ticker=="TS") (line px_close date if Ticker=="dolarblue")  (connected px_close date if Ticker=="ADRB_PBRTS") (line px_close date if Ticker=="BCS") (line px_close date if Ticker=="ADRBlue") (line px_close date if Ticker=="YPFDBlue") (line px_close date if Ticker=="DSBlue") if date>=td(13jun2014) & date<=td(19jun2014), legend(order(1 "BFR" 2 "BMA" 3 "GGAL" 4 "PAM" 5 "PBR" 6 "PZE" 7 "TEO" 8 "TS" 9 "Dolarblue" 10 "ADRB_PBRTS" 11 "BCS" 12 "ADRBlue" 13 "YPF" 14 "DSBlue"))
