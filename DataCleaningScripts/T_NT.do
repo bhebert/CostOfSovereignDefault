@@ -1,4 +1,4 @@
-import excel "$tpath/SIC_ISIC.xlsx", sheet("Sheet1") firstrow clear
+import excel "$csd_data/OECD/SIC_ISIC.xlsx", sheet("Sheet1") firstrow clear
 keep SIC ISIC1 ISIC2 ISIC3 ISIC4
 gen ISIC=ISIC1
 tostring ISIC, replace
@@ -11,7 +11,7 @@ save "$apath/SIC_ISIC.dta", replace
 	
 *********
 *IO Tables.
-import excel "$tpath/OECD IO.xls", sheet("OECD.Stat export") allstring clear
+import excel "$csd_data/OECD/OECD IO.xls", sheet("OECD.Stat export") allstring clear
 drop if _n<7
 drop if _n==2
 foreach x of varlist _all {
@@ -121,7 +121,7 @@ foreach x of varlist _all {
 ******************************
 *INTERMEDIATE INPUT SHARE
 *****************************
-		import excel "$tpath/OECD IO Import.xlsx", sheet("Imports_by_Ind") firstrow clear
+		import excel "$csd_data/OECD/OECD IO Import.xlsx", sheet("Imports_by_Ind") firstrow clear
 		split column, p(" ")
 		order column1
 		rename column1 name
