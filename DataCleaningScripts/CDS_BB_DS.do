@@ -53,7 +53,7 @@ save "$apath/Bloomberg_CDS", replace
 
 *DATASTREAM 
 tempfile dsall cds1 cds2 cds3 cds4 cds5 cds6
-import excel "$miscdata/BB_DS_CDS_April2016/Argentina_DS_CDS_April2016.xlsx", sheet("Sheet1") clear
+import excel "$csd_data/Datastream/DS_CDS_April2016.xlsx", sheet("Sheet1") clear
 local i=1
 foreach x of varlist _all {
 	rename `x' v`i'
