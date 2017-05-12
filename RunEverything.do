@@ -45,6 +45,8 @@ do ${csd_dir}/Cost_Table.do
 
 do ${csd_dir}/HoldingsTable.do
 
+do ${csd_dir}/DataCleaningScripts/ADRVolume.do
+
 * Configure Rigobon-Sack File
 global RSControl 1
 
