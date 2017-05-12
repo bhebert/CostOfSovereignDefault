@@ -20,7 +20,7 @@ mmerge ticker using "`ticks'", umatch(adrticker)
 keep if _merge==3
 order date ticker vol prc
 keep date ticker under bb vol prc
-mmerge bb date using "$mainpath/Local Data/Bolsar/Bolsar_merged.dta", umatch(ticker date) ukeep(volume volume_value) uname(bolsar_)
+mmerge bb date using "$apath/Bolsar_merged.dta", umatch(ticker date) ukeep(volume volume_value) uname(bolsar_)
 keep if _merge==3
 gen adr_turnover=vol*prc
 *merge in ADR Blue rate

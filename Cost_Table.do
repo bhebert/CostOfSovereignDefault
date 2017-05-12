@@ -30,7 +30,7 @@ save "`adrtemp'", replace
 use "$apath/DS_BB_Static_v2.dta", clear
 keep Ticker isin_code indicator_adr //Industry_sector industry_Group
 rename isin_code ID_ISIN
-mmerge ID_ISIN using "$dpath/Market_Cap_Ticker_2011.dta", unmatched(both)
+mmerge ID_ISIN using "$apath/Market_Cap_Ticker_2011.dta", unmatched(both)
 drop _merge
 split bb_ticker, gen(ticker_short) limit(1)
 rename ticker_short ticker_short

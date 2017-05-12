@@ -159,7 +159,7 @@ foreach mark in US AR {
 		
 		local weightfile="`mark'_weighting"
 		
-		use "$bbpath/Datasets/BB_Local_ADR_Indices_April2014.dta", clear
+		use "$apath/BB_Local_ADR_Indices_April2014.dta", clear
 		
 		drop if date == .
 		drop if Ticker == ""
