@@ -1,14 +1,15 @@
 set more off
 
 *FIX ISIN MISMATCH IN 
-use "$bbpath/BB_Static_0304.dta", clear
+import excel "$csd_data/Bloomberg/Argentina_Bloomberg_0304.xlsx", sheet("Static_Values") firstrow clear
 replace ID_ISIN ="ARTGNO010117" if ID_ISIN=="ARP930811186"
+rename bb_ BB_ticker
 save  "$apath/BB_Static_0304.dta", replace
 
 ************************
 *Static Characteristics*
 ************************
-import excel "$dpath/Datastream_Static_0302.xlsx",  sheet("Static") clear
+import excel "$csd_data/Datastream/Datastream_Static_0302.xlsx",  sheet("Static") clear
 replace F="Industry_group_num" if F=="INDUSTRY GROUP"
 foreach x of varlist _all {
 	replace `x'=subinstr(`x'," ","_",.) if _n==1
@@ -37,13 +38,13 @@ save "$apath/Datastr_Static_Chars_v2.dta", replace
 
 *MERGE BB STATIC with Datastream Static
 use "$apath/Datastr_Static_Chars_v2.dta", clear
-mmerge isin_code using "$bbpath/BB_Static_0304.dta", umatch(ID_ISIN)
+mmerge isin_code using "$apath/BB_Static_0304.dta", umatch(ID_ISIN)
 keep if _merge==3
 
 save "$apath/DS_BB_Static.dta", replace
 
 ** Ownership
-import excel "$bbpath/Argentina_Bloomberg_0304.xlsx", sheet("Ownership") clear
+import excel "$csd_data/Bloomberg/Argentina_Bloomberg_0304.xlsx", sheet("Ownership") clear
 foreach x of varlist _all {
 	tostring `x', replace force
 	if `x'[3]=="." {
@@ -99,7 +100,7 @@ order bb_ticker Government
 foreach x in Government Bank Corporation Endowment Hedge_Fund_Manager Holding_Company Individual Insurance_Company Investment_Advisor Other Pension_Fund_ERISA Private_Equity Unclassified Venture_Capital {
 replace `x'=0 if `x'==.
 }
-mmerge bb_ticker using "$bbpath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
+mmerge bb_ticker using "$apath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
 keep if _merge==3
 mmerge ID_ISIN using "$apath/Datastr_Static_Chars_v2.dta", umatch(isin_code) ukeep(Ticker name)
 keep if _merge==3
@@ -110,7 +111,7 @@ save "$apath/Ownership_Ticker.dta", replace
 ***********************
 *Foreign Ownership***
 ***********************
-import excel "$bbpath/Argentina_Bloomberg_0304.xlsx", first sheet("Domicile") clear
+import excel "$csd_data/Bloomberg/Argentina_Bloomberg_0304.xlsx", first sheet("Domicile") clear
 replace ID_ISIN ="ARTGNO010117" if ID_ISIN=="ARP930811186"
 rename PARENT_COM parent
 rename ID_BB_ULTIMATE_PARENT_CO_NAME ultimate_parent
@@ -129,7 +130,7 @@ save "$apath/Foreign_Ownership_Ticker.dta", replace
 ***********************
 *Exports Sales ***
 ***********************
-import excel "$bbpath/Argentina_Bloomberg_0304.xlsx",  sheet("Exports_Sales") clear
+import excel "$csd_data/Bloomberg/Argentina_Bloomberg_0304.xlsx",  sheet("Exports_Sales") clear
 foreach x of varlist _all {
 	tostring `x', replace force
 	if `x'[3]=="." {
@@ -189,7 +190,7 @@ gen date=date(datestr,"MDY")
 format date %td
 drop datestr
 order date
-mmerge bb_ticker using "$bbpath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
+mmerge bb_ticker using "$apath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
 keep if _merge==3
 replace ID_ISIN ="ARTGNO010117" if ID_ISIN=="ARP930811186"
 mmerge ID_ISIN using "$apath/Datastr_Static_Chars_v2.dta", umatch(isin_code) ukeep(Ticker name)
@@ -204,7 +205,7 @@ save "$apath/Export_TS_manual_Ticker.dta", replace
 ***********************
 *Market Cap************
 ***********************
-import excel "$bbpath/Market_Cap.xlsx",  sheet("Market_Cap") clear
+import excel "$csd_data/Bloomberg/Market_Cap.xlsx",  sheet("Market_Cap") clear
 foreach x of varlist _all {
 	tostring `x', replace force
 	if `x'[3]=="." {
