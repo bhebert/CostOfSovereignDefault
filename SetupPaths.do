@@ -28,7 +28,7 @@ global miscdata "$csd_data/Misc Data"
 
 global crsp_path "$csd_data/CRSP"
 global local_path "$csd_data/Local Data"
-global holdpath "$csd_data/HoldingsData"
+
 global warrant_path "$csd_data/GDP Warrants"
 
 

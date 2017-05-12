@@ -1,7 +1,7 @@
 
-use "${holdpath}/ArgentinaADRHoldings.dta", clear
+use "${crsp_path}/ArgentinaADRHoldings.dta", clear
 
-append using "${holdpath}/ArgentinaADRHoldingsCRESY.dta"
+append using "${crsp_path}/ArgentinaADRHoldingsCRESY.dta"
 
 gen quarter = qofd(rdate)
 format quarter %tq
