@@ -129,9 +129,9 @@ rename ticker Ticker*/
 
 save "`firmtabletemp'", replace
 
-**************************
-*MERGE IN Brent's Imports*
-**************************
+***************************************************************
+*Merge in Data on Imports from Gopinath and Neiman (AER, 2014)*
+***************************************************************
 tempfile data brenttemp
 import excel "$miscdata/Brent Neiman Data/Match.xlsx", sheet("Raw") firstrow clear
 save "`data'", replace
