@@ -31,7 +31,7 @@ local y=`y'+1
 replace cds=cds_*100
 
 *EXCHANGE RATE PLOTS
-local indplot ADRB_PBRTS ADRBlue BCS   dolarblue 
+local indplot ADRBlue BCS   dolarblue 
 local y=1
 discard
 foreach x of local indplot {
@@ -179,7 +179,7 @@ append using "$apath/blue_rate.dta"
 *append using "$apath/NDF_Datastream.dta"
 append using "$apath/dolarblue.dta"
 append using "$apath/bcs.dta"
-append using "$apath/ADRB_PBRTS.dta"
+*append using "$apath/ADRB_PBRTS.dta"
 *append using "$apath/Contado.dta"
 
 replace Ticker=ADR_Ticker if Ticker==""
@@ -298,7 +298,7 @@ replace industry_sec="Real Estate" if industry_sec=="RlEst"
 replace industry_sec="Telecoms" if industry_sec=="Telcm"
 replace industry_sec="Utilities" if industry_sec=="Utils"
 gen ind_ADR="Y" if indicator_adr==1 & ADRticker~=""
-replace ind_ADR="Y*" if indicator_adr & ADRticker==""
+replace ind_ADR="Y*" if indicator_adr & (ADRticker=="" | ADRticker == "BSAR US Equity" )
 gen foreign_ind="Y" if foreign_own==1
 keep name ticker_short industry_sec es_ import_rev market_cap foreign_ind ind_ADR 
 order name ticker_short industry_sec es_ import_rev market_cap foreign_ind ind_ADR  
