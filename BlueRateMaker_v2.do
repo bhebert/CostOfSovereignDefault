@@ -14,7 +14,7 @@ save "`temp'", replace
 
 
 tempfile eqtemp ADR_temp
-use "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta", clear
+use "$apath/EqNewBlueRate.dta", clear
 gen ADR=.
 replace ADR=1 if market=="US"
 replace ADR=0 if market=="AR"
@@ -44,17 +44,12 @@ reshape wide px_open px_last , i(date ADR_T Und) j(ADR)
 
 gen ADRticker = ADR_Ticker + " US Equity"
 mmerge ADRticker using "$apath/FirmTable.dta", ukeep(ADRratio) unmatched(master)
-
 rename ADRratio ratio
 
 drop ADRticker
 replace ratio = 2 if ADR_T == "TS" | ADR_T == "PBR"
 drop if ratio == .
-
 sort ADR_T date
-
-
-
 replace px_open1=px_open1/ratio
 replace px_last1=px_last1/ratio
 
@@ -69,10 +64,7 @@ label var px_close1 "Close, ADR(scaled)"
 label var px_open "Open, Blue Rate"
 label var px_close "Close, Blue Rate"
 gen total_return=px_close
-twoway (line px_close date if ADR_T=="BFR") (line px_close date if ADR_T=="BMA") (line px_close date if ADR_T=="GGAL") (line px_close date if ADR_T=="PAM") (line px_close date if ADR_T=="PBR") (line px_close date if ADR_T=="PZE") (line px_close date if ADR_T=="TEO") (line px_close date if ADR_T=="TS") , legend(order(1 "BFR" 2 "BMA" 3 "GGAL" 4 "PAM" 5 "PBR" 6 "PZE" 7 "TEO" 8 "TS"))
-graph export "$rpath/ADR_Blue_db.png", replace
 save "$apath/ADRBlue_All.dta", replace
-
 
 
 use "$apath/ADRBlue_All.dta", clear
@@ -81,8 +73,6 @@ bysort date: egen min_px_close=min(px_close)
 bysort date: egen max_px_close=max(px_close)
 bysort date: egen count=count(px_close)
 bysort date: replace exclude=1 if (px_close==min_px_close | px_close==max_px_close) & count>=3
-
-
 drop if exclude==1
 collapse (mean) px_open px_close total_return, by(date)
 gen Ticker="ADRBlue"
@@ -104,28 +94,8 @@ format quarter %tq
 collapse (lastnm) px_close, by(quarter Ticker)
 reshape wide px_close, i(quarter) j(Ticker) string
 renpfix px_close
-
 keep quarter ADRBlue OfficialRate
 replace OfficialRate = 1 if quarter < yq(2001,4)
 replace OfficialRate = ADRBlue if quarter >= yq(2001,4) & quarter <= yq(2007,3)
-
 save "$apath/ADRBlue_quarter.dta", replace
 
-
-*CALCULATE DISPERSION NUMBER FOR PAPER
-use "$apath/ADRBlue_All.dta", clear
-gen ADRBluetemp=px_close if Ticker=="ADRBlue"
-bysort date: egen ADRBlue=max(ADRBluetemp)
-keep date px_close ADR_Tick ADRBlue
-keep if ADR_T~=""
-keep if date>=td(01jan2011) & date<=td(30jul2014)
-summ px_close
-bysort date: egen mean=mean(px_close)
-gen px_close2=px_close
-collapse (max) px_close (min) px_close2 (firstnm) mean ADRBlue, by(date)
-rename px_close max
-rename px_close2 min
-gen gap=max-min
-gen share_mean=100*(gap/mean)
-gen share_ADRBlue=100*(gap/ADRBlue)
-summ share_ADRBlue
