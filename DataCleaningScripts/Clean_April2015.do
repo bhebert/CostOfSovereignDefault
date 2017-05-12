@@ -119,7 +119,7 @@ save "$apath/Local_ADR_Full.dta", replace
 ****************************
 *MERVALs*
 
-import excel "$miscdata/GFD Stock Markets/Jesse_Schreger_Merval_excel2007.xlsx", sheet("Price Data") firstrow clear
+import excel "$csd_data/GFD/Jesse_Schreger_Merval_excel2007.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td 
 order date

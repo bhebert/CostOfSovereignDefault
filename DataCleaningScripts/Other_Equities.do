@@ -2,12 +2,12 @@ set more off
 
 *EQUITIES
 tempfile temp
-import excel "$miscdata/GFD Stock Markets/USD.xlsx", sheet("Data Information") clear firstrow
+import excel "$csd_data/GFD/USD.xlsx", sheet("Data Information") clear firstrow
 keep Ticker Country
 save "`temp'", replace
 
 
-import excel "$miscdata/GFD Stock Markets/USD.xlsx", sheet("Price Data") clear firstrow
+import excel "$csd_data/GFD/USD.xlsx", sheet("Price Data") clear firstrow
 gen date=date(Date,"MDY")
 format date %td
 order date

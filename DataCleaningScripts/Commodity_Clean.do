@@ -1,6 +1,6 @@
 *Commodities clean
 *Raw data from Global Financial Data
-import excel "$miscdata/Commodities/Jesse_Schreger_Misc_Series_excel2007_GFDComm.xlsx", sheet("Price Data") firstrow clear
+import excel "$csd_data/GFD/Jesse_Schreger_Misc_Series_excel2007_GFDComm.xlsx", sheet("Price Data") firstrow clear
 rename Date date
 rename Ticker ticker
 rename Open open

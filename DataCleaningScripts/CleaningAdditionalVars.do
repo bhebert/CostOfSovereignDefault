@@ -1,5 +1,5 @@
 *
-import excel "$fpath/GFD_SP.xlsx", sheet("Price Data") firstrow clear
+import excel "$csd_data/GFD/GFD_SP.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td
 drop Date
@@ -11,7 +11,7 @@ rename Close close
 drop High Low
 save "$apath/SPX.dta", replace
 
-import excel "$fpath/GFDMexicoIndex.xlsx", sheet("Price Data") firstrow clear
+import excel "$csd_data/GFD/GFDMexicoIndex.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td
 drop Date

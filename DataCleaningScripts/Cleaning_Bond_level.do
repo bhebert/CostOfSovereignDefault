@@ -3,7 +3,7 @@ set more off
 
 *Cleaning exchange rate data
 tempfile eur bondtemp
-import excel "$miscdata/EURUSD_GFD/EURUSD_20150914_excel2007.xlsx", sheet("Price Data") firstrow clear
+import excel "$csd_data/GFD/EURUSD_20150914_excel2007.xlsx", sheet("Price Data") firstrow clear
 gen date=date(Date,"MDY")
 format date %td
 keep  date Close
