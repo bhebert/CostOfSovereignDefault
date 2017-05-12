@@ -167,9 +167,5 @@ replace EPSNew = WC05294 if qtnum == 4
 save "$apath/Datastream_Quarterly.dta", replace
 	
 
-browse if yofd(dofq(quarter))>=2003 & yofd(dofq(quarter))<=2014
-*THE DATA MISSING IS PRE-2003, 2015, or FIRMS WE DON'T USE
-
-
 
 
