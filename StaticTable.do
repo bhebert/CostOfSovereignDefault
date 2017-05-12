@@ -142,7 +142,7 @@ keep if _merge==3
 drop _merge
 mmerge Ticker using "`firmtabletemp'", ukeep(isin_code import_intensity)
 keep if _merge==3
-mmerge  isin_code year using "$miscdata/Brent Neiman Data/CompustatGlobal.dta", umatch(isin fyear)
+mmerge  isin_code year using "${crsp_path}/CompustatGlobal.dta", umatch(isin fyear)
 keep if _merge==3
 replace imports=imports/(10^6)
 keep name Ticker isin year import* capx revt
