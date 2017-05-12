@@ -52,7 +52,7 @@ global RSControl 1
 
 global RSexclusions 1
 global RSdaytype twoday
-global RSbstyle rep(100) strata(eventvar) seed(4251984) cluster(date)
+global RSbstyle rep(1000) strata(eventvar) seed(4251984) cluster(date)
 global RSivstderrs robust
 
 global RSwarrants_run 0
