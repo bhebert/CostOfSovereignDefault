@@ -23,13 +23,13 @@ rename Close close
 drop High Low Volume
 save "$apath/Mexico.dta", replace
 
-import excel "$fpath/Indices.xlsx", sheet("EEMAUS") firstrow clear
+import excel "$bbpath/Indices.xlsx", sheet("EEMAUS") firstrow clear
 sort date
 rename index ticker
 replace ticker="EEMA"
 save "$apath/EEMA.dta", replace
 
-import excel "$fpath/Indices.xlsx", sheet("MXASJ") firstrow clear
+import excel "$bbpath/Indices.xlsx", sheet("MXASJ") firstrow clear
 sort date
 rename index ticker
 replace ticker="MXASJ"
