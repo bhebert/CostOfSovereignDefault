@@ -76,7 +76,7 @@ replace Market="Euro-Dollar" if ticker=="EI2415061"
 save  "$apath/Warrant_detail.dta", replace
 
 use "$apath/Warrant_Master.dta", clear
-mmerge ticker using "$dir_warrants/Warrant_detail.dta", ukeep(Curr Market ISIN)
+mmerge ticker using "$apath/Warrant_detail.dta", ukeep(Curr Market ISIN)
 drop _merge
 save "$apath/Warrant_Master.dta", replace
 
