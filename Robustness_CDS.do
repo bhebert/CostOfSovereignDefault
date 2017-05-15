@@ -90,7 +90,7 @@ foreach x in   PUF_3y PUF_5y  Spread1y Spread3y Spread5y   mC5_1y mC5_3y mC5_5y 
 export excel using "$rpath/Robustness_Table.xls", firstrow(variables) replace
 
 use "$rpath/Robustness_Table.dta", clear
-keep if variables=="cds2"
+keep if variables=="cds2" | variables == "CI_95"
 export excel using "$rpath/Robustness_Table_Compact.xls", firstrow(variables) replace
 
 global cds_robust 0
