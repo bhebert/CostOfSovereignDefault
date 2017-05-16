@@ -250,7 +250,7 @@ gen date=date(quarterstr,"MDY")
 format date %td
 drop quarterstr
 order date
-mmerge bb_ticker using "$bbpath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
+mmerge bb_ticker using "$apath/BB_Static_0304.dta", umatch(BB_ticker) ukeep(ID_ISIN)
 replace ID_ISIN ="ARTGNO010117" if ID_ISIN=="ARP930811186"
 
 keep if _merge==3
