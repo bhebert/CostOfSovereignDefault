@@ -45,7 +45,7 @@ rename ticker Ticker
 rename openprc px_open 
 rename prc px_close
 save "$apath/Additional_CRSP.dta", replace
-use "$mainpath/Bloomberg/Datasets/EqNewBlueRate.dta", clear
+use "$apath/EqNewBlueRate.dta", clear
 keep Ticker date px_last px_open total market
 rename px_last px_close
 drop if market=="US"

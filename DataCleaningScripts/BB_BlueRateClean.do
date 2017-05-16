@@ -1,7 +1,7 @@
 *Bloomberg ADR/Underlying clean for BlueRateMaker_v2
 *Note, this still generates output to dropbox, need to correct.
 set more off
-import excel "$csd_data/Bloomberg/Equities_for_Blue.xlsx", sheet("Data All") clear
+import excel "$csd_data/Bloomberg/Equities_for_blue.xlsx", sheet("Data All") clear
 foreach x of varlist _all {
 tostring `x', replace
 	if `x'[3]=="." {

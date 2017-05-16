@@ -27,3 +27,7 @@ do ${csd_dir}/DataCleaningScripts/CleaningBB_Step2.do
 do ${csd_dir}/DataCleaningScripts/CleaningBB_Step3.do
 
 do ${csd_dir}/DataCleaningScripts/CleaningBB_Step4.do
+
+do ${csd_dir}/DataCleaningScripts/BB_BlueRateClean.do
+
+do ${csd_dir}/DataCleaningScripts/FF_Industry.do
