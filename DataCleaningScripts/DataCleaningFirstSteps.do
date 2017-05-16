@@ -20,10 +20,10 @@ do ${csd_dir}/DataCleaningScripts/GSW_Clean.do
 
 do ${csd_dir}/DataCleaningScripts/Cleaning_Bolsar.do
 
-do "${csd_dir}/DataCleaningScripts/Cleaning March 2015.do"
+do ${csd_dir}/DataCleaningScripts/CleaningBB_Step1.do
 
-do ${csd_dir}/DataCleaningScripts/Clean_April2015.do
+do ${csd_dir}/DataCleaningScripts/CleaningBB_Step2.do
 
-do ${csd_dir}/DataCleaningScripts/Cleaning_November.do
+do ${csd_dir}/DataCleaningScripts/CleaningBB_Step3.do
 
-do ${csd_dir}/DataCleaningScripts/Cleaning_December.do
+do ${csd_dir}/DataCleaningScripts/CleaningBB_Step4.do
