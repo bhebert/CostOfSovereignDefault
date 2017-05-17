@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *Bloomberg and DS credit triangles. 
 tempfile bbds
 set more off
@@ -27,6 +28,8 @@ local tenor=5
 // save "$apath/triangle_bbds.dta", replace
 
 
+=======
+>>>>>>> origin/AER-Final
 *SIMPLE CREDIT TRIANGLE, Datastream, Bloomberg
 set more off
 use "$apath/Datastream_CDS",  clear
@@ -129,15 +132,6 @@ save "$apath/UST_Zero.dta", replace
 
 ***
 use  "$mpath/Composite_USD.dta", clear
-*mmerge date using "$mpath/Sameday_USD.dta"
-*mmerge date using "$mpath/Sameday_FC_USD.dta"
-*keep if _merge==3
-*Credit triangle approximation on page 11 of OpenGamma
-*foreach x in 1 2 3 4 5 7 10 15 30 {
-*	gen hazard`x'=(Spread`x'y/100)/(1-Recovery/100)
-*	}
-*	twoway (line hazard1 date, sort) if year(date)>=2012
-*		twoway (line hazard5 date, sort) if year(date)>=2012
 keep date Spread* Recovery
 mmerge date using "$apath/swaprates.dta"
 order date Recovery
@@ -577,7 +571,10 @@ foreach y in "" "_europe" "_newyork" "_asia" "_london" "_londonmidday" "_japan" 
 	foreach x in 6M 1Y 2Y 3Y 4Y 5Y 7Y 10Y {
 		label var Upfront`x' "Points Upfront, 5% coupon, `x'"
 		}
+<<<<<<< HEAD
 *mmerge date using "$apath/triangle_bbds.dta"
+=======
+>>>>>>> origin/AER-Final
 mmerge date using "$apath/cumdef_BB.dta", uname(bb_)
 mmerge date using "$apath/cumdef_ds.dta", uname(ds_)
 mmerge date using "$apath/cumdef_hazard_triangle_bb.dta", uname(bb_) ukeep(tri*)
