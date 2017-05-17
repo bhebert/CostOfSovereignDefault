@@ -7,7 +7,7 @@ set more off
 local crsp_adr 1
 
 * This controls which Exchange Rates to use
-global exrates ADRBlue DSBlue OfficialRate dolarblue BCS ADRB_PBRTS
+global exrates ADRBlue DSBlue OfficialRate dolarblue BCS
 
 * global exrates ADRBlue DSBlue OfficialRate dolarblue NDF12M NDF6M NDF3M NDF1M FWDP12M FWDP6M FWDP3M FWDP1M US10YBE US5YBE BCS ADRB_PBRTS Contado_Ambito
 
