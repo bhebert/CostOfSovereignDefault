@@ -80,7 +80,7 @@ save "$apath/Warrant_Master.dta", replace
 
 *BORSE FRANKFURT
 tempfile bfusd bfeur
-import excel "$dir_warrants/Borse_Frankfurt.xlsx", sheet("Data_XS0209139244") firstrow clear
+import excel "$warrant_path/Borse_Frankfurt.xlsx", sheet("Data_XS0209139244") firstrow clear
 gen date=date(Date,"DMY")
 order date
 format date %td
@@ -107,7 +107,7 @@ gen market="Index"
 gen industry_sector=Ticker
 save "`bfeur'", replace
 	
-import excel "$dir_warrants/Borse_Frankfurt.xlsx", sheet("Data_US040114GM64") firstrow clear
+import excel "$warrant_path/Borse_Frankfurt.xlsx", sheet("Data_US040114GM64") firstrow clear
 gen date=date(Date,"DMY")
 order date
 format date %td
