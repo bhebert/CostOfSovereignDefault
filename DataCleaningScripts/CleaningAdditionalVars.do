@@ -35,7 +35,7 @@ rename index ticker
 replace ticker="MXASJ"
 save "$apath/MXASJ.dta", replace
 
-import excel "$fpath/vix_CBOE.xlsx", sheet("vix") firstrow clear
+import excel "$csd_data/Misc Data/CBOE/vix_CBOE.xlsx", sheet("vix") firstrow clear
 gen ticker="VIX"
 drop high low
 save "$apath/VIX.dta", replace
