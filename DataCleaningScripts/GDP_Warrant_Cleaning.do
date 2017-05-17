@@ -1,11 +1,8 @@
 
 
 *GDP WARRANTS
-
-global dir_warrants "$warrant_path"
-
 set more off
-import excel "$dir_warrants/Warrant Info/GDP Warrants Full.xlsx", sheet("Prices") clear
+import excel "$bbpath/GDP Warrants Full.xlsx", sheet("Prices") clear
 foreach x of varlist _all {
 tostring `x', replace
 	if `x'[3]=="." {
@@ -60,7 +57,7 @@ rename Ticker ticker
 save  "$apath/Warrant_Master.dta", replace
 
 *WARRANT CHARACTERISTICS
-import excel "$dir_warrants/Warrant Info/GDP Warrants Full.xlsx", sheet("All") firstrow clear
+import excel "$bbpath/GDP Warrants Full.xlsx", sheet("All") firstrow clear
 keep if GDP==1
 order Identifier
 drop Ticker
@@ -144,14 +141,3 @@ drop high low turn*
 gen total_return=px_close
 duplicates drop
 save "$apath/gdpw_merge.dta", replace
-
-/*
-use "$dir_warrants/Warrant_Master.dta", clear
-rename ticker Ticker
-rename px_last px_close 
-append using "`bfusd'"
-append using "`bfeur'"
-
-twoway (line px_close date if ISIN=="US040114GM64" & Curr=="", sort) (line px_close date if ISIN=="US040114GM64" & Curr~="", sort) if date>=td(01jan2011), legend(order(1 "Frankfurt" 2 "Bloomberg"))
-twoway (line px_close date if ISIN=="XS0209139244" & Curr=="", sort) (line px_close date if ISIN=="XS0209139244" & Curr~="", sort) if date>=td(01jan2011), legend(order(1 "Frankfurt" 2 "Bloomberg"))
-
