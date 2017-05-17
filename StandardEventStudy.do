@@ -20,6 +20,9 @@ local exclusions 1
 //local factors SPX_ VIX_ EEMA_ IG5Yr_ HY5Yr_
 local factors $all_factors
 
+
+local example_sec ValueINDEXNew_US
+
 * These determine the earliest and latest days to use for non-events
 local mindate = mdy(1,1,2011)
 local maxdate = mdy(1,1,2015)
@@ -39,7 +42,7 @@ if `use_singlenames' == 0 {
 * The code below is copied from RigobonSack_v3.do
 
 gen eventvar = .
-drop if ~regexm(day_type,"twoday")
+drop if day_type != "twoday"
 replace eventvar = event_day
 local clause mod(dayindex,2)==0 &
 
@@ -78,7 +81,7 @@ foreach ft in `factors' {
 * Classify events
 
 * Predict CDS residuals.
-reg cds_ `factors2' if (nonevent == 1 & regexm(industry_sector,"INDEX"))
+reg cds_ `factors2' if (nonevent == 1 & regexm(firmname,"`example_sec'"))
 predict cdsresids, residuals
 local cds_sd = `e(rmse)'
 
