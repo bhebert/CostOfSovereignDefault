@@ -9,7 +9,7 @@ save "$apath/Nov_Indices_chars.dta", replace
 
 
 * Industries (moved from Cleaning.do)
-import excel "$bbpath/Argentina.xlsx", sheet("Industry") firstrow clear
+import excel "$bbpath/Industry.xlsx", sheet("Industry") firstrow clear
 foreach x of varlist _all {
 rename `x', lower
 }
