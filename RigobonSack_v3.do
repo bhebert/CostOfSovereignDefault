@@ -661,9 +661,9 @@ foreach x in  `regs' {
 	destring CI_*, replace force
 	
 	gen aster = ""
-	replace aster = "*" if CI_1_90_L > 0 | CI_1_90_H < 0
-	replace aster = "**" if CI_1_95_L > 0 | CI_1_95_H < 0
-	replace aster = "***" if CI_1_99_L > 0 | CI_1_99_H < 0
+	*replace aster = "*" if CI_1_90_L > 0 | CI_1_90_H < 0
+	*replace aster = "**" if CI_1_95_L > 0 | CI_1_95_H < 0
+	*replace aster = "***" if CI_1_99_L > 0 | CI_1_99_H < 0
 	replace aster = "" if _n == 1
 	
 	tostring CI_*, replace force format(%9.1f)
