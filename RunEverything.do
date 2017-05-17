@@ -225,7 +225,7 @@ do ${csd_dir}/CDSMaker.do
 do ${csd_dir}/ThirdAnalysis.do
 
 do ${csd_dir}/HeteroEventStudy.do
-
+global hetero_event 0
 
 ** Run warrants
 global RSuse_adrs 1
