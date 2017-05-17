@@ -1,6 +1,6 @@
-*CLEAN UP Bloomberg and Datastream April 2016
+*CLEAN UP Bloomberg and Datastream CDS Data
 tempfile bball cds1 cds2 cds3 cds4 cds5 cds6
-import excel "$bbpath/Argentina_BB_Full_April2016.xlsx", allstring sheet("data") clear
+import excel "$bbpath/BB_CDS.xlsx", allstring sheet("data") clear
 foreach x of varlist _all {
 	if `x'[2]=="" {
 		drop `x'
@@ -53,7 +53,7 @@ save "$apath/Bloomberg_CDS", replace
 
 *DATASTREAM 
 tempfile dsall cds1 cds2 cds3 cds4 cds5 cds6
-import excel "$csd_data/Datastream/DS_CDS_April2016.xlsx", sheet("Sheet1") clear
+import excel "$csd_data/Datastream/DS_CDS.xlsx", sheet("Sheet1") clear
 local i=1
 foreach x of varlist _all {
 	rename `x' v`i'
