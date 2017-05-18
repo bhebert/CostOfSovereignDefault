@@ -24,7 +24,7 @@ global mkpath "$droppath/Cost of Sovereign Default/Markit"
 global cpath "$csd_data/CDS Comparison"
 global ffpath "$csd_data/Argentina/Tradable/FF"
 global tpath "$csd_data/Argentina/Tradable"
-global gdppath "$csd_data/GDP Weighting"
+global fredpath "$csd_data/FRED"
 global miscdata "$csd_data/Misc Data"
 
 global crsp_path "$csd_data/CRSP"

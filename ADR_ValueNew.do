@@ -100,7 +100,7 @@ save "$apath/AR_weighting.dta", replace
 *******************************************************
 *Construct T-bill returns for inclusion in Value Index*
 *******************************************************
-import excel "$gdppath/Tbill_rate.xls", sheet("fred_stata") firstrow clear
+import excel "$fredpath/Tbill_rate.xls", sheet("fred_stata") firstrow clear
 gen quarter=qofd(date)
 format quarter %tq
 collapse (firstnm) tbill, by(quarter)

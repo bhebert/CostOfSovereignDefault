@@ -91,14 +91,14 @@ foreach x in 1 2 3 4 5 7 10 15 20 30 {
 
 *JUST GET THE ARGENTINE DATA
 *Clean the zero curve, swaps
-import excel "$mainpath/Markit/Prob of Default/Swap_Rates.xls", sheet("Daily") firstrow clear
+import excel "$fredpath/Swap_Rates.xls", sheet("Daily") firstrow clear
 drop USD3
 order DATE  USD6 DSWP1  DSWP3  DSWP4 DSWP5 DSWP7 DSWP10 DSWP30
 rename DATE date
 save "$apath/swaprates.dta", replace
 
 *Import the US TREASURY ZEROS
-import excel "$mainpath/Markit/Prob of Default/GSW_Zero_Curve.xlsx", sheet("Yields") firstrow clear
+import excel "$miscdata/GSW/GSW_Zero_Curve.xlsx", sheet("Yields") firstrow clear
 rename date datestr
 gen date=date(datestr,"YMD")
 order date
