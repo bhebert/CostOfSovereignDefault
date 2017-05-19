@@ -1,9 +1,6 @@
 # CostOfSovereignDefault
 Stata and other code associated with "The Cost of Sovereign Default: Evidence from Argentina"
 
-WARNING: Code comments have not been updated. If they conflict with what is in the paper,
-assume the paper is correct and the code comments are not.
-
 Required Stata packages:
 
 ivreg2
@@ -20,6 +17,9 @@ note that these packages can be installed using (for example)
 "ssc install ivreg2"
 
 
+Matlab is also required. Tested with Stata 14.2 and Matlab R2016b on Mac and Windows 
+machines.
+
 STATA Global Setup Instructions:
 You will need to setup several global variables to run the code. These variables are 
 listed below, along with example values and comments indicating their meaning.
@@ -33,3 +33,14 @@ global csd_dir /Users/bhebert/CostOfSovereignDefault
 ** Path to the Matlab application to run the default probability computation
 global matlab /Applications/MATLAB_R2016b.app/bin/matlab
 
+Editing SetupPaths.do:
+You will need to edit several paths at the top of SetupPaths.do, and create a location for
+the output (the "results" folder).
+
+Running the code:
+Run the "RunEverything.do" file
+
+Comparing the results to the paper:
+The "results" folder you created when editing SetupPaths.do will contain many output 
+files. The word document "FigureTablesForPaper.docx" describes which files contain results 
+used in the paper.
