@@ -289,8 +289,25 @@ export delimited using "$apath/Matlab_June16.csv", replace novarnames
 *Open Matlab and Run the Bootstrapping
 **************************************************
 
+if "`c(os)'" == "Windows" {
+	cap erase $apath/MATLAB_done.csv
+}
+
 cd $csd_dir/ProbabilityOfDefault
 shell $matlab -nosplash -nodesktop -r "apath='$apath/'; test=0; DefProb_Bootstrap"
+
+if "`c(os)'" == "Windows" {
+	local wait = 1
+	while `wait' {
+		cap confirm file "$apath/MATLAB_done.csv"
+		if _rc {
+			sleep 1000
+		}
+		else {
+			local wait = 0
+		}
+	}
+}
 
 ***************************
 *FILES NOW BACK FROM MATLAB

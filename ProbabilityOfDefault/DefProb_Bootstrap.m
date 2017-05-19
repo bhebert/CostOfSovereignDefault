@@ -324,4 +324,7 @@ end
 
 end
 
+cd(apath)
+fileID = fopen('MATLAB_done.csv','w');
+
 
